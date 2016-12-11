@@ -1,0 +1,6 @@
+[submodule "libs/googletest"]
+	path = libs/googletest
+	url = https://github.com/google/googletest.git
+[submodule "libs/libb64"]
+	path = libs/libb64
+	url = git://git.code.sf.net/p/libb64/git
