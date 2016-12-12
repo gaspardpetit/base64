@@ -95,11 +95,11 @@ The table below shows the number of microseconds for the encoding of different b
 | wikibooks_org_cpp| 0.144213| 0.146629| 0.147858| 0.175964| 0.179018| 0.18618| 0.215937| 0.223115| 0.225969| 0.430226| 0.447034| 0.445014| 0.47286| 0.48427| 0.48352| 0.514986| 0.516739| 0.524396| 0.558306| 0.557655| 0.563375| 0.592889| 0.597609| 0.611094| 0.641835| 0.657562| 0.675007| 0.695273| 0.703914| 0.699327| 0.728545| 0.73004| 0.733179| 0.778718| 0.768151| 0.785034| 0.806497| 0.808572| 0.817688| 0.836858| 0.834362| 0.844736| 0.869771| 0.882243| 0.884719| 0.916048| 0.91318| 0.921752| 0.993757| 0.968024| 0.974655| 1.00692| 1.0081| 1.0252| 1.05121| 1.05677| 1.05513| 1.09003| 1.0798| 1.08559| 1.13966| 1.1318| 1.15107| 1.17487| 1.21812| 1.26759| 1.3272| 1.40078| 1.61577| 1.83743| 2.02324| 2.46498| 2.912| 3.32621| 3.78587|
 
 
-![Performance 1 to 256 bytes_32bit_withcurl](https://github.com/gaspardpetit/base64/blob/master/doc/perf_1to256-32_curl.png "")
+![Performance 1 to 256 bytes_32bit_withcurl](https://github.com/gaspardpetit/base64/blob/master/doc/perf_1to256_all.png "")
 
 libcurl and user152949 stands out, being slower by a factor of 5x or more than the others.  Here's the same graph without them:
 
-![Performance 1 to 256 bytes_32bit_withcurl](https://github.com/gaspardpetit/base64/blob/master/doc/perf_1to256-32.png "")
+![Performance 1 to 256 bytes_32bit_withcurl](https://github.com/gaspardpetit/base64/blob/master/doc/perf_1to256.png "")
 
 libb64 seems to have a high fixed cost and a low variable cost - it may be that it will outperform other solutions with larger strings. However, here are results going up to 32K:
 
@@ -122,7 +122,7 @@ libb64 seems to have a high fixed cost and a low variable cost - it may be that 
 | wikibooks_org_c| 61.8934|
 | wikibooks_org_cpp| 427.811|
 
-![Performance 32K](https://github.com/gaspardpetit/base64/blob/master/doc/perf_32K.png "")
+![Performance 32K](https://github.com/gaspardpetit/base64/blob/master/doc/perf_at32K.png "")
 
 At 32K, it does not outperform the average performing solutions.
 
