@@ -78,6 +78,8 @@ From https://github.com/superwills/NibbleAndAHalf/
 ### Gnome
 From https://github.com/GNOME/glib/blob/master/glib/gbase64.c
 
+### cppcodec
+From https://github.com/tplgy/cppcodec
 
 # Results (32bit Visual Studio 2015)
 The table below shows the number of microseconds for the encoding of different buffer sizes:
@@ -135,6 +137,7 @@ Other implementations not yet in the full tests:
 |----|----|
 | NibbleAndAHalf| 45.472|
 | gnome| 69.0894|
+| CppCodec| 194.3|
 
 ![Performance 32K](https://github.com/gaspardpetit/base64/blob/master/doc/perf_at32K.png "")
 
