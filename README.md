@@ -97,7 +97,7 @@ The table below shows the number of microseconds for the encoding of different b
 
 ![Performance 1 to 256 bytes_32bit_withcurl](https://github.com/gaspardpetit/base64/blob/master/doc/perf_1to256-32_curl.png "")
 
-libcurl stands out, being slower by a factor of 5x than the others.  Here's the same graph without it:
+libcurl and user152949 stands out, being slower by a factor of 5x or more than the others.  Here's the same graph without them:
 
 ![Performance 1 to 256 bytes_32bit_withcurl](https://github.com/gaspardpetit/base64/blob/master/doc/perf_1to256-32.png "")
 
