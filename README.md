@@ -27,7 +27,7 @@ From http://www.adp-gmbh.ch/cpp/common/base64.html
 ### lib64
 From https://sourceforge.net/projects/libb64/
  
-### libcurl (https://sourceforge.net/projects/libb64/)
+### libcurl
 From https://curl.haxx.se/libcurl/
  
 ### Internet Software Consortium
