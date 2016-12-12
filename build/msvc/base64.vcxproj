@@ -160,6 +160,7 @@
     <ClCompile Include="..\..\src\DaedalusAlpha\test_DaedalusAlpha.cpp" />
     <ClCompile Include="..\..\src\ElegantDice\ElegantDice.cpp" />
     <ClCompile Include="..\..\src\ElegantDice\test_ElegantDice.cpp" />
+    <ClCompile Include="..\..\src\gnome\test_gnome.cpp" />
     <ClCompile Include="..\..\src\InternetSoftwareConsortium\InternetSoftwareConsortium.cpp" />
     <ClCompile Include="..\..\src\InternetSoftwareConsortium\test_InternetSoftwareConsortium.cpp" />
     <ClCompile Include="..\..\src\JouniMalinen\test_jounimalinen.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="..\..\src\arduino\arduino.h" />
     <ClInclude Include="..\..\src\DaedalusAlpha\DaedalusAlpha.h" />
     <ClInclude Include="..\..\src\ElegantDice\ElegantDice.h" />
+    <ClInclude Include="..\..\src\gnome\gnome.h" />
     <ClInclude Include="..\..\src\InternetSoftwareConsortium\InternetSoftwareConsortium.h" />
     <ClInclude Include="..\..\src\JouniMalinen\jounimalinen.h" />
     <ClInclude Include="..\..\src\libcurl\curl_base64.h" />

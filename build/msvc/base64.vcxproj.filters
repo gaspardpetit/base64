@@ -56,6 +56,9 @@
     <Filter Include="impl\NibbleAndAHalf">
       <UniqueIdentifier>{86405cd5-290b-4f90-b99c-7ff39280082f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl\gnome">
+      <UniqueIdentifier>{1616078c-3cce-4714-b04a-054885f83197}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\adp-gmbh.ch\base64.cpp">
@@ -139,6 +142,9 @@
     <ClCompile Include="..\..\src\NibbleAndAHalf\test_NibbleAndAHalf.cpp">
       <Filter>impl\NibbleAndAHalf</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\gnome\test_gnome.cpp">
+      <Filter>impl\gnome</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\adp-gmbh.ch\base64.h">
@@ -191,6 +197,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\NibbleAndAHalf\NibbleAndAHalf.h">
       <Filter>impl\NibbleAndAHalf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gnome\gnome.h">
+      <Filter>impl\gnome</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
