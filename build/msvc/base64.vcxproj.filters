@@ -53,6 +53,9 @@
     <Filter Include="impl\jounimalinen">
       <UniqueIdentifier>{091742e3-3acc-4e98-a126-4bb953ba8576}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl\NibbleAndAHalf">
+      <UniqueIdentifier>{86405cd5-290b-4f90-b99c-7ff39280082f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\adp-gmbh.ch\base64.cpp">
@@ -133,6 +136,9 @@
     <ClCompile Include="..\..\src\JouniMalinen\test_jounimalinen.cpp">
       <Filter>impl\jounimalinen</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\NibbleAndAHalf\test_NibbleAndAHalf.cpp">
+      <Filter>impl\NibbleAndAHalf</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\adp-gmbh.ch\base64.h">
@@ -182,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\JouniMalinen\jounimalinen.h">
       <Filter>impl\jounimalinen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\NibbleAndAHalf\NibbleAndAHalf.h">
+      <Filter>impl\NibbleAndAHalf</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

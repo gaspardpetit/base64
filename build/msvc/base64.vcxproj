@@ -170,6 +170,7 @@
     <ClCompile Include="..\..\src\LihO\test_LihO.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\ManuelMartinez\test_ManuelMartinez.cpp" />
+    <ClCompile Include="..\..\src\NibbleAndAHalf\test_NibbleAndAHalf.cpp" />
     <ClCompile Include="..\..\src\omnifarious\omnifarious.cpp" />
     <ClCompile Include="..\..\src\omnifarious\test_omnifarious.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -198,6 +199,7 @@
     <ClInclude Include="..\..\src\libcurl\curl_base64.h" />
     <ClInclude Include="..\..\src\LihO\LihO.h" />
     <ClInclude Include="..\..\src\ManuelMartinez\ManuelMartinez.h" />
+    <ClInclude Include="..\..\src\NibbleAndAHalf\NibbleAndAHalf.h" />
     <ClInclude Include="..\..\src\omnifarious\omnifarious.h" />
     <ClInclude Include="..\..\src\polfosol\polfosol.h" />
     <ClInclude Include="..\..\src\test_base.hpp" />
