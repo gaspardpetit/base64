@@ -130,7 +130,9 @@ libb64 seems to have a high fixed cost and a low variable cost - it may be that 
 | user152949| 5752.37|
 
 Other implementations not yet in the full tests:
+
 | Implementation | 32768|
+|----|----|
 | NibbleAndAHalf| 45.472|
 | gnome| 69.0894|
 
