@@ -1,6 +1,6 @@
 # base64
 
-Searching the web for a base64 implementation yields many results.  The first hit as of 2016-12-10 for "c++ base64" are:
+Searching the web for a C/C++ base64 implementation yields many results.  The first hit as of 2016-12-10 for "c++ base64" are:
 
  - http://www.adp-gmbh.ch/cpp/common/base64.html (René Nyffenegger's implementation which is often quoted by other implementations)
  - http://stackoverflow.com/questions/180947/base64-decode-snippet-in-c which is a stackoverflow entry with multiple "here is my implementation which I think is better"
@@ -27,7 +27,7 @@ From http://www.adp-gmbh.ch/cpp/common/base64.html
 ### lib64
 From https://sourceforge.net/projects/libb64/
  
-### libcurl (https://sourceforge.net/projects/libb64/)
+### libcurl
 From https://curl.haxx.se/libcurl/
  
 ### Internet Software Consortium
@@ -72,6 +72,15 @@ From https://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
 Which I think was based on Rob McCool's uuencode's implementation in 1993
 https://opensource.apple.com/source/QuickTimeStreamingServer/QuickTimeStreamingServer-452/CommonUtilitiesLib/base64.c
 
+### NibbleAndAHalf
+From https://github.com/superwills/NibbleAndAHalf/
+
+### Gnome
+From https://github.com/GNOME/glib/blob/master/glib/gbase64.c
+
+### cppcodec
+From https://github.com/tplgy/cppcodec
+
 # Results (32bit Visual Studio 2015)
 The table below shows the number of microseconds for the encoding of different buffer sizes:
 
@@ -105,22 +114,24 @@ libb64 seems to have a high fixed cost and a low variable cost - it may be that 
 
 | Implementation | 32768|
 |----|----|
-| LihO| 488.674|
-| adp_gmbh| 507.942|
-| apache| 31.6221|
-| arduino| 153.267|
-| daedalusalpha| 149.064|
-| elegantdice| 147.357|
-| internetsoftwareconsortium| 54.9623|
-| jounimalinen| 30.5788|
-| libb64| 146.305|
-| libcurl| 2906.98|
-| manuelmartinez| 157.84|
-| omnifarious| 108.644|
-| polfosol| 58.9534|
-| user152949| 5752.37|
-| wikibooks_org_c| 61.8934|
-| wikibooks_org_cpp| 427.811|
+| apache| 28.9077|
+| jounimalinen| 30.4965|
+| NibbleAndAHalf| 46.0619|
+| internetsoftwareconsortium| 55.3013|
+| polfosol| 57.6273|
+| wikibooks_org_c| 61.5319|
+| gnome| 70.1095|
+| elegantdice| 146.471|
+| daedalusalpha| 147.503|
+| arduino| 148.96|
+| libb64| 152.933|
+| manuelmartinez| 158.616|
+| CppCodec| 199.157|
+| wikibooks_org_cpp| 444.807|
+| adp_gmbh| 461.506|
+| LihO| 477.591|
+| libcurl| 2927.97|
+| user152949| 5828.38|
 
 ![Performance 32K](https://github.com/gaspardpetit/base64/blob/master/doc/perf_at32K.png "")
 
