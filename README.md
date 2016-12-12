@@ -124,7 +124,7 @@ Without libcurl:
 
 ## Conclusion
 
-- A few interesting things to observe: the Internet Software Consortium version, written over 15 years ago, beats most of the code snippets posted around - which brings us back to how it is important to look for existing implementations before writing new ones. This implementation comes with an unconvenient license from IBM, however, granting you "immunity from suites under its patents, if any, for the use, sale or manufacture of produces to the extent that such products are used for performing Domain Name System";
+- The Internet Software Consortium version, written over 15 years ago, beats most of the code snippets posted around - which brings us back to how it is important to look for existing implementations before writing new ones. This implementation comes with an unconvenient license from IBM, however, granting you "immunity from suites under its patents, if any, for the use, sale or manufacture of produces to the extent that such products are used for performing Domain Name System";
 - The 64bit version has a strange bump at around 50 bytes - I have no idea what it is at this point;
 - The libcurl implementation is really terrible;
 - libb64 shows very strange performance results - I get the feeling that they are doing something neat but that I am perhaps not using their code right;
