@@ -72,6 +72,13 @@ From https://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
 Which I think was based on Rob McCool's uuencode's implementation in 1993
 https://opensource.apple.com/source/QuickTimeStreamingServer/QuickTimeStreamingServer-452/CommonUtilitiesLib/base64.c
 
+### NibbleAndAHalf
+From https://github.com/superwills/NibbleAndAHalf/
+
+### Gnome
+From https://github.com/GNOME/glib/blob/master/glib/gbase64.c
+
+
 # Results (32bit Visual Studio 2015)
 The table below shows the number of microseconds for the encoding of different buffer sizes:
 
@@ -121,6 +128,11 @@ libb64 seems to have a high fixed cost and a low variable cost - it may be that 
 | adp_gmbh| 507.942|
 | libcurl| 2906.98|
 | user152949| 5752.37|
+
+Other implementations not yet in the full tests:
+| Implementation | 32768|
+| NibbleAndAHalf| 45.472|
+| gnome| 69.0894|
 
 ![Performance 32K](https://github.com/gaspardpetit/base64/blob/master/doc/perf_at32K.png "")
 
