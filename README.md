@@ -1,6 +1,6 @@
 # base64
 
-Searching the web for a base64 implementation yields many results.  The first hit as of 2016-12-10 for "c++ base64" are:
+Searching the web for a C/C++ base64 implementation yields many results.  The first hit as of 2016-12-10 for "c++ base64" are:
 
  - http://www.adp-gmbh.ch/cpp/common/base64.html (René Nyffenegger's implementation which is often quoted by other implementations)
  - http://stackoverflow.com/questions/180947/base64-decode-snippet-in-c which is a stackoverflow entry with multiple "here is my implementation which I think is better"
