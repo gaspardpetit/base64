@@ -60,21 +60,25 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="props\include gtest.props" />
     <Import Project="props\include libb64.props" />
+    <Import Project="props\include cppcodec.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="props\include gtest.props" />
     <Import Project="props\include libb64.props" />
+    <Import Project="props\include cppcodec.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="props\include gtest.props" />
     <Import Project="props\include libb64.props" />
+    <Import Project="props\include cppcodec.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="props\include gtest.props" />
     <Import Project="props\include libb64.props" />
+    <Import Project="props\include cppcodec.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -156,6 +160,7 @@
     <ClCompile Include="..\..\src\adp-gmbh.ch\test_adp-gmbh.cpp" />
     <ClCompile Include="..\..\src\apache\test_apache.cpp" />
     <ClCompile Include="..\..\src\arduino\test_arduino.cpp" />
+    <ClCompile Include="..\..\src\cppcodec\test_cppcodec.cpp" />
     <ClCompile Include="..\..\src\DaedalusAlpha\DaedalusAlpha.cpp" />
     <ClCompile Include="..\..\src\DaedalusAlpha\test_DaedalusAlpha.cpp" />
     <ClCompile Include="..\..\src\ElegantDice\ElegantDice.cpp" />

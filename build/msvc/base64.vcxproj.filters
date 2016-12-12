@@ -59,6 +59,9 @@
     <Filter Include="impl\gnome">
       <UniqueIdentifier>{1616078c-3cce-4714-b04a-054885f83197}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl\cppcodec">
+      <UniqueIdentifier>{7f2bef76-1f9e-4cc4-8300-fbd600457494}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\adp-gmbh.ch\base64.cpp">
@@ -144,6 +147,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\gnome\test_gnome.cpp">
       <Filter>impl\gnome</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cppcodec\test_cppcodec.cpp">
+      <Filter>impl\cppcodec</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
