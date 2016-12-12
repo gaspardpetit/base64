@@ -114,22 +114,24 @@ libb64 seems to have a high fixed cost and a low variable cost - it may be that 
 
 | Implementation | 32768|
 |----|----|
-| jounimalinen| 30.5788|
-| apache| 31.6221|
-| internetsoftwareconsortium| 54.9623|
-| polfosol| 58.9534|
-| wikibooks_org_c| 61.8934|
-| omnifarious| 108.644|
-| libb64| 146.305|
-| elegantdice| 147.357|
-| daedalusalpha| 149.064|
-| arduino| 153.267|
-| manuelmartinez| 157.84|
-| wikibooks_org_cpp| 427.811|
-| LihO| 488.674|
-| adp_gmbh| 507.942|
-| libcurl| 2906.98|
-| user152949| 5752.37|
+| apache| 28.9077|
+| jounimalinen| 30.4965|
+| NibbleAndAHalf| 46.0619|
+| internetsoftwareconsortium| 55.3013|
+| polfosol| 57.6273|
+| wikibooks_org_c| 61.5319|
+| gnome| 70.1095|
+| elegantdice| 146.471|
+| daedalusalpha| 147.503|
+| arduino| 148.96|
+| libb64| 152.933|
+| manuelmartinez| 158.616|
+| CppCodec| 199.157|
+| wikibooks_org_cpp| 444.807|
+| adp_gmbh| 461.506|
+| LihO| 477.591|
+| libcurl| 2927.97|
+| user152949| 5828.38|
 
 Other implementations not yet in the full tests:
 
