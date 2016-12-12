@@ -29,10 +29,11 @@ void RunBenchmark()
 {
 	bool printTable = true;
 	typedef high_resolution_clock Clock;
+	std::map<std::string, std::map<int, double>> results;
 
 	//int test_sizes[] = { 1, 2, 3, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 40, 48, 56, 64, 80, 96, 112, 128,  160, 192, 224, 256, 512, 768, 1024, 2048, 3072, 4096, 8192, 16384, 32768};
-	//int test_sizes[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 68, 72, 76, 80, 96, 112, 128,  160, 192, 224, 256 };
-	int test_sizes[] = { 32768 };
+	int test_sizes[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 68, 72, 76, 80, 96, 112, 128,  160, 192, 224, 256 };
+	//int test_sizes[] = { 32768 };
 	string buffers[sizeof(test_sizes) / sizeof(test_sizes[0])];
 	string  value_buffers[sizeof(test_sizes) / sizeof(test_sizes[0])];
 	for (int i = 0; i < sizeof(test_sizes) / sizeof(test_sizes[0]); ++i)
@@ -108,6 +109,7 @@ void RunBenchmark()
 			}
 			auto t2 = Clock::now();
 			double time_tiny = double(duration_cast<microseconds>(t2 - t1).count()) / double(i+1);
+			results[name][test_sizes[testN]] = time_tiny;
 			if (printTable)
 			{
 				cout << "| " << time_tiny << std::flush;
@@ -124,6 +126,67 @@ void RunBenchmark()
 			cout << endl;
 
 	}
+
+	std::map<double, std::vector<std::string>> sorted;
+	for (const auto &entry : results)
+		sorted[entry.second.rbegin()->second].push_back(entry.first);
+
+	if (printTable)
+	{
+		cout << "| Implementation ";
+
+		for (int size : test_sizes)
+			cout << "| " << size;
+
+		cout << "|" << endl;
+
+		cout << "|----";
+
+		for (int size : test_sizes)
+			cout << "|----";
+
+		cout << "|" << endl;
+	}
+
+	for (const auto &entry : sorted)
+	{
+		for (const std::string &name : entry.second)
+		{
+			if (printTable)
+			{
+				cout << "| " << name;
+			}
+			else
+			{
+				cout << name;
+			}
+
+
+			for (int testN = 0; testN < sizeof(test_sizes) / sizeof(test_sizes[0]); ++testN)
+			{
+				double time_tiny = results[name][test_sizes[testN]];
+				results[name][test_sizes[testN]] = time_tiny;
+				if (printTable)
+				{
+					cout << "| " << time_tiny << std::flush;
+				}
+				else
+				{
+					cout << ",\t" << time_tiny << std::flush;
+				}
+			}
+
+			if (printTable)
+				cout << "|" << endl;
+			else
+				cout << endl;
+
+		}
+
+	}
+
+	// print sorted summary
+
 }
 
 
