@@ -133,14 +133,6 @@ libb64 seems to have a high fixed cost and a low variable cost - it may be that 
 | libcurl| 2927.97|
 | user152949| 5828.38|
 
-Other implementations not yet in the full tests:
-
-| Implementation | 32768|
-|----|----|
-| NibbleAndAHalf| 45.472|
-| gnome| 69.0894|
-| CppCodec| 194.3|
-
 ![Performance 32K](https://github.com/gaspardpetit/base64/blob/master/doc/perf_at32K.png "")
 
 At 32K, it does not outperform the average performing solutions.
