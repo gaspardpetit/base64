@@ -9,6 +9,12 @@ struct adp_gmbh
 	{
 		return adp_gmbh_base64_encode((unsigned char*)bytes.data(), bytes.length());
 	}
+
+	std::string decode(std::string &bytes)
+	{
+		return adp_gmbh_base64_decode(bytes);
+	}
 };
 
-IMPLEMENT_TESTS(adp_gmbh);
+IMPLEMENT_ENCODE_TESTS(adp_gmbh);
+IMPLEMENT_DECODE_TESTS(adp_gmbh);

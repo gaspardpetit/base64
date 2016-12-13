@@ -12,6 +12,17 @@ struct wikibooks_org_c
 		base64encode(bytes.data(), bytes.length(), &out[0], encLen);
 		return out;
 	}
+
+	std::string decode(std::string &bytes)
+	{
+		std::string out;
+		size_t encLen = 3 * ((bytes.length() + 3) / 4);
+		out.resize(encLen);
+		base64decode(&bytes[0], bytes.length(), (unsigned char*)&out[0], &encLen);
+		out.resize(encLen);
+		return out;
+	}
 };
 
-IMPLEMENT_TESTS(wikibooks_org_c);
+IMPLEMENT_ENCODE_TESTS(wikibooks_org_c);
+IMPLEMENT_DECODE_TESTS(wikibooks_org_c);

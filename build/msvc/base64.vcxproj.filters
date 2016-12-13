@@ -76,12 +76,6 @@
     <ClCompile Include="..\..\src\libb64\test_libb64.cpp">
       <Filter>impl\libb64</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\libs\libb64\src\cdecode.c">
-      <Filter>impl\libb64</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\libs\libb64\src\cencode.c">
-      <Filter>impl\libb64</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\libcurl\curl_base64.cpp">
       <Filter>impl\libcurl</Filter>
     </ClCompile>
@@ -150,6 +144,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\cppcodec\test_cppcodec.cpp">
       <Filter>impl\cppcodec</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libb64\libb64\src\cdecode.c">
+      <Filter>impl\libb64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libb64\libb64\src\cencode.c">
+      <Filter>impl\libb64</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

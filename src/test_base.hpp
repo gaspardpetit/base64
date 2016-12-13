@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
 
-std::map<std::string, std::string(*)(std::string &)>& getTests();
+std::map<std::string, std::string(*)(std::string &)>& getEncodeTests();
+std::map<std::string, std::string(*)(std::string &)>& getDecodeTests();
 
 extern std::string s_tiny;
 extern std::string s_tiny_expected;
@@ -14,13 +15,26 @@ extern std::string s_long_expected;
 
 
 template<class BASE64Impl>
-struct RegisterTest
+struct RegisterEncodeTest
 {
-	RegisterTest(const std::string name)
+	RegisterEncodeTest(const std::string name)
 	{
-		getTests()[name] = [](std::string &bytes) {
+		getEncodeTests()[name] = [](std::string &bytes) {
 			BASE64Impl impl;
 			return impl.encode(bytes);
+		};
+	}
+};
+
+template<class BASE64Impl>
+struct RegisterDecodeTest
+{
+	RegisterDecodeTest(const std::string name)
+	{
+
+		getDecodeTests()[name] = [](std::string &bytes) {
+			BASE64Impl impl;
+			return impl.decode(bytes);
 		};
 	}
 };
@@ -66,8 +80,48 @@ void test_encode_long()
 }
 
 
-#define IMPLEMENT_TESTS(TEST_TYPE)\
-RegisterTest<TEST_TYPE> register_##TEST_TYPE(#TEST_TYPE);\
+template<class BASE64Impl>
+void test_decode_tiny()
+{
+	std::string &str = s_tiny_expected;
+	std::string &expected = s_tiny;
+
+	BASE64Impl impl;
+	ASSERT_EQ(expected, impl.decode(str));
+}
+
+template<class BASE64Impl>
+void test_decode_short()
+{
+	std::string &str = s_short_expected;
+	std::string &expected = s_short;
+
+	BASE64Impl impl;
+	ASSERT_EQ(expected, impl.decode(str));
+}
+
+template<class BASE64Impl>
+void test_decode_medium()
+{
+	std::string &str = s_medium_expected;
+	std::string &expected = s_medium;
+
+	BASE64Impl impl;
+	ASSERT_EQ(expected, impl.decode(str));
+}
+
+template<class BASE64Impl>
+void test_decode_long()
+{
+	std::string &str = s_long_expected;
+	std::string &expected = s_long;
+
+	BASE64Impl impl;
+	ASSERT_EQ(expected, impl.decode(str));
+}
+
+#define IMPLEMENT_ENCODE_TESTS(TEST_TYPE)\
+RegisterEncodeTest<TEST_TYPE> register_##TEST_TYPE_encode(#TEST_TYPE);\
 TEST(TEST_TYPE, test_encode_tiny)\
 {\
 	test_encode_tiny<TEST_TYPE>();\
@@ -86,4 +140,26 @@ TEST(TEST_TYPE, test_encode_medium)\
 TEST(TEST_TYPE, test_encode_long)\
 {\
 	test_encode_long<TEST_TYPE>();\
+}
+
+#define IMPLEMENT_DECODE_TESTS(TEST_TYPE)\
+RegisterDecodeTest<TEST_TYPE> register_##TEST_TYPE##_decode(#TEST_TYPE);\
+TEST(TEST_TYPE, test_decode_tiny)\
+{\
+	test_decode_tiny<TEST_TYPE>();\
+}\
+\
+TEST(TEST_TYPE, test_decode_short)\
+{\
+	test_decode_short<TEST_TYPE>();\
+}\
+\
+TEST(TEST_TYPE, test_decode_medium)\
+{\
+	test_decode_medium<TEST_TYPE>();\
+}\
+\
+TEST(TEST_TYPE, test_decode_long)\
+{\
+	test_decode_long<TEST_TYPE>();\
 }

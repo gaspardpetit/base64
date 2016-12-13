@@ -11,7 +11,14 @@ struct arduino
 		Base64::Encode(bytes.data(), bytes.length(), &outStr);
 		return outStr;
 	}
+	std::string decode(std::string &bytes)
+	{
+		std::string outStr;
+		Base64::Decode(bytes, &outStr);
+		return outStr;
+	}
 };
 
-IMPLEMENT_TESTS(arduino);
+IMPLEMENT_ENCODE_TESTS(arduino);
+IMPLEMENT_DECODE_TESTS(arduino);
 

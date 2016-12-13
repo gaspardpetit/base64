@@ -399,27 +399,29 @@ g_base64_decode_step(const gchar  *in,
 *
 * Since: 2.12
 */
-guchar *
-g_base64_decode(const gchar *text, gsize       *out_len)
+std::string g_base64_decode(const gchar *text)
 {
+	std::string retStr;
 	guchar *ret;
 	gsize input_length;
 	gint state = 0;
 	guint save = 0;
+	gsize out_len;
 
 	g_return_val_if_fail(text != NULL, NULL);
-	g_return_val_if_fail(out_len != NULL, NULL);
 
 	input_length = strlen(text);
 
 	/* We can use a smaller limit here, since we know the saved state is 0,
 	+1 used to avoid calling g_malloc0(0), and hence returning NULL */
-	ret = (guchar*)malloc((input_length / 4) * 3 + 1);
+	retStr.resize((input_length / 4) * 3 + 1);
+	ret = (guchar*)&retStr[0];
 	memset(ret, 0, (input_length / 4) * 3 + 1);
 
-	*out_len = g_base64_decode_step(text, input_length, ret, &state, &save);
+	out_len = g_base64_decode_step(text, input_length, ret, &state, &save);
+	retStr.resize(out_len);
 
-	return ret;
+	return retStr;
 }
 
 /**

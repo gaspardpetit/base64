@@ -10,6 +10,12 @@ struct CppCodec
 	{
 		return base64::encode((unsigned char*)bytes.data(), bytes.length());
 	}
+
+	std::string decode(std::string &bytes)
+	{
+		return base64::decode<std::string>((char*)bytes.data(), bytes.length());
+	}
 };
 
-IMPLEMENT_TESTS(CppCodec);
+IMPLEMENT_ENCODE_TESTS(CppCodec);
+IMPLEMENT_DECODE_TESTS(CppCodec);

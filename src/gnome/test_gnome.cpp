@@ -9,6 +9,12 @@ struct gnome
 	{
 		return g_base64_encode((unsigned char*)bytes.data(), bytes.length());
 	}
+
+	std::string decode(std::string &bytes)
+	{
+		return g_base64_decode(bytes.data());
+	}
 };
 
-IMPLEMENT_TESTS(gnome);
+IMPLEMENT_ENCODE_TESTS(gnome);
+IMPLEMENT_DECODE_TESTS(gnome);

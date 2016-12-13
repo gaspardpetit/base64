@@ -11,5 +11,5 @@ struct omnifarious
 	}
 };
 
-IMPLEMENT_TESTS(omnifarious);
+IMPLEMENT_ENCODE_TESTS(omnifarious);
 

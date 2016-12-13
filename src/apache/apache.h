@@ -96,7 +96,7 @@ int Base64decode_len(const char *bufcoded)
 	nprbytes = (bufin - (const unsigned char *)bufcoded) - 1;
 	nbytesdecoded = ((nprbytes + 3) / 4) * 3;
 
-	return nbytesdecoded + 1;
+	return nbytesdecoded;
 }
 
 int Base64decode(char *bufplain, const char *bufcoded)
@@ -139,7 +139,6 @@ int Base64decode(char *bufplain, const char *bufcoded)
 			(unsigned char)(pr2six[bufin[2]] << 6 | pr2six[bufin[3]]);
 	}
 
-	*(bufout++) = '\0';
 	nbytesdecoded -= (4 - nprbytes) & 3;
 	return nbytesdecoded;
 }

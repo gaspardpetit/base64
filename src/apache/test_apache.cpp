@@ -11,6 +11,16 @@ struct apache
 		Base64encode(&out[0], bytes.data(), bytes.length());
 		return out;
 	}
+
+	std::string decode(std::string &bytes)
+	{
+		std::string out;
+		out.resize(Base64decode_len(&bytes[0]));
+		size_t actualSize = Base64decode(&out[0], bytes.data());
+		out.resize(actualSize);
+		return out;
+	}
 };
 
-IMPLEMENT_TESTS(apache);
+IMPLEMENT_ENCODE_TESTS(apache);
+IMPLEMENT_DECODE_TESTS(apache);

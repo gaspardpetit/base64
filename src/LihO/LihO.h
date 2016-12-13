@@ -7,6 +7,6 @@
 typedef unsigned char BYTE;
 
 std::string LihO_base64_encode(BYTE const* buf, unsigned int bufLen);
-std::vector<BYTE> LihO_base64_decode(std::string const&);
+std::string LihO_base64_decode(std::string const&);
 
 #endif

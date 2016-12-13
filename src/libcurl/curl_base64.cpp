@@ -113,8 +113,7 @@ static size_t decodeQuantum(unsigned char *dest, const char *src)
 *
 * @unittest: 1302
 */
-CURLcode Curl_base64_decode(const char *src,
-	unsigned char **outptr, size_t *outlen)
+CURLcode Curl_base64_decode(const char *src, std::string *outStr)
 {
 	size_t srclen = 0;
 	size_t length = 0;
@@ -125,8 +124,8 @@ CURLcode Curl_base64_decode(const char *src,
 	unsigned char *pos;
 	unsigned char *newstr;
 
-	*outptr = NULL;
-	*outlen = 0;
+	unsigned char *outptr = NULL;
+	int outlen = 0;
 	srclen = strlen(src);
 
 	/* Check the length of the input string is valid */
@@ -155,7 +154,8 @@ CURLcode Curl_base64_decode(const char *src,
 	rawlen = (numQuantums * 3) - padding;
 
 	/* Allocate our buffer including room for a zero terminator */
-	newstr = (unsigned char*)malloc(rawlen + 1);
+	outStr->resize(rawlen);
+	newstr = (unsigned char*)&(*outStr)[0];
 	if (!newstr)
 		return CURLE_OUT_OF_MEMORY;
 
@@ -173,13 +173,6 @@ CURLcode Curl_base64_decode(const char *src,
 		pos += result;
 		src += 4;
 	}
-
-	/* Zero terminate */
-	*pos = '\0';
-
-	/* Return the decoded data */
-	*outptr = newstr;
-	*outlen = rawlen;
 
 	return CURLE_OK;
 }

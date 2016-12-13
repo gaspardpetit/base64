@@ -69,14 +69,14 @@ std::string Base64::encode(const BYTE* buf, unsigned int bufLen)
 	return ret;
 }
 
-std::vector<BYTE> Base64::decode(std::string encoded_string)
+std::string Base64::decode(std::string encoded_string)
 {
 	// Make sure string length is a multiple of 4
 	while ((encoded_string.size() % 4) != 0)
 		encoded_string.push_back('=');
 
 	size_t encoded_size = encoded_string.size();
-	std::vector<BYTE> ret;
+	std::string ret;
 	ret.reserve(3 * encoded_size / 4);
 
 	for (size_t i = 0; i < encoded_size; i += 4)

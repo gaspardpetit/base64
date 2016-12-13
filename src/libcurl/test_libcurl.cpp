@@ -11,6 +11,14 @@ struct libcurl
 		Curl_base64_encode(bytes.data(), bytes.length(), &str);
 		return str;
 	}
+
+	std::string decode(std::string &bytes)
+	{
+		std::string str;
+		Curl_base64_decode(bytes.data(), &str);
+		return str;
+	}
 };
 
-IMPLEMENT_TESTS(libcurl);
+IMPLEMENT_ENCODE_TESTS(libcurl);
+IMPLEMENT_DECODE_TESTS(libcurl);

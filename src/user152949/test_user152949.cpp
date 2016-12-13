@@ -11,6 +11,15 @@ struct user152949
 		CBase64::Encode(istrm, ostrm);
 		return std::move(ostrm.str());
 	}
+
+	std::string decode(std::string &bytes)
+	{
+		std::istringstream istrm(bytes);
+		std::ostringstream ostrm;
+		CBase64::Decode(istrm, ostrm);
+		return std::move(ostrm.str());
+	}
 };
 
-IMPLEMENT_TESTS(user152949);
+IMPLEMENT_ENCODE_TESTS(user152949);
+IMPLEMENT_DECODE_TESTS(user152949);

@@ -8,6 +8,11 @@ struct daedalusalpha
 	{
 		return Base64::encode((unsigned char*)bytes.data(), bytes.length());
 	}
+	std::string decode(std::string &bytes)
+	{
+		return Base64::decode(bytes);
+	}
 };
 
-IMPLEMENT_TESTS(daedalusalpha);
+IMPLEMENT_ENCODE_TESTS(daedalusalpha);
+IMPLEMENT_DECODE_TESTS(daedalusalpha);

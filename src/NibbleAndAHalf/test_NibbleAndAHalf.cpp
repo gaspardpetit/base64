@@ -8,6 +8,11 @@ struct NibbleAndAHalf
 	{
 		return base64(bytes.data(), bytes.length());
 	}
+
+	std::string decode(std::string &bytes)
+	{
+		return unbase64(bytes.data(), bytes.length());
+	}
 };
 
-IMPLEMENT_TESTS(NibbleAndAHalf);
+IMPLEMENT_ENCODE_TESTS(NibbleAndAHalf);

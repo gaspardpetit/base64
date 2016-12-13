@@ -4,7 +4,7 @@
 static const char* B64chars =
 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-static const int B64index[256] = { 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+static constexpr const unsigned char B64index[256] = { 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 62, 63, 62, 62, 63, 52, 53, 54, 55,
 56, 57, 58, 59, 60, 61,  0,  0,  0,  0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6,
@@ -36,6 +36,7 @@ std::string b64encode(const void* data, const size_t len)
 	return str64;
 }
 
+
 std::string b64decode(const void* data, const size_t len)
 {
 	unsigned char* p = (unsigned char*)data;
@@ -62,6 +63,39 @@ std::string b64decode(const void* data, const size_t len)
 		}
 	}
 	return str;
+}
+
+
+std::string b64decode_mod(const unsigned char *table, const void* data, const size_t len)
+{
+	unsigned char* p = (unsigned char*)data;
+	int pad = len > 0 && (len % 4 || p[len - 1] == '=');
+	const size_t L = ((len + 3) / 4 - pad) * 4;
+	std::string str;
+	str.resize(3*((len+3)/4));
+
+	int j = 0;
+	for (size_t i = 0; i < L; i += 4)
+	{
+		int n = table[p[i]] << 18 | table[p[i + 1]] << 12 | table[p[i + 2]] << 6 | table[p[i + 3]];
+		str[j++] = n >> 16;
+		str[j++] = n >> 8 & 0xFF;
+		str[j++] = n & 0xFF;
+	}
+	if (pad)
+	{
+		int n = table[p[L]] << 18 | table[p[L + 1]] << 12;
+		str[j++] = n >> 16;
+
+		if (len > L + 2 && p[L + 2] != '=')
+		{
+			n |= table[p[L + 2]] << 6;
+			str[j++] = n >> 8 & 0xFF;
+		}
+	}
+
+	str.resize(j);
+	return std::move(str);
 }
 
 std::string b64decode(const std::string& str64)

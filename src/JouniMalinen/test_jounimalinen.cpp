@@ -8,6 +8,12 @@ struct jounimalinen
 	{
 		return base64_encode((unsigned char*)&bytes[0], bytes.length());
 	}
+
+	std::string decode(std::string &bytes)
+	{
+		return base64_decode((unsigned char*)&bytes[0], bytes.length());
+	}
 };
 
-IMPLEMENT_TESTS(jounimalinen);
+IMPLEMENT_ENCODE_TESTS(jounimalinen);
+IMPLEMENT_DECODE_TESTS(jounimalinen);

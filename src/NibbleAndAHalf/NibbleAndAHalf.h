@@ -116,8 +116,9 @@ std::string base64(const void* binaryData, int len)
 	return resStr;
 }
 
-unsigned char* unbase64(const char* ascii, int len, int *flen)
+std::string unbase64(const char* ascii, int len)
 {
+	int flen;
 	const unsigned char *safeAsciiPtr = (const unsigned char*)ascii;
 	unsigned char *bin;
 	int cb = 0;
@@ -127,14 +128,16 @@ unsigned char* unbase64(const char* ascii, int len, int *flen)
 	if (len < 2) { // 2 accesses below would be OOB.
 				   // catch empty string, return NULL as result.
 		puts("ERROR: You passed an invalid base64 string (too short). You get NULL back.");
-		*flen = 0;
+		flen = 0;
 		return 0;
 	}
 	if (safeAsciiPtr[len - 1] == '=')  ++pad;
 	if (safeAsciiPtr[len - 2] == '=')  ++pad;
 
-	*flen = 3 * len / 4 - pad;
-	bin = (unsigned char*)malloc(*flen);
+	flen = 3 * len / 4 - pad;
+	std::string binStr;
+	binStr.resize(flen);
+	bin = (unsigned char*)&binStr[0];
 	if (!bin)
 	{
 		puts("ERROR: unbase64 could not allocate enough memory.");
@@ -171,7 +174,7 @@ unsigned char* unbase64(const char* ascii, int len, int *flen)
 		bin[cb++] = (A << 2) | (B >> 4);
 	}
 
-	return bin;
+	return binStr;
 }
 
 #endif
