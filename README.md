@@ -168,6 +168,13 @@ The results for decoding were a bit surprising:
 | adp_gmbh| 0.209475| 0.234301| 0.214723| 0.36542| 0.374458| 0.391939| 0.466609| 0.489803| 0.510785| 0.610815| 0.66594| 0.682442| 0.771804| 0.817743| 0.810188| 1.05309| 1.0621| 1.10696| 1.23201| 1.24374| 1.17008| 1.35006| 1.35821| 1.33779| 1.36942| 1.47349| 1.50232| 1.67442| 1.5531| 1.67777| 1.82921| 1.79899| 1.87766| 2.00309| 2.04931| 1.9613| 2.17817| 2.13072| 2.18533| 2.26772| 2.24121| 2.35696| 2.47487| 2.43142| 2.48025| 2.59841| 2.56752| 2.76805| 2.91337| 2.8522| 2.86643| 2.96925| 2.93879| 2.95373| 3.12177| 3.0836| 3.199| 3.2406| 3.18348| 3.23138| 3.39761| 3.42359| 3.52741| 4.16719| 3.84944| 4.0173| 4.32387| 4.42701| 5.2434| 6.18663| 6.90654| 8.9877| 10.3403| 12.1351| 14.3773|
 | user152949| 1.56263| 1.72881| 1.83673| 2.16248| 2.33526| 2.43341| 2.7817| 2.92215| 3.06089| 3.36212| 3.52552| 3.61884| 3.94919| 4.16032| 4.22839| 4.68393| 4.82273| 4.94147| 5.26418| 5.49898| 5.52942| 5.82988| 6.02082| 6.12667| 6.43054| 6.64832| 6.74578| 7.08192| 7.19858| 7.3667| 7.66561| 7.79815| 7.99703| 8.28286| 8.48972| 8.62092| 8.91568| 9.11106| 9.16898| 9.50423| 9.6593| 9.83468| 10.1351| 10.3154| 10.438| 10.8461| 10.969| 10.9927| 11.2078| 11.4015| 11.5855| 11.9239| 12.2725| 12.1929| 12.5762| 12.7439| 12.8227| 13.2369| 13.4012| 13.3287| 13.7715| 13.9274| 13.9946| 14.3755| 15.1852| 15.867| 16.7722| 17.5232| 20.6807| 24.1109| 27.3195| 33.9019| 40.1385| 46.9977| 53.1124|
 
+
+![Performance 1 to 256 bytes_32bit_withcurl](https://github.com/gaspardpetit/base64/blob/master/doc/perf_dec_1to256_all.png "")
+
+Removing the slowest implementations:
+
+![Performance 1 to 256 bytes_32bit_withcurl](https://github.com/gaspardpetit/base64/blob/master/doc/perf_dec_1to256.png "")
+
 The fastest implementation is polfosol's snippet from Stack Overflow. What's even more surprising is that by looking just a few minutes at the code, I was able to juice it a little bit more - The implementation is allocating a std::string and then setting the characters using the operator[].  It turns out that operator[] on std::string has some checks for out of bound. Since it is impossible to be out of bound in this context, I changed the code to use the operator[] on a unchecked char pointer and was able to get another 10-15% boost.
 
 Here are the results for a 32K buffer:
@@ -192,6 +199,8 @@ Here are the results for a 32K buffer:
 | LihO| 2199.47|
 | adp_gmbh| 2304.03|
 | user152949| 6510.23|
+
+![Performance 32K](https://github.com/gaspardpetit/base64/blob/master/doc/perf_dec_at32K.png "")
 
 ## Conclusion
 
