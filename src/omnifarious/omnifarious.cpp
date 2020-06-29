@@ -34,11 +34,14 @@ static const char reverse_table[128] = {
 	if (bindata_size > (numeric_limits<string::size_type>::max() / 4u) * 3u) {
 		throw ::std::length_error("Converting too large a string to base64.");
 	}
-
+	
 	const ::std::size_t binlen = bindata_size;
 	// Use = signs so the end is properly padded.
-	string retval((((binlen + 2) / 3) * 4), '=');
+	uint32_t retLen=((bindata_length + 2) / 3 * 4);
+	
+	string retval(retLen, '=');
 	::std::size_t outpos = 0;
+
 	int bits_collected = 0;
 	unsigned int accumulator = 0;
 	const char* binend = bindata_bytes_end;
@@ -56,8 +59,8 @@ static const char reverse_table[128] = {
 		accumulator <<= 6 - bits_collected;
 		retval[outpos++] = b64_table[accumulator & 0x3fu];
 	}
-	assert(outpos >= (retval.size() - 2));
-	assert(outpos <= retval.size());
+	//assert(outpos >= (retval.size() - 2));
+	//assert(outpos <= retval.size());
 	return retval;
 }
 

@@ -1,3 +1,7 @@
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
 #pragma once
 
 using u_char = unsigned char;
