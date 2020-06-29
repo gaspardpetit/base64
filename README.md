@@ -25,6 +25,9 @@ Keep in mind that some implementations were slightly modified to have a common i
 I do not own any of these implementations - make sure you check their respective license before using them.
 
 ## Compared implementations
+
+### To view the last updated result on Linux platform (GCC and clang) follow [ this ] (https://rawcdn.githack.com/mohsenatigh/base64/9184d097801f11d51e0c3b2657ef91bd9da27bb0/result/result.html) link 
+
 ### adp-gmbh (René Nyffenegger)
 From http://www.adp-gmbh.ch/cpp/common/base64.html
 
