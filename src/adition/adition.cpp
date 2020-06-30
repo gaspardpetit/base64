@@ -5,7 +5,7 @@ size_t CBase64Parser::GetEncodeLen(size_t inLen) const {
 }
 
 //-----------------------------------------------------------------------
-uint32_t CBase64Parser::GetDecodeExpectedLen(uint32_t inLen) const {
+size_t CBase64Parser::GetDecodeExpectedLen(size_t inLen) const {
   return ((inLen + 3) / 4) * 3;
 }
 
