@@ -16,7 +16,7 @@ void CBase64Parser::EncodeChunk(const uint8_t *in, uint32_t inLen,
   /*
     translation table
   */
-  static constexpr char tTable[64] = {
+   constexpr std::array<char,64> tTable = {
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
       'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
       'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
