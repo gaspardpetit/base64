@@ -58,7 +58,7 @@ void CBase64Parser::EncodeChunk(const uint8_t *in, uint32_t inLen,
 uint32_t CBase64Parser::DecodeChunk(const char *in, uint32_t inLen,
                                     uint8_t *out) const {
 
-  static constexpr char valTable[256] = {
+  constexpr std::array<char,256> valTable = {
       /* ASCII table */
       64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
       64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
