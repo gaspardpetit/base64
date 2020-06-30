@@ -1,6 +1,6 @@
 #include "adition.hpp"
 //-----------------------------------------------------------------------
-uint32_t CBase64Parser::GetEncodeLen(uint32_t inLen) const {
+size_t CBase64Parser::GetEncodeLen(size_t inLen) const {
   return ((inLen + 2) / 3) * 4;
 }
 
