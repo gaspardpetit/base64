@@ -417,9 +417,6 @@ int main(int argc, char *argv[])
 
   //
   auto runTest = [](const std::string &in, const std::string &expected) {
-    //std::vector<uint8_t> v{in.begin(),in.end()};
-    //auto ret=parser.Encode(v)
-    //EXPECT_TRUE(ret==expected);
   };
 
   // create result directory
