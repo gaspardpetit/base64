@@ -147,14 +147,6 @@ void RunEncodeBenchmark()
     for (int testN = 0; testN < sizeof(test_sizes) / sizeof(test_sizes[0]);
          ++testN)
     {
-      //			std::string result =
-      //(entry.second)(buffers[testN]); 			if (result !=
-      // value_buffers[testN])
-      //			{
-      //				cout << "failure, expected " <<
-      // value_buffers[testN] << " but got " << result << endl;
-      // break;
-      //			}
 
       // run N iterations, or break after 0.5s
       int i;
