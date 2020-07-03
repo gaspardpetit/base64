@@ -59,8 +59,6 @@ static const char reverse_table[128] = {
 		accumulator <<= 6 - bits_collected;
 		retval[outpos++] = b64_table[accumulator & 0x3fu];
 	}
-	//assert(outpos >= (retval.size() - 2));
-	//assert(outpos <= retval.size());
 	return retval;
 }
 
