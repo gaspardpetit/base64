@@ -1,3 +1,5 @@
+__build
+.vscode
 # Compiled Object files
 *.slo
 *.lo

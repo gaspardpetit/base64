@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<style type="text/css">
+</style>
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!--CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.css"
+        crossorigin="anonymous">
+
+
+    <!--JS-->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+
+
+    <title>BASE64 Result</title>
+</head>
+
+<body>
+    <script src="result/encode-gcc9.js"></script>
+    <script src="result/decode-gcc9.js"></script>
+    <script src="result/encode-clang.js"></script>
+    <script src="result/decode-clang.js"></script>
+    <script type="text/babel">
+        //----------------------------------------------------------------------------- 
+        function mergResult(encode, decode) {
+            let result = [];
+
+            let findDecodeVal = (name) => {
+                for (let obj of decode) {
+                    if (obj.name == name) {
+                        return obj;
+                    }
+                }
+                return null;
+            }
+
+            let clone = JSON.parse(JSON.stringify(encode));
+
+
+            for (let obj of clone) {
+                let decodeVal = findDecodeVal(obj.name);
+                let nObject = obj
+                if (decodeVal === null) {
+                    console.log("can not find decoder for " + obj.name);
+                    continue;
+                }
+                for (let i in nObject.values) {
+                    nObject.values[i].time += decodeVal.values[i].time;
+                }
+                result.push(nObject)
+            }
+
+            return result;
+        }
+        //-----------------------------------------------------------------------------
+        function generateResultTable(tableName, result) {
+
+            if (result.length === 0) {
+                alert("invalid result")
+                return;
+            }
+
+            //sort results
+            result.sort((a, b) => {
+                let aSum = a.values.reduce((total, v) => {
+                    return v.time;
+                })
+
+                let bSum = b.values.reduce((total, v) => {
+                    return v.time;
+                })
+                return (aSum - bSum);
+            })
+
+            //render header
+            let lens = result[0].values;
+            let head = "<th>#</th><th>Implementation</th>";
+            head += lens.map((item) => {
+                return `<th>${item.len}</th>`
+            })
+            let thead = $(`#${tableName} thead tr`);
+            thead.html(head);
+
+            //render body
+            let body = result.map((item, index) => {
+                let val = `<tr><td>${index + 1}</td><th>${item.name}</th>`;
+                val += item.values.map((res) => {
+                    return `<td>${res.time.toFixed(3)}</td>`
+                })
+                val += `</tr>`
+                return val;
+            })
+
+            let tbody = $(`#${tableName} tbody`);
+            tbody.html(body);
+        }
+
+        //-----------------------------------------------------------------------------
+        function generateBarCharts(chartName, result, label) {
+
+            let colorPalate = ['#00ff00', '#43f800', '#5df200', '#71eb00', '#80e400', '#8cdd00', '#97d600',
+                '#a1cf00', '#a9c800', '#b1c100', '#b8ba00', '#beb300', '#c4ab00', '#c9a400',
+                '#ce9c00', '#d29500', '#d68d00', '#d98500', '#dc7c00', '#df7400', '#e16b00',
+                '#e26200', '#e45800', '#e54e00', '#e54300', '#e53800', '#e42b00', '#e21d00',
+                '#de0b00', '#d90000']
+            //
+            if (result.length == 0) {
+                return;
+            }
+
+            //make labels
+            let labels = result[0].values.map((obj) => {
+                return obj.len;
+            })
+
+            let datasets = result.map((o, index) => {
+                let obj = {}
+                obj.label = o.name;
+                obj.backgroundColor = colorPalate[index]
+                obj.borderColor = colorPalate[index]
+                obj.fill = false;
+                obj.data = o.values.map((o) => {
+                    return o.time;
+                })
+                return obj;
+            })
+
+            console.log(datasets)
+
+            var config = {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets,
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: label,
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Buffer Size (Byte)'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Time (Millisecond)'
+                            }
+                        }]
+                    }
+                }
+            };
+
+            var ctx = $(`#${chartName}`)[0].getContext('2d');
+            new Chart(ctx, config);
+        }
+        //-----------------------------------------------------------------------------
+        window.onload = function () {
+            let mergResultVal = mergResult(encode_result_gcc9, decode_result_gcc9);
+            let mergResultVal_clang = mergResult(encode_result_clang10, decode_result_clang10);
+
+            generateResultTable("table_encode_result", encode_result_gcc9);
+            generateBarCharts("canvas_encode_result", encode_result_gcc9, "Encode Results (Lower is better)");
+
+            generateResultTable("table_decode_result", decode_result_gcc9);
+            generateBarCharts("canvas_decode_result", decode_result_gcc9, "Decode Results (Lower is better)");
+
+            generateResultTable("table_decode_encode_result", mergResultVal);
+            generateBarCharts("canvas_decode_encode_result", mergResultVal, "Decode + Encode Results (Lower is better)");
+
+
+            generateResultTable("table_encode_result_clang", encode_result_clang10);
+            generateBarCharts("canvas_encode_result_clang", encode_result_clang10, "Encode Results (Lower is better)");
+
+            generateResultTable("table_decode_result_clang", decode_result_clang10);
+            generateBarCharts("canvas_decode_result_clang", decode_result_clang10, "Decode Results (Lower is better)");
+
+            generateResultTable("table_decode_encode_result_clang", mergResultVal_clang);
+            generateBarCharts("canvas_decode_encode_result_clang", mergResultVal_clang, "Decode + Encode Results (Lower is better)");
+
+        };
+    </script>
+    <!---Body start -->
+    <div class="container">
+        <div class="py-5 text-center">
+            <h1>
+                Benchmark results (GCC 9.3)
+            </h1>
+        </div>
+        <p>
+        <h2>Encode Results</h2>
+        <table class="table table-striped" id="table_encode_result">
+            <thead class="thead-dark">
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </p>
+
+        <p>
+            <canvas id="canvas_encode_result"></canvas>
+        </p>
+
+        <p>
+        <h2>Decode Results</h2>
+        <table class="table table-striped" id="table_decode_result">
+            <thead class="thead-dark">
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </p>
+
+        <p>
+            <canvas id="canvas_decode_result"></canvas>
+        </p>
+
+        <p>
+        <h2>Encode + Decode Results</h2>
+        <table class="table table-striped" id="table_decode_encode_result">
+            <thead class="thead-dark">
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </p>
+
+        <p>
+            <canvas id="canvas_decode_encode_result"></canvas>
+        </p>
+
+        <div class="py-5 text-center">
+            <h1>
+                Benchmark results (Clang 10)
+            </h1>
+        </div>
+        <p>
+        <h2>Encode Results</h2>
+        <table class="table table-striped" id="table_encode_result_clang">
+            <thead class="thead-dark">
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </p>
+
+        <p>
+            <canvas id="canvas_encode_result_clang"></canvas>
+        </p>
+
+        <p>
+        <h2>Decode Results</h2>
+        <table class="table table-striped" id="table_decode_result_clang">
+            <thead class="thead-dark">
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </p>
+
+        <p>
+            <canvas id="canvas_decode_result_clang"></canvas>
+        </p>
+
+        <p>
+        <h2>Encode + Decode Results</h2>
+        <table class="table table-striped" id="table_decode_encode_result_clang">
+            <thead class="thead-dark">
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </p>
+
+        <p>
+            <canvas id="canvas_decode_encode_result_clang"></canvas>
+        </p>
+    </div>
+    <!---Body end -->
+</body>
+
+</html>
