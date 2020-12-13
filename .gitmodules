@@ -7,3 +7,36 @@
 [submodule "libs/libb64"]
 	path = libs/libb64
 	url = https://github.com/transmission/libb64.git
+[submodule "libs/boost/serialization"]
+	path = libs/boost/serialization
+	url = https://github.com/boostorg/serialization.git
+[submodule "libs/boost/assert"]
+	path = libs/boost/assert
+	url = https://github.com/boostorg/assert.git
+[submodule "libs/boost/config"]
+	path = libs/boost/config
+	url = https://github.com/boostorg/config.git
+[submodule "libs/boost/static_assert"]
+	path = libs/boost/static_assert
+	url = https://github.com/boostorg/static_assert.git
+[submodule "libs/boost/iterator"]
+	path = libs/boost/iterator
+	url = https://github.com/boostorg/iterator.git
+[submodule "libs/boost/mpl"]
+	path = libs/boost/mpl
+	url = https://github.com/boostorg/mpl.git
+[submodule "libs/boost/preprocessor"]
+	path = libs/boost/preprocessor
+	url = https://github.com/boostorg/preprocessor.git
+[submodule "libs/boost/core"]
+	path = libs/boost/core
+	url = https://github.com/boostorg/core.git
+[submodule "libs/boost/type_traits"]
+	path = libs/boost/type_traits
+	url = https://github.com/boostorg/type_traits.git
+[submodule "libs/boost/detail"]
+	path = libs/boost/detail
+	url = https://github.com/boostorg/detail.git
+[submodule "libs/boost/utility"]
+	path = libs/boost/utility
+	url = https://github.com/boostorg/utility.git
