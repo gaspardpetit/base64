@@ -36,3 +36,8 @@ __build
 **/Release/*
 CMakeFiles
 **/.DS_Store
+CMakeCache.txt
+cmake_install.cmake
+base64.bin
+Makefile
+CTestTestfile.cmake
