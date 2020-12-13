@@ -22,32 +22,32 @@
     <ProjectGuid>{8E386649-B4B2-4C81-9F8D-E59AE5CA8A36}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>base64</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -113,6 +113,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,6 +146,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,6 +156,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\adition\adition.cpp" />
+    <ClCompile Include="..\..\src\adition\test_adition.cpp" />
     <ClCompile Include="..\..\src\adp-gmbh.ch\base64.cpp" />
     <ClCompile Include="..\..\src\adp-gmbh.ch\test_adp-gmbh.cpp" />
     <ClCompile Include="..\..\src\apache\test_apache.cpp" />
@@ -190,6 +194,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\polfosol\test_polfosol.cpp" />
+    <ClCompile Include="..\..\src\renenyffenegger\renenyffenegger.cpp" />
+    <ClCompile Include="..\..\src\renenyffenegger\test_renenyffenegger.cpp" />
+    <ClCompile Include="..\..\src\tomykaria\test_tomykaria.cpp" />
     <ClCompile Include="..\..\src\user152949\test_user152949.cpp" />
     <ClCompile Include="..\..\src\wikibooks.org\test_wikibooks_org_c.cpp" />
     <ClCompile Include="..\..\src\wikibooks.org\test_wikibooks_org_cpp.cpp" />
@@ -200,6 +207,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\adition\adition.hpp" />
     <ClInclude Include="..\..\src\adp-gmbh.ch\base64.h" />
     <ClInclude Include="..\..\src\apache\apache.h" />
     <ClInclude Include="..\..\src\arduino\arduino.h" />
@@ -214,7 +222,9 @@
     <ClInclude Include="..\..\src\NibbleAndAHalf\NibbleAndAHalf.h" />
     <ClInclude Include="..\..\src\omnifarious\omnifarious.h" />
     <ClInclude Include="..\..\src\polfosol\polfosol.h" />
+    <ClInclude Include="..\..\src\renenyffenegger\renenyffenegger.h" />
     <ClInclude Include="..\..\src\test_base.hpp" />
+    <ClInclude Include="..\..\src\tomykaria\tomykaria.hpp" />
     <ClInclude Include="..\..\src\user152949\user152949.h" />
     <ClInclude Include="..\..\src\wikibooks.org\wikibooks_org_c.h" />
     <ClInclude Include="..\..\src\wikibooks.org\wikibooks_org_cpp.h" />

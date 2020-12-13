@@ -2,6 +2,8 @@
 #include <fstream>
 #include <gtest/gtest.h>
 #include <iostream>
+#include <filesystem>
+
 
 //other
 using namespace std::chrono;
@@ -411,8 +413,9 @@ int main(int argc, char *argv[])
   auto runTest = [](const std::string &in, const std::string &expected) {
   };
 
+
   // create result directory
-  mkdir(resultDir.c_str(), 0);
+  filesystem::create_directory(resultDir);
 
   //
   int result = RunTests(argc + 1, argv);

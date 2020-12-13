@@ -62,6 +62,15 @@
     <Filter Include="impl\cppcodec">
       <UniqueIdentifier>{7f2bef76-1f9e-4cc4-8300-fbd600457494}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl\adition">
+      <UniqueIdentifier>{47568dee-7d5a-48e2-8a1f-bd8117780a57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="impl\renenyffenegger">
+      <UniqueIdentifier>{c80140f1-f6d8-4a7a-8872-868af062976d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="impl\tomykaria">
+      <UniqueIdentifier>{dcb353d2-3ecd-4b79-90b1-754789cf0cf9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\adp-gmbh.ch\base64.cpp">
@@ -151,6 +160,21 @@
     <ClCompile Include="..\..\src\libb64\libb64\src\cencode.c">
       <Filter>impl\libb64</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\adition\adition.cpp">
+      <Filter>impl\adition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\adition\test_adition.cpp">
+      <Filter>impl\adition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\renenyffenegger\test_renenyffenegger.cpp">
+      <Filter>impl\renenyffenegger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\renenyffenegger\renenyffenegger.cpp">
+      <Filter>impl\renenyffenegger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tomykaria\test_tomykaria.cpp">
+      <Filter>impl\tomykaria</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\adp-gmbh.ch\base64.h">
@@ -206,6 +230,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\gnome\gnome.h">
       <Filter>impl\gnome</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\adition\adition.hpp">
+      <Filter>impl\adition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\renenyffenegger\renenyffenegger.h">
+      <Filter>impl\renenyffenegger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\tomykaria\tomykaria.hpp">
+      <Filter>impl\tomykaria</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
