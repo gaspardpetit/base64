@@ -34,3 +34,5 @@ __build
 **/.vs/*
 **/Debug/*
 **/Release/*
+CMakeFiles
+**/.DS_Store
