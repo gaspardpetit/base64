@@ -39,10 +39,8 @@
 </head>
 
 <body>
-    <script src="result/encode-gcc9.js"></script>
-    <script src="result/decode-gcc9.js"></script>
-    <script src="result/encode-clang.js"></script>
-    <script src="result/decode-clang.js"></script>
+    <script src="result/encode-clang11.js"></script>
+    <script src="result/decode-clang11.js"></script>
     <script type="text/babel">
         //----------------------------------------------------------------------------- 
         function mergResult(encode, decode) {
@@ -194,24 +192,13 @@
         }
         //-----------------------------------------------------------------------------
         window.onload = function () {
-            let mergResultVal = mergResult(encode_result_gcc9, decode_result_gcc9);
-            let mergResultVal_clang = mergResult(encode_result_clang10, decode_result_clang10);
+            let mergResultVal_clang = mergResult(encode_result_clang11, decode_result_clang11);
 
-            generateResultTable("table_encode_result", encode_result_gcc9);
-            generateBarCharts("canvas_encode_result", encode_result_gcc9, "Encode Results (Lower is better)");
+            generateResultTable("table_encode_result_clang", encode_result_clang11);
+            generateBarCharts("canvas_encode_result_clang", encode_result_clang11, "Encode Results (Lower is better)");
 
-            generateResultTable("table_decode_result", decode_result_gcc9);
-            generateBarCharts("canvas_decode_result", decode_result_gcc9, "Decode Results (Lower is better)");
-
-            generateResultTable("table_decode_encode_result", mergResultVal);
-            generateBarCharts("canvas_decode_encode_result", mergResultVal, "Decode + Encode Results (Lower is better)");
-
-
-            generateResultTable("table_encode_result_clang", encode_result_clang10);
-            generateBarCharts("canvas_encode_result_clang", encode_result_clang10, "Encode Results (Lower is better)");
-
-            generateResultTable("table_decode_result_clang", decode_result_clang10);
-            generateBarCharts("canvas_decode_result_clang", decode_result_clang10, "Decode Results (Lower is better)");
+            generateResultTable("table_decode_result_clang", decode_result_clang11);
+            generateBarCharts("canvas_decode_result_clang", decode_result_clang11, "Decode Results (Lower is better)");
 
             generateResultTable("table_decode_encode_result_clang", mergResultVal_clang);
             generateBarCharts("canvas_decode_encode_result_clang", mergResultVal_clang, "Decode + Encode Results (Lower is better)");
@@ -222,54 +209,7 @@
     <div class="container">
         <div class="py-5 text-center">
             <h1>
-                Benchmark results (GCC 9.3)
-            </h1>
-        </div>
-        <p>
-        <h2>Encode Results</h2>
-        <table class="table table-striped" id="table_encode_result">
-            <thead class="thead-dark">
-                <tr></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        </p>
-
-        <p>
-            <canvas id="canvas_encode_result"></canvas>
-        </p>
-
-        <p>
-        <h2>Decode Results</h2>
-        <table class="table table-striped" id="table_decode_result">
-            <thead class="thead-dark">
-                <tr></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        </p>
-
-        <p>
-            <canvas id="canvas_decode_result"></canvas>
-        </p>
-
-        <p>
-        <h2>Encode + Decode Results</h2>
-        <table class="table table-striped" id="table_decode_encode_result">
-            <thead class="thead-dark">
-                <tr></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        </p>
-
-        <p>
-            <canvas id="canvas_decode_encode_result"></canvas>
-        </p>
-
-        <div class="py-5 text-center">
-            <h1>
-                Benchmark results (Clang 10)
+                Benchmark results (Clang 11)
             </h1>
         </div>
         <p>
