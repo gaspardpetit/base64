@@ -4,3 +4,6 @@
 [submodule "libs/cppcodec"]
 	path = libs/cppcodec
 	url = https://github.com/tplgy/cppcodec.git
+[submodule "libs/libb64"]
+	path = libs/libb64
+	url = https://github.com/transmission/libb64.git
