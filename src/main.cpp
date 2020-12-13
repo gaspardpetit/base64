@@ -66,7 +66,7 @@ static const std::string resultDir = "result/";
 static const std::string encodePath = resultDir + "encode-" + getSuffix() + ".js";
 static const std::string decodePath = resultDir + "decode-" + getSuffix() + ".js";
 
-static int test_sizes[] = { 20, 60, 100, 300, 1000, 2000, 4000, 9000, 16000, 30000, 60000 };
+static int test_sizes[] = { 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536 };
 
 void DumpJsonResult(const std::string &path, BenchmarkResult &results,
     const std::string &varName)
