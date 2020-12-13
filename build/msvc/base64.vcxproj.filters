@@ -71,6 +71,9 @@
     <Filter Include="impl\tomykaria">
       <UniqueIdentifier>{dcb353d2-3ecd-4b79-90b1-754789cf0cf9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl\boost">
+      <UniqueIdentifier>{c929fe7d-2954-4451-a978-a8076b451b40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\adp-gmbh.ch\base64.cpp">
@@ -174,6 +177,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\tomykaria\test_tomykaria.cpp">
       <Filter>impl\tomykaria</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\boost\test_boost.cpp">
+      <Filter>impl\boost</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

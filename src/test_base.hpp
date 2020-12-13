@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <map>
+#include <gtest/gtest.h>
 
 std::map<std::string, std::string(*)(std::string &)>& getEncodeTests();
 std::map<std::string, std::string(*)(std::string &)>& getDecodeTests();
