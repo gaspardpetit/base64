@@ -12,6 +12,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 
+enable_testing()
+add_subdirectory(libs/googletest/)
+include_directories(libs/googletest/googletest/include)
 
 AUX_SOURCE_DIRECTORY(./src/ CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/adp-gmbh.ch CTR_SOURCES)
