@@ -39,6 +39,8 @@
 </head>
 
 <body>
+    <script src="result/encode-msvc19.js"></script>
+    <script src="result/decode-msvc19.js"></script>
     <script src="result/encode-clang11.js"></script>
     <script src="result/decode-clang11.js"></script>
     <script type="text/babel">
@@ -192,16 +194,27 @@
         }
         //-----------------------------------------------------------------------------
         window.onload = function () {
-            let mergResultVal_clang = mergResult(encode_result_clang11, decode_result_clang11);
+            // Clang 11
+            generateResultTable("table_encode_result_clang11", encode_result_clang11);
+            generateBarCharts("canvas_encode_result_clang11", encode_result_clang11, "Encode Results (Lower is better)");
 
-            generateResultTable("table_encode_result_clang", encode_result_clang11);
-            generateBarCharts("canvas_encode_result_clang", encode_result_clang11, "Encode Results (Lower is better)");
+            generateResultTable("table_decode_result_clang11", decode_result_clang11);
+            generateBarCharts("canvas_decode_result_clang11", decode_result_clang11, "Decode Results (Lower is better)");
 
-            generateResultTable("table_decode_result_clang", decode_result_clang11);
-            generateBarCharts("canvas_decode_result_clang", decode_result_clang11, "Decode Results (Lower is better)");
+            let mergResultVal_clang11 = mergResult(encode_result_clang11, decode_result_clang11);
+            generateResultTable("table_decode_encode_result_clang11", mergResultVal_clang11);
+            generateBarCharts("canvas_decode_encode_result_clang11", mergResultVal_clang11, "Decode + Encode Results (Lower is better)");
 
-            generateResultTable("table_decode_encode_result_clang", mergResultVal_clang);
-            generateBarCharts("canvas_decode_encode_result_clang", mergResultVal_clang, "Decode + Encode Results (Lower is better)");
+            // MSVC 2019
+            generateResultTable("table_encode_result_msvc19", encode_result_msvc19);
+            generateBarCharts("canvas_encode_result_msvc19", encode_result_msvc19, "Encode Results (Lower is better)");
+
+            generateResultTable("table_decode_result_msvc19", decode_result_msvc19);
+            generateBarCharts("canvas_decode_result_msvc19", decode_result_msvc19, "Decode Results (Lower is better)");
+
+            let mergResultVal_msvc19 = mergResult(encode_result_msvc19, decode_result_msvc19);
+            generateResultTable("table_decode_encode_result_msvc19", mergResultVal_msvc19);
+            generateBarCharts("canvas_decode_encode_result_msvc19", mergResultVal_msvc19, "Decode + Encode Results (Lower is better)");
 
         };
     </script>
@@ -209,12 +222,12 @@
     <div class="container">
         <div class="py-5 text-center">
             <h1>
-                Benchmark results (Clang 11)
+                Benchmark results (Clang 11.0.3 / Intel Core 5 8210Y @ 1.6GHz)
             </h1>
         </div>
         <p>
         <h2>Encode Results</h2>
-        <table class="table table-striped" id="table_encode_result_clang">
+        <table class="table table-striped" id="table_encode_result_clang11">
             <thead class="thead-dark">
                 <tr></tr>
             </thead>
@@ -223,12 +236,12 @@
         </p>
 
         <p>
-            <canvas id="canvas_encode_result_clang"></canvas>
+            <canvas id="canvas_encode_result_clang11"></canvas>
         </p>
 
         <p>
         <h2>Decode Results</h2>
-        <table class="table table-striped" id="table_decode_result_clang">
+        <table class="table table-striped" id="table_decode_result_clang11">
             <thead class="thead-dark">
                 <tr></tr>
             </thead>
@@ -237,12 +250,12 @@
         </p>
 
         <p>
-            <canvas id="canvas_decode_result_clang"></canvas>
+            <canvas id="canvas_decode_result_clang11"></canvas>
         </p>
 
         <p>
         <h2>Encode + Decode Results</h2>
-        <table class="table table-striped" id="table_decode_encode_result_clang">
+        <table class="table table-striped" id="table_decode_encode_result_clang11">
             <thead class="thead-dark">
                 <tr></tr>
             </thead>
@@ -251,7 +264,54 @@
         </p>
 
         <p>
-            <canvas id="canvas_decode_encode_result_clang"></canvas>
+            <canvas id="canvas_decode_encode_result_clang11"></canvas>
+        </p>
+
+        <div class="py-5 text-center">
+            <h1>
+                Benchmark results (MSVC 2019/19.28.29335 x64 / Intel Xeon W-2133 @ 3.6GHz)
+            </h1>
+        </div>
+        <p>
+        <h2>Encode Results</h2>
+        <table class="table table-striped" id="table_encode_result_msvc19">
+            <thead class="thead-dark">
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </p>
+
+        <p>
+            <canvas id="canvas_encode_result_msvc19"></canvas>
+        </p>
+
+        <p>
+        <h2>Decode Results</h2>
+        <table class="table table-striped" id="table_decode_result_msvc19">
+            <thead class="thead-dark">
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </p>
+
+        <p>
+            <canvas id="canvas_decode_result_msvc19"></canvas>
+        </p>
+
+        <p>
+        <h2>Encode + Decode Results</h2>
+        <table class="table table-striped" id="table_decode_encode_result_msvc19">
+            <thead class="thead-dark">
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </p>
+
+        <p>
+            <canvas id="canvas_decode_encode_result_msvc19"></canvas>
         </p>
     </div>
     <!---Body end -->
