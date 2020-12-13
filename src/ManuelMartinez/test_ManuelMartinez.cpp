@@ -1,4 +1,4 @@
-#include "manuelmartinez.h"
+#include "ManuelMartinez.h"
 #include <gtest/gtest.h>
 #include "../test_base.hpp"
 

@@ -121,7 +121,7 @@ void test_decode_long()
 }
 
 #define IMPLEMENT_ENCODE_TESTS(TEST_TYPE)\
-RegisterEncodeTest<TEST_TYPE> register_##TEST_TYPE_encode(#TEST_TYPE);\
+RegisterEncodeTest<TEST_TYPE> register_##TEST_TYPE##_encode(#TEST_TYPE);\
 TEST(TEST_TYPE, test_encode_tiny)\
 {\
 	test_encode_tiny<TEST_TYPE>();\

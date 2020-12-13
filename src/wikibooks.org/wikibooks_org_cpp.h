@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 // Prototype
 // std::basic_string<TCHAR> base64Encode(std::vector<BYTE> inputBuffer);
