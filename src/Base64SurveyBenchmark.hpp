@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Base64SurveyRegistry.hpp"
 #include "Base64SurveyReport.hpp"
+
 #include <vector>
 #include <chrono>
 
@@ -11,7 +13,7 @@ using namespace std::chrono;
 struct Base64SurveyBenchmark
 {
     template<typename _FN>
-    static pair<int, chrono::microseconds> RunUntil(int maxIter, chrono::milliseconds maxMS, _FN &&fn)
+    static pair<int, microseconds> RunUntil(int maxIter, chrono::milliseconds maxMS, _FN &&fn)
     {
         // run N iterations, or break after 0.5s
         using Clock = chrono::high_resolution_clock;
