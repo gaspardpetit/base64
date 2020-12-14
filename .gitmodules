@@ -43,3 +43,6 @@
 [submodule "libs/chromium/modp_b64"]
 	path = libs/chromium/modp_b64
 	url = https://chromium.googlesource.com/chromium/src/third_party/modp_b64
+[submodule "libs/ReneNyffenegger/cpp-base64"]
+	path = libs/ReneNyffenegger/cpp-base64
+	url = https://github.com/ReneNyffenegger/cpp-base64.git
