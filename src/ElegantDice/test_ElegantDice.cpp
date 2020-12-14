@@ -1,24 +1,24 @@
 #include "ElegantDice.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
-struct elegantdice
+struct ElegantDice
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		std::string str;
 		base64_encode(str, (unsigned char*)bytes.data(), bytes.length());
 		return str;
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
 		std::string str;
-		base64_decode(str, bytes);
+		base64_decode(str, base64);
 		return str;
 	}
 };
 
 
-IMPLEMENT_ENCODE_TESTS(elegantdice);
-IMPLEMENT_DECODE_TESTS(elegantdice);
+BASE64_REGISTER_ENCODER(ElegantDice);
+BASE64_REGISTER_DECODER(ElegantDice);

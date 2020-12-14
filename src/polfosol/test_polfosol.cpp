@@ -1,17 +1,17 @@
 #include "polfosol.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
-struct polfosol
+struct Polfosol
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		return b64encode((unsigned char*)bytes.data(), bytes.length());
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
-		return b64decode((unsigned char*)bytes.data(), bytes.length());
+		return b64decode((unsigned char*)base64.data(), base64.length());
 	}
 };
 
@@ -34,14 +34,14 @@ static constexpr const unsigned char base64_dtable[256] = {
 	0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80
 };
 
-struct polfosol_mod
+struct Polfosol_mod
 {
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
-		return b64decode_mod(base64_dtable, bytes.data(), bytes.length());
+		return b64decode_mod(base64_dtable, base64.data(), base64.length());
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(polfosol);
-IMPLEMENT_DECODE_TESTS(polfosol);
-IMPLEMENT_DECODE_TESTS(polfosol_mod);
+BASE64_REGISTER_ENCODER(Polfosol);
+BASE64_REGISTER_DECODER(Polfosol);
+BASE64_REGISTER_DECODER(Polfosol_mod);

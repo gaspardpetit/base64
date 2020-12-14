@@ -1,18 +1,18 @@
 #include "NibbleAndAHalf.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
 struct NibbleAndAHalf
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		return base64(bytes.data(), bytes.length());
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
-		return unbase64(bytes.data(), bytes.length());
+		return unbase64(base64.data(), base64.length());
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(NibbleAndAHalf);
+BASE64_REGISTER_ENCODER(NibbleAndAHalf);

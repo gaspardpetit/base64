@@ -1,21 +1,21 @@
 #include "cppcodec/base64_default_rfc4648.hpp"
 #include <iostream>
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
 
 struct CppCodec
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		return base64::encode((unsigned char*)bytes.data(), bytes.length());
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
-		return base64::decode<std::string>((char*)bytes.data(), bytes.length());
+		return base64::decode<std::string>((char*)base64.data(), base64.length());
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(CppCodec);
-IMPLEMENT_DECODE_TESTS(CppCodec);
+BASE64_REGISTER_ENCODER(CppCodec);
+BASE64_REGISTER_DECODER(CppCodec);

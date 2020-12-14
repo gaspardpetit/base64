@@ -1,10 +1,10 @@
 #include "wikibooks_org_c.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
-struct wikibooks_org_c
+struct WikibooksOrgC
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		std::string out;
 		size_t encLen = 4 * ((bytes.length() + 2) / 3);
@@ -13,16 +13,16 @@ struct wikibooks_org_c
 		return out;
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
 		std::string out;
-		size_t encLen = 3 * ((bytes.length() + 3) / 4);
+		size_t encLen = 3 * ((base64.length() + 3) / 4);
 		out.resize(encLen);
-		base64decode(&bytes[0], bytes.length(), (unsigned char*)&out[0], &encLen);
+		base64decode((char*)&base64[0], base64.length(), (unsigned char*)&out[0], &encLen);
 		out.resize(encLen);
 		return out;
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(wikibooks_org_c);
-IMPLEMENT_DECODE_TESTS(wikibooks_org_c);
+BASE64_REGISTER_ENCODER(WikibooksOrgC);
+BASE64_REGISTER_DECODER(WikibooksOrgC);

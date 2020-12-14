@@ -1,20 +1,20 @@
 #include "gnome.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
 
-struct gnome
+struct Gnome
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		return g_base64_encode((unsigned char*)bytes.data(), bytes.length());
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
-		return g_base64_decode(bytes.data());
+		return g_base64_decode(base64.data());
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(gnome);
-IMPLEMENT_DECODE_TESTS(gnome);
+BASE64_REGISTER_ENCODER(Gnome);
+BASE64_REGISTER_DECODER(Gnome);

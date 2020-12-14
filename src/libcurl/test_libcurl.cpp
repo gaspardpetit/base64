@@ -1,24 +1,24 @@
 #include "curl_base64.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
 
-struct libcurl
+struct LibCurl
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		std::string str;
 		Curl_base64_encode(bytes.data(), bytes.length(), &str);
 		return str;
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
 		std::string str;
-		Curl_base64_decode(bytes.data(), &str);
+		Curl_base64_decode(base64.data(), &str);
 		return str;
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(libcurl);
-IMPLEMENT_DECODE_TESTS(libcurl);
+BASE64_REGISTER_ENCODER(LibCurl);
+BASE64_REGISTER_DECODER(LibCurl);

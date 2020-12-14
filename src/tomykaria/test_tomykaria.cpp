@@ -1,23 +1,23 @@
 #include "tomykaria.hpp"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
 
-struct tomykaria
+struct TomyKaria
 {
 	macaron::Base64 base;
-    std::string encode(std::string &bytes)
+    std::string encode(const std::string &bytes)
 	{
 		return base.Encode(bytes);
     }
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
         std::string out;
-        base.Decode(bytes,out);
+        base.Decode(base64,out);
         return out;
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(tomykaria);
-IMPLEMENT_DECODE_TESTS(tomykaria);
+BASE64_REGISTER_ENCODER(TomyKaria);
+BASE64_REGISTER_DECODER(TomyKaria);

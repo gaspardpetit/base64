@@ -170,6 +170,10 @@
     <ClCompile Include="..\..\src\adp-gmbh.ch\test_adp-gmbh.cpp" />
     <ClCompile Include="..\..\src\apache\test_apache.cpp" />
     <ClCompile Include="..\..\src\arduino\test_arduino.cpp" />
+    <ClCompile Include="..\..\src\Base64SurveyBenchmark.cpp" />
+    <ClCompile Include="..\..\src\Base64SurveyRepoort.cpp" />
+    <ClCompile Include="..\..\src\Base64SurveyRegistry.cpp" />
+    <ClCompile Include="..\..\src\Base64SurveyTests.cpp" />
     <ClCompile Include="..\..\src\boost\test_boost.cpp" />
     <ClCompile Include="..\..\src\cppcodec\test_cppcodec.cpp" />
     <ClCompile Include="..\..\src\DaedalusAlpha\DaedalusAlpha.cpp" />
@@ -218,6 +222,10 @@
     <ClInclude Include="..\..\src\adition\adition.hpp" />
     <ClInclude Include="..\..\src\apache\apache.h" />
     <ClInclude Include="..\..\src\arduino\arduino.h" />
+    <ClInclude Include="..\..\src\Base64SurveyBenchmark.hpp" />
+    <ClInclude Include="..\..\src\Base64SurveyReport.hpp" />
+    <ClInclude Include="..\..\src\Base64SurveyRegistry.hpp" />
+    <ClInclude Include="..\..\src\Base64SurveyTests.hpp" />
     <ClInclude Include="..\..\src\DaedalusAlpha\DaedalusAlpha.h" />
     <ClInclude Include="..\..\src\ElegantDice\ElegantDice.h" />
     <ClInclude Include="..\..\src\gnome\gnome.h" />
@@ -229,7 +237,6 @@
     <ClInclude Include="..\..\src\NibbleAndAHalf\NibbleAndAHalf.h" />
     <ClInclude Include="..\..\src\omnifarious\omnifarious.h" />
     <ClInclude Include="..\..\src\polfosol\polfosol.h" />
-    <ClInclude Include="..\..\src\test_base.hpp" />
     <ClInclude Include="..\..\src\tomykaria\tomykaria.hpp" />
     <ClInclude Include="..\..\src\user152949\user152949.h" />
     <ClInclude Include="..\..\src\wikibooks.org\wikibooks_org_c.h" />

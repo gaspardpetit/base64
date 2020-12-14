@@ -1,19 +1,19 @@
 #include "ManuelMartinez.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
-struct manuelmartinez
+struct ManuelMartinez
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		return base64_encode((unsigned char*)bytes.data(), bytes.length());
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
-		return base64_decode(bytes);
+		return base64_decode(base64);
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(manuelmartinez);
-IMPLEMENT_DECODE_TESTS(manuelmartinez);
+BASE64_REGISTER_ENCODER(ManuelMartinez);
+BASE64_REGISTER_DECODER(ManuelMartinez);

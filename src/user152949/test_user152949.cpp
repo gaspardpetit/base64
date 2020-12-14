@@ -1,10 +1,10 @@
 #include "user152949.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
-struct user152949
+struct User152949
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		std::istringstream istrm(bytes);
 		std::ostringstream ostrm;
@@ -12,14 +12,14 @@ struct user152949
 		return std::move(ostrm.str());
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
-		std::istringstream istrm(bytes);
+		std::istringstream istrm(base64);
 		std::ostringstream ostrm;
 		CBase64::Decode(istrm, ostrm);
 		return std::move(ostrm.str());
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(user152949);
-IMPLEMENT_DECODE_TESTS(user152949);
+BASE64_REGISTER_ENCODER(User152949);
+BASE64_REGISTER_DECODER(User152949);

@@ -1,19 +1,19 @@
 #include "jounimalinen.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
-struct jounimalinen
+struct JouniMalinen
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		return base64_encode((unsigned char*)&bytes[0], bytes.length());
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
-		return base64_decode((unsigned char*)&bytes[0], bytes.length());
+		return base64_decode((unsigned char*)&base64[0], base64.length());
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(jounimalinen);
-IMPLEMENT_DECODE_TESTS(jounimalinen);
+BASE64_REGISTER_ENCODER(JouniMalinen);
+BASE64_REGISTER_DECODER(JouniMalinen);

@@ -1,12 +1,12 @@
 #include "adition.hpp"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
 
-struct adition
+struct Adition
 {
 	CBase64Parser p;
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		std::string out;
         uint32_t eLen=p.GetEncodeLen(bytes.length());
@@ -16,16 +16,16 @@ struct adition
         return out;
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
         std::string out;
-		uint32_t eLen=p.GetDecodeExpectedLen(bytes.length());
+		uint32_t eLen=p.GetDecodeExpectedLen(base64.length());
         out.resize(eLen);
-		eLen=p.DecodeChunk(bytes.c_str(), bytes.length(),reinterpret_cast<uint8_t*>(&out[0]));
+		eLen=p.DecodeChunk(base64.c_str(), base64.length(),reinterpret_cast<uint8_t*>(&out[0]));
 		out.resize(eLen);
         return out;
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(adition);
-IMPLEMENT_DECODE_TESTS(adition);
+BASE64_REGISTER_ENCODER(Adition);
+BASE64_REGISTER_DECODER(Adition);

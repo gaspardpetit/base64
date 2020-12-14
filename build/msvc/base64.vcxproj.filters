@@ -178,11 +178,20 @@
     <ClCompile Include="..\..\libs\chromium\modp_b64\modp_b64.cc">
       <Filter>impl\modp_b64_chromium</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Base64SurveyRepoort.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Base64SurveyBenchmark.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Base64SurveyTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Base64SurveyRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\test_base.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\libcurl\curl_base64.h">
       <Filter>impl\libcurl</Filter>
     </ClInclude>
@@ -236,6 +245,18 @@
     </ClInclude>
     <ClInclude Include="..\..\src\tomykaria\tomykaria.hpp">
       <Filter>impl\tomykaria</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Base64SurveyReport.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Base64SurveyBenchmark.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Base64SurveyTests.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Base64SurveyRegistry.hpp">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

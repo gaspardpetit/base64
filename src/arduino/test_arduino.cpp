@@ -1,24 +1,24 @@
 #include "arduino.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
 
-struct arduino
+struct Arduino
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		std::string outStr;
 		Base64::Encode(bytes.data(), bytes.length(), &outStr);
 		return outStr;
 	}
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
 		std::string outStr;
-		Base64::Decode(bytes, &outStr);
+		Base64::Decode(base64, &outStr);
 		return outStr;
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(arduino);
-IMPLEMENT_DECODE_TESTS(arduino);
+BASE64_REGISTER_ENCODER(Arduino);
+BASE64_REGISTER_DECODER(Arduino);
 

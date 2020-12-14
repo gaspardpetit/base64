@@ -1,4 +1,4 @@
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/base64_from_binary.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
@@ -14,16 +14,16 @@ using namespace boost::archive::iterators;
 
 struct Boost
 {
-    std::string encode(std::string &binary)
+    std::string encode(const std::string &bytes)
     {
         using namespace boost::archive::iterators;
         using It = base64_from_binary<transform_width<std::string::const_iterator, 6, 8>>;
-        auto base64 = std::string(It(binary.begin()), It(binary.end()));
+        auto base64 = std::string(It(bytes.begin()), It(bytes.end()));
         // Add padding.
-        return base64.append((3 - binary.size() % 3) % 3, '=');
+        return base64.append((3 - bytes.size() % 3) % 3, '=');
     }
 
-	std::string decode(std::string &base64)
+    std::string decode(const std::string &base64)
 	{
         using namespace boost::archive::iterators;
         using It = transform_width<binary_from_base64<std::string::const_iterator>, 8, 6>;
@@ -42,5 +42,5 @@ struct Boost
     }
 };
 
-IMPLEMENT_ENCODE_TESTS(Boost);
-IMPLEMENT_DECODE_TESTS(Boost);
+BASE64_REGISTER_ENCODER(Boost);
+BASE64_REGISTER_DECODER(Boost);

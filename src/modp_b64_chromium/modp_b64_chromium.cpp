@@ -1,7 +1,7 @@
 #include "chromium/modp_b64/modp_b64.h"
 #include <iostream>
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 #include <string>
 
 using namespace std;
@@ -60,18 +60,18 @@ struct B64_Adapt
 	}
 };
 
-struct modp_b64_chromium
+struct ModpB64Chromium
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		return B64_Adapt::encode(modp_b64_encode, bytes);
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
-		return B64_Adapt::decode(modp_b64_decode, bytes);
+		return B64_Adapt::decode(modp_b64_decode, base64);
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(modp_b64_chromium);
-IMPLEMENT_DECODE_TESTS(modp_b64_chromium);
+BASE64_REGISTER_ENCODER(ModpB64Chromium);
+BASE64_REGISTER_DECODER(ModpB64Chromium);

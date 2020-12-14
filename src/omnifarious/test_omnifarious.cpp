@@ -1,15 +1,15 @@
 #include "omnifarious.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
 
-struct omnifarious
+struct Omnifarious
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		return base64_encode(bytes.data(), bytes.length());
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(omnifarious);
+BASE64_REGISTER_ENCODER(Omnifarious);
 

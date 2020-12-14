@@ -1,11 +1,11 @@
 #include "InternetSoftwareConsortium.h"
 #include <gtest/gtest.h>
-#include "../test_base.hpp"
+#include "../Base64SurveyRegistry.hpp"
 
 
-struct internetsoftwareconsortium
+struct InternetSoftwareConsortium
 {
-	std::string encode(std::string &bytes)
+	std::string encode(const std::string &bytes)
 	{
 		std::string outStr;
 		size_t outLength = 4 * ((bytes.length() + 2) / 3);
@@ -15,16 +15,16 @@ struct internetsoftwareconsortium
 		return outStr;
 	}
 
-	std::string decode(std::string &bytes)
+	std::string decode(const std::string &base64)
 	{
 		std::string outStr;
-		size_t outLength = 3 * ((bytes.length() + 3) / 4);
+		size_t outLength = 3 * ((base64.length() + 3) / 4);
 		outStr.resize(outLength + 1);
-		size_t realLength = b64_pton(bytes.data(), (unsigned char*)&outStr[0], outLength + 1);
+		size_t realLength = b64_pton(base64.data(), (unsigned char*)&outStr[0], outLength + 1);
 		outStr.resize(realLength);
 		return outStr;
 	}
 };
 
-IMPLEMENT_ENCODE_TESTS(internetsoftwareconsortium);
-IMPLEMENT_DECODE_TESTS(internetsoftwareconsortium);
+BASE64_REGISTER_ENCODER(InternetSoftwareConsortium);
+BASE64_REGISTER_DECODER(InternetSoftwareConsortium);
