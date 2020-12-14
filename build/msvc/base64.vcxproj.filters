@@ -65,9 +65,6 @@
     <Filter Include="impl\adition">
       <UniqueIdentifier>{47568dee-7d5a-48e2-8a1f-bd8117780a57}</UniqueIdentifier>
     </Filter>
-    <Filter Include="impl\renenyffenegger">
-      <UniqueIdentifier>{c80140f1-f6d8-4a7a-8872-868af062976d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="impl\tomykaria">
       <UniqueIdentifier>{dcb353d2-3ecd-4b79-90b1-754789cf0cf9}</UniqueIdentifier>
     </Filter>
@@ -79,9 +76,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\adp-gmbh.ch\base64.cpp">
-      <Filter>impl\adp-gmbh.ch</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\adp-gmbh.ch\test_adp-gmbh.cpp">
       <Filter>impl\adp-gmbh.ch</Filter>
     </ClCompile>
@@ -172,12 +166,6 @@
     <ClCompile Include="..\..\src\adition\test_adition.cpp">
       <Filter>impl\adition</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\renenyffenegger\test_renenyffenegger.cpp">
-      <Filter>impl\renenyffenegger</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\renenyffenegger\renenyffenegger.cpp">
-      <Filter>impl\renenyffenegger</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\tomykaria\test_tomykaria.cpp">
       <Filter>impl\tomykaria</Filter>
     </ClCompile>
@@ -192,9 +180,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\adp-gmbh.ch\base64.h">
-      <Filter>impl\adp-gmbh.ch</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\test_base.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -248,9 +233,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\adition\adition.hpp">
       <Filter>impl\adition</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\renenyffenegger\renenyffenegger.h">
-      <Filter>impl\renenyffenegger</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tomykaria\tomykaria.hpp">
       <Filter>impl\tomykaria</Filter>

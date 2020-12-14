@@ -167,7 +167,6 @@
     <ClCompile Include="..\..\libs\chromium\modp_b64\modp_b64.cc" />
     <ClCompile Include="..\..\src\adition\adition.cpp" />
     <ClCompile Include="..\..\src\adition\test_adition.cpp" />
-    <ClCompile Include="..\..\src\adp-gmbh.ch\base64.cpp" />
     <ClCompile Include="..\..\src\adp-gmbh.ch\test_adp-gmbh.cpp" />
     <ClCompile Include="..\..\src\apache\test_apache.cpp" />
     <ClCompile Include="..\..\src\arduino\test_arduino.cpp" />
@@ -205,8 +204,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\polfosol\test_polfosol.cpp" />
-    <ClCompile Include="..\..\src\renenyffenegger\renenyffenegger.cpp" />
-    <ClCompile Include="..\..\src\renenyffenegger\test_renenyffenegger.cpp" />
     <ClCompile Include="..\..\src\tomykaria\test_tomykaria.cpp" />
     <ClCompile Include="..\..\src\user152949\test_user152949.cpp" />
     <ClCompile Include="..\..\src\wikibooks.org\test_wikibooks_org_c.cpp" />
@@ -219,7 +216,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\adition\adition.hpp" />
-    <ClInclude Include="..\..\src\adp-gmbh.ch\base64.h" />
     <ClInclude Include="..\..\src\apache\apache.h" />
     <ClInclude Include="..\..\src\arduino\arduino.h" />
     <ClInclude Include="..\..\src\DaedalusAlpha\DaedalusAlpha.h" />
@@ -233,7 +229,6 @@
     <ClInclude Include="..\..\src\NibbleAndAHalf\NibbleAndAHalf.h" />
     <ClInclude Include="..\..\src\omnifarious\omnifarious.h" />
     <ClInclude Include="..\..\src\polfosol\polfosol.h" />
-    <ClInclude Include="..\..\src\renenyffenegger\renenyffenegger.h" />
     <ClInclude Include="..\..\src\test_base.hpp" />
     <ClInclude Include="..\..\src\tomykaria\tomykaria.hpp" />
     <ClInclude Include="..\..\src\user152949\user152949.h" />
