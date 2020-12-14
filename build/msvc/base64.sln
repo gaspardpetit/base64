@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest", "gtest.vcxproj", "{B6A473FB-1AC2-4E15-B975-43FDC48B4A57}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base64", "base64.vcxproj", "{8E386649-B4B2-4C81-9F8D-E59AE5CA8A36}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TurboBase64", "..\..\libs\Turbo-Base64\vs\vs2017\TurboBase64.vcxproj", "{A162F37F-183F-4250-88AB-9B9FBDE30B04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,8 +33,19 @@ Global
 		{8E386649-B4B2-4C81-9F8D-E59AE5CA8A36}.Release|x64.Build.0 = Release|x64
 		{8E386649-B4B2-4C81-9F8D-E59AE5CA8A36}.Release|x86.ActiveCfg = Release|Win32
 		{8E386649-B4B2-4C81-9F8D-E59AE5CA8A36}.Release|x86.Build.0 = Release|Win32
+		{A162F37F-183F-4250-88AB-9B9FBDE30B04}.Debug|x64.ActiveCfg = Debug|x64
+		{A162F37F-183F-4250-88AB-9B9FBDE30B04}.Debug|x64.Build.0 = Debug|x64
+		{A162F37F-183F-4250-88AB-9B9FBDE30B04}.Debug|x86.ActiveCfg = Debug|Win32
+		{A162F37F-183F-4250-88AB-9B9FBDE30B04}.Debug|x86.Build.0 = Debug|Win32
+		{A162F37F-183F-4250-88AB-9B9FBDE30B04}.Release|x64.ActiveCfg = Release|x64
+		{A162F37F-183F-4250-88AB-9B9FBDE30B04}.Release|x64.Build.0 = Release|x64
+		{A162F37F-183F-4250-88AB-9B9FBDE30B04}.Release|x86.ActiveCfg = Release|Win32
+		{A162F37F-183F-4250-88AB-9B9FBDE30B04}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C837B7E9-B076-402D-9946-51CC61ACF348}
 	EndGlobalSection
 EndGlobal

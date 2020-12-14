@@ -209,11 +209,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\polfosol\test_polfosol.cpp" />
     <ClCompile Include="..\..\src\tomykaria\test_tomykaria.cpp" />
+    <ClCompile Include="..\..\src\Turbob64\test_turbob64.cpp" />
     <ClCompile Include="..\..\src\user152949\test_user152949.cpp" />
     <ClCompile Include="..\..\src\wikibooks.org\test_wikibooks_org_c.cpp" />
     <ClCompile Include="..\..\src\wikibooks.org\test_wikibooks_org_cpp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\libs\Turbo-Base64\vs\vs2017\TurboBase64.vcxproj">
+      <Project>{a162f37f-183f-4250-88ab-9b9fbde30b04}</Project>
+    </ProjectReference>
     <ProjectReference Include="gtest.vcxproj">
       <Project>{b6a473fb-1ac2-4e15-b975-43fdc48b4a57}</Project>
     </ProjectReference>

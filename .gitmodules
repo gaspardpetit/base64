@@ -46,3 +46,6 @@
 [submodule "libs/ReneNyffenegger/cpp-base64"]
 	path = libs/ReneNyffenegger/cpp-base64
 	url = https://github.com/ReneNyffenegger/cpp-base64.git
+[submodule "libs/Turbo-Base64"]
+	path = libs/Turbo-Base64
+	url = https://github.com/powturbo/Turbo-Base64.git
