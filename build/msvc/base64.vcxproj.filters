@@ -74,6 +74,9 @@
     <Filter Include="impl\boost">
       <UniqueIdentifier>{c929fe7d-2954-4451-a978-a8076b451b40}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl\modp_b64_chromium">
+      <UniqueIdentifier>{08960bdd-5414-423c-b8d6-4e7229d49cf7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\adp-gmbh.ch\base64.cpp">
@@ -180,6 +183,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\boost\test_boost.cpp">
       <Filter>impl\boost</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\modp_b64_chromium\modp_b64_chromium.cpp">
+      <Filter>impl\modp_b64_chromium</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\chromium\modp_b64\modp_b64.cc">
+      <Filter>impl\modp_b64_chromium</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

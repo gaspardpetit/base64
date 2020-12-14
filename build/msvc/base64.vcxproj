@@ -62,6 +62,7 @@
     <Import Project="props\include libb64.props" />
     <Import Project="props\include cppcodec.props" />
     <Import Project="props\include boost.props" />
+    <Import Project="props\include chromium_modp_b64.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -69,6 +70,7 @@
     <Import Project="props\include libb64.props" />
     <Import Project="props\include cppcodec.props" />
     <Import Project="props\include boost.props" />
+    <Import Project="props\include chromium_modp_b64.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -76,6 +78,7 @@
     <Import Project="props\include libb64.props" />
     <Import Project="props\include cppcodec.props" />
     <Import Project="props\include boost.props" />
+    <Import Project="props\include chromium_modp_b64.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -83,6 +86,7 @@
     <Import Project="props\include libb64.props" />
     <Import Project="props\include cppcodec.props" />
     <Import Project="props\include boost.props" />
+    <Import Project="props\include chromium_modp_b64.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -160,6 +164,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\libs\chromium\modp_b64\modp_b64.cc" />
     <ClCompile Include="..\..\src\adition\adition.cpp" />
     <ClCompile Include="..\..\src\adition\test_adition.cpp" />
     <ClCompile Include="..\..\src\adp-gmbh.ch\base64.cpp" />
@@ -185,6 +190,7 @@
     <ClCompile Include="..\..\src\LihO\test_LihO.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\ManuelMartinez\test_ManuelMartinez.cpp" />
+    <ClCompile Include="..\..\src\modp_b64_chromium\modp_b64_chromium.cpp" />
     <ClCompile Include="..\..\src\NibbleAndAHalf\test_NibbleAndAHalf.cpp" />
     <ClCompile Include="..\..\src\omnifarious\omnifarious.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
