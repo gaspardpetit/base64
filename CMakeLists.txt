@@ -1,26 +1,26 @@
-cmake_minimum_required(VERSION 2.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 #CLANG compiler activation options
 SET (CMAKE_C_COMPILER "/usr/bin/clang")
 SET (CMAKE_CXX_COMPILER "/usr/bin/clang++")
 
-set(CMAKE_BUILD_TYPE Release)
-set(NAME base64.bin)
-project (${NAME})
+SET(CMAKE_BUILD_TYPE Release)
+SET(NAME base64.bin)
+PROJECT(${NAME})
+ENABLE_TESTING()
 
 # Update if necessary
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 
-enable_testing()
-add_subdirectory(libs/googletest/)
-include_directories(libs/googletest/googletest/include)
+# BUILD AND INCLUDE GOOGLETEST
+ADD_SUBDIRECTORY(libs/googletest/)
+INCLUDE_DIRECTORIES(libs/googletest/googletest/include)
 
 AUX_SOURCE_DIRECTORY(./src/ CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/adp-gmbh.ch CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/apache CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/arduino CTR_SOURCES)
-AUX_SOURCE_DIRECTORY(./src/cppcodec CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/DaedalusAlpha CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/ElegantDice CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/gnome CTR_SOURCES)
@@ -39,11 +39,30 @@ AUX_SOURCE_DIRECTORY(./src/adition CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/renenyffenegger CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/tomykaria CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/stov-180947 CTR_SOURCES)
-
 AUX_SOURCE_DIRECTORY(./src/libb64/libb64/src C_SOURCES)
+
+AUX_SOURCE_DIRECTORY(./libs/chromium/modp_b64 CTR_SOURCES)
+INCLUDE_DIRECTORIES(libs)
+AUX_SOURCE_DIRECTORY(./src/modp_b64_chromium CTR_SOURCES)
+
+INCLUDE_DIRECTORIES(libs/cppcodec)
+AUX_SOURCE_DIRECTORY(./src/cppcodec CTR_SOURCES)
+
+INCLUDE_DIRECTORIES(libs/boost/utility/include)
+INCLUDE_DIRECTORIES(libs/boost/serialization/include)
+INCLUDE_DIRECTORIES(libs/boost/config/include)
+INCLUDE_DIRECTORIES(libs/boost/detail/include)
+INCLUDE_DIRECTORIES(libs/boost/preprocessor/include)
+INCLUDE_DIRECTORIES(libs/boost/core/include)
+INCLUDE_DIRECTORIES(libs/boost/type_traits/include)
+INCLUDE_DIRECTORIES(libs/boost/iterator/include)
+INCLUDE_DIRECTORIES(libs/boost/mpl/include)
+INCLUDE_DIRECTORIES(libs/boost/static_assert/include)
+INCLUDE_DIRECTORIES(libs/boost/assert/include)
+AUX_SOURCE_DIRECTORY(./src/boost CTR_SOURCES)
 
 SET_SOURCE_FILES_PROPERTIES( ${CTR_SOURCES} PROPERTIES LANGUAGE CXX )
 SET_SOURCE_FILES_PROPERTIES( ${C_SOURCES} PROPERTIES LANGUAGE C )
 
-add_executable(${NAME} ${CTR_SOURCES} ${C_SOURCES})
-target_link_libraries(${NAME} gtest pthread)
+ADD_EXECUTABLE(${NAME} ${CTR_SOURCES} ${C_SOURCES})
+TARGET_LINK_LIBRARIES(${NAME} gtest pthread)
