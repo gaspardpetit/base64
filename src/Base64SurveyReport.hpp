@@ -14,7 +14,7 @@ using BenchmarkResults = map<string, map<int, double>>;
 
 struct Base64SurveyReport
 {
-	static string Base64SurveyReport::GetCompilerSuffix();
+	static string GetCompilerSuffix();
 	static string DumpJsonResult(const string &name, BenchmarkResults &results);
 
     template<class _ResultDelegate>
@@ -23,8 +23,6 @@ struct Base64SurveyReport
         map<double, vector<string>> sorted;
         for (const auto &entry : results)
             sorted[entry.second.rbegin()->second].push_back(entry.first);
-
-        MarkdownTable sortedTable{ 28, 10 };
 
         for (const pair<double, vector<string>> &entry : sorted)
         {
