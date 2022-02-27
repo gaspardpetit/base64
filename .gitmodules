@@ -49,3 +49,6 @@
 [submodule "libs/Turbo-Base64"]
 	path = libs/Turbo-Base64
 	url = https://github.com/powturbo/Turbo-Base64.git
+[submodule "libs/picobase64"]
+	path = libs/picobase64
+	url = https://github.com/GermanAizek/picobase64

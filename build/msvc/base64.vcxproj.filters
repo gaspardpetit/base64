@@ -77,6 +77,9 @@
     <Filter Include="impl\Turbob64">
       <UniqueIdentifier>{5d760d12-c358-40dd-81b7-8abf15db88b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl\picobase64">
+      <UniqueIdentifier>{d490dd70-4257-4edf-88aa-65a4c6dbec0d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\adp-gmbh.ch\test_adp-gmbh.cpp">
@@ -195,6 +198,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Turbob64\test_turbob64.cpp">
       <Filter>impl\Turbob64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\picobase64\test_picobase64.cpp">
+      <Filter>impl\picobase64</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
