@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "../Base64SurveyRegistry.hpp"
+#include <algorithm>
 
 namespace {
 #include "ReneNyffenegger/cpp-base64/base64.cpp"
