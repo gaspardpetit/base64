@@ -1,6 +1,8 @@
 #include <string>
 #include <cstring>
 
+namespace polfosol {
+
 static const char* B64chars =
 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
@@ -102,3 +104,5 @@ std::string b64decode(const std::string& str64)
 {
 	return b64decode(str64.c_str(), str64.size());
 }
+
+} // namespace polfosol

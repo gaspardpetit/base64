@@ -207,6 +207,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\src\picobase64\test_picobase64.cpp" />
     <ClCompile Include="..\..\src\polfosol\test_polfosol.cpp" />
     <ClCompile Include="..\..\src\tomykaria\test_tomykaria.cpp" />
     <ClCompile Include="..\..\src\Turbob64\test_turbob64.cpp" />

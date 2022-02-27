@@ -6,12 +6,12 @@ struct Polfosol
 {
 	std::string encode(const std::string &bytes)
 	{
-		return b64encode((unsigned char*)bytes.data(), bytes.length());
+		return polfosol::b64encode((unsigned char*)bytes.data(), bytes.length());
 	}
 
 	std::string decode(const std::string &base64)
 	{
-		return b64decode((unsigned char*)base64.data(), base64.length());
+		return polfosol::b64decode((unsigned char*)base64.data(), base64.length());
 	}
 };
 
@@ -38,7 +38,7 @@ struct Polfosol_mod
 {
 	std::string decode(const std::string &base64)
 	{
-		return b64decode_mod(base64_dtable, base64.data(), base64.length());
+		return polfosol::b64decode_mod(base64_dtable, base64.data(), base64.length());
 	}
 };
 

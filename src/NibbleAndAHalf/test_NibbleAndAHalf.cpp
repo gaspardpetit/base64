@@ -16,3 +16,4 @@ struct NibbleAndAHalf
 };
 
 BASE64_REGISTER_ENCODER(NibbleAndAHalf);
+BASE64_REGISTER_DECODER(NibbleAndAHalf);
