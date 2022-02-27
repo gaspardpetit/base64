@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 #CLANG compiler activation options
-SET (CMAKE_C_COMPILER "/usr/bin/clang")
-SET (CMAKE_CXX_COMPILER "/usr/bin/clang++")
+SET (CMAKE_C_COMPILER "/usr/bin/clang-12")
+SET (CMAKE_CXX_COMPILER "/usr/bin/clang++-12")
 
 SET(CMAKE_BUILD_TYPE Release)
 SET(NAME base64.bin)
@@ -42,6 +42,7 @@ AUX_SOURCE_DIRECTORY(./src/A.Hristov CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/tomykaria CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/stov-180947 CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/libb64/libb64/src C_SOURCES)
+AUX_SOURCE_DIRECTORY(./src/picobase64 C_SOURCES)
 
 AUX_SOURCE_DIRECTORY(./libs/chromium/modp_b64 CTR_SOURCES)
 AUX_SOURCE_DIRECTORY(./src/modp_b64_chromium CTR_SOURCES)
