@@ -1,3 +1,7 @@
+# Benchmark results Results for Encoding
+
+[The latest results are here](https://rawcdn.githack.com/gaspardpetit/base64/master/result/result.html)
+
 # base64
 
 Searching the web for a C/C++ base64 implementation yields many results.  The first hit as of 2016-12-10 for "c++ base64" are:
@@ -85,10 +89,6 @@ From https://github.com/GNOME/glib/blob/master/glib/gbase64.c
 
 ### cppcodec
 From https://github.com/tplgy/cppcodec
-
-# Benchmark results Results for Encoding
-
-[The latest results are here](https://rawcdn.githack.com/gaspardpetit/base64/eef8f8aea458fd13afb8f327ecbc7ecdf5cd8f16/result/result.html)
 
 ## Conclusion
 
