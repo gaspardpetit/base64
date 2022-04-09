@@ -60,12 +60,12 @@ struct Turbob64
 {
 	std::string encode(const std::string &bytes)
 	{
-		return B64_Adapt::encode(tb64enc, bytes);
+		return B64_Adapt::encode(tb64v256enc, bytes);
 	}
 
 	std::string decode(const std::string &base64)
 	{
-		return B64_Adapt::decode(tb64dec, base64);
+		return B64_Adapt::decode(tb64v256dec, base64);
 	}
 };
 

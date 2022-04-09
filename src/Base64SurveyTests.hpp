@@ -22,14 +22,16 @@ struct Base64SurveyTests
 	static void test_encode(const string &str, const string &expected)
 	{
 		BASE64Impl impl;
-		ASSERT_EQ(expected, impl.encode(str));
+		string observed = impl.encode(str);
+		ASSERT_EQ(expected, observed);
 	}
 
 	template<class BASE64Impl>
 	static void test_decode(const string &str, const string &expected)
 	{
 		BASE64Impl impl;
-		ASSERT_EQ(expected, impl.decode(str));
+		string observed = impl.decode(str);
+		ASSERT_EQ(expected, observed);
 	}
 
 	static int RunTests(int argc, char *argv[]);

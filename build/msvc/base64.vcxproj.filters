@@ -80,6 +80,9 @@
     <Filter Include="impl\picobase64">
       <UniqueIdentifier>{d490dd70-4257-4edf-88aa-65a4c6dbec0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl\IMUtility">
+      <UniqueIdentifier>{ee2dde68-e341-4cca-aa30-e903808a5b15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\adp-gmbh.ch\test_adp-gmbh.cpp">
@@ -202,6 +205,9 @@
     <ClCompile Include="..\..\src\picobase64\test_picobase64.cpp">
       <Filter>impl\picobase64</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\IMUtility\test_polfosol_imutility.cpp">
+      <Filter>impl\IMUtility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\libcurl\curl_base64.h">
@@ -269,6 +275,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Base64SurveyRegistry.hpp">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\IMUtility\polfosol_imutility.h">
+      <Filter>impl\IMUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\IMUtility\base64.h">
+      <Filter>impl\IMUtility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

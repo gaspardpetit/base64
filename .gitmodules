@@ -52,3 +52,6 @@
 [submodule "libs/picobase64"]
 	path = libs/picobase64
 	url = https://github.com/GermanAizek/picobase64
+[submodule "libs/IMUtility"]
+	path = libs/IMUtility
+	url = https://github.com/IMProject/IMUtility.git
