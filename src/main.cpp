@@ -31,10 +31,11 @@ int main(int argc, char *argv[])
 #endif // _WIN32
 
     // Run smoke tests on each implementation
+    int result = EXIT_SUCCESS;
     {
-        int result = Base64SurveyTests::RunTests(argc + 1, argv);
-        cout << "Press enter to continue." << endl;
-        getchar();
+        result = Base64SurveyTests::RunTests(argc + 1, argv);
+        //cout << "Press enter to continue." << endl;
+        //getchar();
     }
 
     // Profile the encoders
@@ -77,7 +78,7 @@ int main(int argc, char *argv[])
         cout << "Saved decoder report to " + savedPath;
     }
 
-    cout << "Press enter to continue." << endl;
-    getchar();
-    return 0;
+    //cout << "Press enter to continue." << endl;
+    //getchar();
+    return result;
 }

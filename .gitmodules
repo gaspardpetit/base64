@@ -52,3 +52,9 @@
 [submodule "libs/IMUtility"]
 	path = libs/IMUtility
 	url = https://github.com/IMProject/IMUtility.git
+[submodule "libs/base64-tl"]
+	path = libs/base64-tl
+	url = git@github.com:tvercaut/base64.git
+[submodule "libs/base64pp"]
+	path = libs/base64pp
+	url = git@github.com:matheusgomes28/base64pp.git

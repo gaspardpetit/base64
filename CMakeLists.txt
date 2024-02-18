@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
-project(base64-banchmark)
+project(base64-benchmark)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_BUILD_TYPE Release)
@@ -24,6 +24,16 @@ set_target_properties(gtest_main PROPERTIES CXX_CLANG_TIDY "")
 set_target_properties(gmock PROPERTIES CXX_CLANG_TIDY "")
 set_target_properties(gmock_main PROPERTIES CXX_CLANG_TIDY "")
 
+# Get base64pp
+#FetchContent_Declare(
+#  base64pp
+#  GIT_REPOSITORY https://github.com/google/googletest.git
+#  GIT_TAG        750d67d809700ae8fca6d610f7b41b71aa161808
+#  SYSTEM
+#)
+#FetchContent_MakeAvailable(base64pp)
+add_subdirectory(./libs/base64pp)
+
 
 include_directories(libs)
 
@@ -31,6 +41,8 @@ aux_source_directory(./src/ CTR_SOURCES)
 aux_source_directory(./src/adp-gmbh.ch CTR_SOURCES)
 aux_source_directory(./src/apache CTR_SOURCES)
 aux_source_directory(./src/arduino CTR_SOURCES)
+aux_source_directory(./src/base64pp CTR_SOURCES)
+aux_source_directory(./src/base64-tl CTR_SOURCES)
 aux_source_directory(./src/DaedalusAlpha CTR_SOURCES)
 aux_source_directory(./src/ElegantDice CTR_SOURCES)
 aux_source_directory(./src/gnome CTR_SOURCES)
@@ -50,7 +62,7 @@ aux_source_directory(./src/A.Hristov CTR_SOURCES)
 aux_source_directory(./src/tomykaria CTR_SOURCES)
 aux_source_directory(./src/stov-180947 CTR_SOURCES)
 aux_source_directory(./src/libb64/libb64/src C_SOURCES)
-aux_source_directory(./src/picobase64 C_SOURCES)
+aux_source_directory(./src/picobase64 CTR_SOURCES)
 
 aux_source_directory(./libs/chromium/modp_b64 CTR_SOURCES)
 aux_source_directory(./src/modp_b64_chromium CTR_SOURCES)
@@ -75,4 +87,6 @@ set_source_files_properties( ${CTR_SOURCES} PROPERTIES LANGUAGE CXX )
 set_source_files_properties( ${C_SOURCES} PROPERTIES LANGUAGE C )
 
 add_executable(${PROJECT_NAME} ${CTR_SOURCES} ${C_SOURCES})
-target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest GTest::gtest_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest GTest::gtest_main base64pp)
+
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
