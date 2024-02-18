@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: RelWithDebInfo
+  BUILD_TYPE: Release
 
 jobs:
   build:
@@ -20,10 +20,6 @@ jobs:
       with:
         submodules: 'true'
 
-    - name: Install optional tools (clang-tidy)
-      if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get install -y clang-tidy
-
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory.
       # `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -38,5 +34,5 @@ jobs:
       working-directory: ${{github.workspace}}/build
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
+      run: ctest -C ${{env.BUILD_TYPE}} --verbose
 
