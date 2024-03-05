@@ -42,3 +42,6 @@ base64.bin
 Makefile
 CTestTestfile.cmake
 *.vcxproj.user
+
+# Other
+.#*

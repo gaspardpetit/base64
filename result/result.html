@@ -39,10 +39,8 @@
 </head>
 
 <body>
-    <script src="result/encode-msvc19.js"></script>
-    <script src="result/decode-msvc19.js"></script>
-    <script src="result/encode-clang12.js"></script>
-    <script src="result/decode-clang12.js"></script>
+    <script src="result/encode-clang15.js"></script>
+    <script src="result/decode-clang15.js"></script>
     <script type="text/babel">
         //----------------------------------------------------------------------------- 
         function mergResult(encode, decode) {
@@ -194,40 +192,28 @@
         }
         //-----------------------------------------------------------------------------
         window.onload = function () {
-            // Clang12
-            generateResultTable("table_encode_result_clang12", encode_result_clang12);
-            generateBarCharts("canvas_encode_result_clang12", encode_result_clang12, "Encode Results (Lower is better)");
+            // Clang15
+            generateResultTable("table_encode_result_clang15", encode_result_clang15);
+            generateBarCharts("canvas_encode_result_clang15", encode_result_clang15, "Encode Results (Lower is better)");
 
-            generateResultTable("table_decode_result_clang12", decode_result_clang12);
-            generateBarCharts("canvas_decode_result_clang12", decode_result_clang12, "Decode Results (Lower is better)");
+            generateResultTable("table_decode_result_clang15", decode_result_clang15);
+            generateBarCharts("canvas_decode_result_clang15", decode_result_clang15, "Decode Results (Lower is better)");
 
-            let mergResultVal_clang12 = mergResult(encode_result_clang12, decode_result_clang12);
-            generateResultTable("table_decode_encode_result_clang12", mergResultVal_clang12);
-            generateBarCharts("canvas_decode_encode_result_clang12", mergResultVal_clang12, "Decode + Encode Results (Lower is better)");
-
-            // MSVC 2019
-            generateResultTable("table_encode_result_msvc19", encode_result_msvc19);
-            generateBarCharts("canvas_encode_result_msvc19", encode_result_msvc19, "Encode Results (Lower is better)");
-
-            generateResultTable("table_decode_result_msvc19", decode_result_msvc19);
-            generateBarCharts("canvas_decode_result_msvc19", decode_result_msvc19, "Decode Results (Lower is better)");
-
-            let mergResultVal_msvc19 = mergResult(encode_result_msvc19, decode_result_msvc19);
-            generateResultTable("table_decode_encode_result_msvc19", mergResultVal_msvc19);
-            generateBarCharts("canvas_decode_encode_result_msvc19", mergResultVal_msvc19, "Decode + Encode Results (Lower is better)");
-
+            let mergResultVal_clang15 = mergResult(encode_result_clang15, decode_result_clang15);
+            generateResultTable("table_decode_encode_result_clang15", mergResultVal_clang15);
+            generateBarCharts("canvas_decode_encode_result_clang15", mergResultVal_clang15, "Decode + Encode Results (Lower is better)");
         };
     </script>
     <!---Body start -->
     <div class="container">
         <div class="py-5 text-center">
             <h1>
-                Benchmark results (Clang 12 / AMD5700G)
+                Benchmark results (Clang 15)
             </h1>
         </div>
         <p>
         <h2>Encode Results</h2>
-        <table class="table table-striped" id="table_encode_result_clang12">
+        <table class="table table-striped" id="table_encode_result_clang15">
             <thead class="thead-dark">
                 <tr></tr>
             </thead>
@@ -236,12 +222,12 @@
         </p>
 
         <p>
-            <canvas id="canvas_encode_result_clang12"></canvas>
+            <canvas id="canvas_encode_result_clang15"></canvas>
         </p>
 
         <p>
         <h2>Decode Results</h2>
-        <table class="table table-striped" id="table_decode_result_clang12">
+        <table class="table table-striped" id="table_decode_result_clang15">
             <thead class="thead-dark">
                 <tr></tr>
             </thead>
@@ -250,12 +236,12 @@
         </p>
 
         <p>
-            <canvas id="canvas_decode_result_clang12"></canvas>
+            <canvas id="canvas_decode_result_clang15"></canvas>
         </p>
 
         <p>
         <h2>Encode + Decode Results</h2>
-        <table class="table table-striped" id="table_decode_encode_result_clang12">
+        <table class="table table-striped" id="table_decode_encode_result_clang15">
             <thead class="thead-dark">
                 <tr></tr>
             </thead>
@@ -264,55 +250,9 @@
         </p>
 
         <p>
-            <canvas id="canvas_decode_encode_result_clang12"></canvas>
+            <canvas id="canvas_decode_encode_result_clang15"></canvas>
         </p>
 
-        <div class="py-5 text-center">
-            <h1>
-                Benchmark results (MSVC 2019/19.28.29335 x64 / Intel Xeon W-2133 @ 3.6GHz)
-            </h1>
-        </div>
-        <p>
-        <h2>Encode Results</h2>
-        <table class="table table-striped" id="table_encode_result_msvc19">
-            <thead class="thead-dark">
-                <tr></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        </p>
-
-        <p>
-            <canvas id="canvas_encode_result_msvc19"></canvas>
-        </p>
-
-        <p>
-        <h2>Decode Results</h2>
-        <table class="table table-striped" id="table_decode_result_msvc19">
-            <thead class="thead-dark">
-                <tr></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        </p>
-
-        <p>
-            <canvas id="canvas_decode_result_msvc19"></canvas>
-        </p>
-
-        <p>
-        <h2>Encode + Decode Results</h2>
-        <table class="table table-striped" id="table_decode_encode_result_msvc19">
-            <thead class="thead-dark">
-                <tr></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        </p>
-
-        <p>
-            <canvas id="canvas_decode_encode_result_msvc19"></canvas>
-        </p>
     </div>
     <!---Body end -->
 </body>
