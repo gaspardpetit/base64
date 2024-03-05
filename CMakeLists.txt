@@ -25,6 +25,7 @@ set_target_properties(gmock PROPERTIES CXX_CLANG_TIDY "")
 set_target_properties(gmock_main PROPERTIES CXX_CLANG_TIDY "")
 
 add_subdirectory(./libs/base64pp)
+add_subdirectory(./libs/base64-aklomp)
 
 include_directories(libs)
 
@@ -33,6 +34,7 @@ aux_source_directory(./src/adp-gmbh.ch CTR_SOURCES)
 aux_source_directory(./src/apache CTR_SOURCES)
 aux_source_directory(./src/arduino CTR_SOURCES)
 aux_source_directory(./src/base64pp CTR_SOURCES)
+aux_source_directory(./src/base64-aklomp CTR_SOURCES)
 aux_source_directory(./src/base64-tl CTR_SOURCES)
 aux_source_directory(./src/DaedalusAlpha CTR_SOURCES)
 aux_source_directory(./src/ElegantDice CTR_SOURCES)
@@ -78,6 +80,6 @@ set_source_files_properties( ${CTR_SOURCES} PROPERTIES LANGUAGE CXX )
 set_source_files_properties( ${C_SOURCES} PROPERTIES LANGUAGE C )
 
 add_executable(${PROJECT_NAME} ${CTR_SOURCES} ${C_SOURCES})
-target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest GTest::gtest_main base64pp)
+target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest GTest::gtest_main base64pp base64)
 
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
