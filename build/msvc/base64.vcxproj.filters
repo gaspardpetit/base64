@@ -83,6 +83,15 @@
     <Filter Include="impl\IMUtility">
       <UniqueIdentifier>{ee2dde68-e341-4cca-aa30-e903808a5b15}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl\base64-aklomp">
+      <UniqueIdentifier>{5c019b3b-715c-4834-afd0-d7b4fb03dafe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="impl\base64-tl">
+      <UniqueIdentifier>{2285549c-17c7-469f-a24d-e797e1583826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="impl\base64pp">
+      <UniqueIdentifier>{8e03b2f0-3dd5-427a-a052-b36af04b0678}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\adp-gmbh.ch\test_adp-gmbh.cpp">
@@ -207,6 +216,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\IMUtility\test_polfosol_imutility.cpp">
       <Filter>impl\IMUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\base64-aklomp\test_base64-aklomp.cpp">
+      <Filter>impl\base64-aklomp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\base64-tl\test_base64-tl.cpp">
+      <Filter>impl\base64-tl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\base64pp\test_base64pp.cpp">
+      <Filter>impl\base64pp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\base64pp\base64pp\base64pp.cpp">
+      <Filter>impl\base64pp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,11 @@
 #include "../Base64SurveyRegistry.hpp"
 #include <gtest/gtest.h>
+#define BASE64_STATIC_DEFINE
 #include "../libs/base64-aklomp/include/libbase64.h"
 
+/**
+* On Windows, to make sure to first build libs\base64-aklomp as a Visual Studio 2022 Cmake project to generate base64.lib under libs\base64-aklomp\out\build\x64-Release
+**/
 
 struct base64aklomp
 {
