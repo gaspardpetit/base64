@@ -1,20 +1,10 @@
 # Benchmark results Results for Encoding
 
-[The latest results are here](https://rawcdn.githack.com/gaspardpetit/base64/master/result/result.html)
+[The latest results are here](https://raw.githack.com/tvercaut/base64-benchmark/master/result/result.html)
 
 # base64
 
-Searching the web for a C/C++ base64 implementation yields many results.  The first hit as of 2016-12-10 for "c++ base64" are:
-
- - http://www.adp-gmbh.ch/cpp/common/base64.html (René Nyffenegger's implementation which is often quoted by other implementations)
- - http://stackoverflow.com/questions/180947/base64-decode-snippet-in-c which is a stackoverflow entry with multiple "here is my implementation which I think is better"
- - http://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c which holds more code snippets
- - http://libb64.sourceforge.net/ which is an opensource implementation claiming to be fast
- 
-Looking further, we find many more:
-
- - http://web.mit.edu/freebsd/head/contrib/wpa/src/utils/base64.c from Jouni Malinen under BSD license
- - https://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64 has both a C and C++ implementations
+Searching the web for a C/C++ base64 implementation yields many results.
  
  
 How does one chose?
@@ -29,6 +19,18 @@ Keep in mind that some implementations were slightly modified to have a common i
 I do not own any of these implementations - make sure you check their respective license before using them.
 
 ## Compared implementations
+
+### base64 (Alfred Klomp)
+From https://github.com/aklomp/base64
+A fast C99 implementation with SIMD acceleration 
+
+### base64 (Tobias Locker)
+From https://github.com/tobiaslocker/base64
+A c++ single-header library implementing the approach of Nick Galbreath's in  `modp_b64`
+
+### base64 (Mat Gomes)
+From https://github.com/matheusgomes28/base64pp
+A c++ library written for readibility and supported by a blog post https://matgomes.com/base64-encode-decode-cpp/
 
 ### adp-gmbh (René Nyffenegger)
 From http://www.adp-gmbh.ch/cpp/common/base64.html
@@ -92,11 +94,10 @@ From https://github.com/tplgy/cppcodec
 
 ## Conclusion
 
-- For encoding. the Apache and the Internet Software Consortium versions, written over 15 years ago, beats most of the code snippets posted around - which brings us back to how it is important to look for existing implementations before writing new ones. The ISC implementation comes with an unconvenient license from IBM, however, granting you "immunity from suites under its patents, if any, for the use, sale or manufacture of produces to the extent that such products are used for performing Domain Name System";
+- If you want the fastest implementation, go for base64 (Alfred Klomp) noting that the code base is BSD-2
+- If you want a simple single-header c++ file with good performance, go for base64 (Tobias Locker)
 - Some other implementations are terrible, the slower ones generally allocate memory dynamically as they convert, even though the output size is deterministic and can be preallocated;
 - libb64 shows very strange performance results - I get the feeling that they are doing something neat but that I am perhaps not using their code right;
 - A lot of implementations are available, everyone claims theirs is better. This test shows that unless you measure, you cannot make any claims about the performance of your code;
-
-If you do not need support for line breaks and don't need validation of data integrity, I would recommend using Jouni Malinen or the Apache's implementation for the Encoder, and the modified Polfosol implementation for decoding. 
 
 Keep in mind that these results were all obtained using Visual Studio and could differ on another compiler.
