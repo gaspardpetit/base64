@@ -11,7 +11,7 @@ using namespace std;
 string Base64SurveyReport::GetCompilerSuffix()
 {
 #if defined(_MSC_VER)
-    int ver = _MSC_VER / 100;
+    int ver = _MSC_VER;
     stringstream strm;
     strm << "msvc" << ver;
     return strm.str();
