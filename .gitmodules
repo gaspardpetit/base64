@@ -62,3 +62,6 @@
 [submodule "libs/base64-aklomp"]
 	path = libs/base64-aklomp
 	url = https://github.com/aklomp/base64.git
+[submodule "libs/googletest"]
+	path = libs/googletest
+	url = https://github.com/google/googletest.git

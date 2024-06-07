@@ -45,3 +45,5 @@ CTestTestfile.cmake
 
 # Other
 .#*
+build/msvc/msvc.build/**
+build/msvc/result/**
