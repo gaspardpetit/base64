@@ -150,7 +150,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions>/w24003 /w24005 /w24028 /w24047 /w24090 /w24133 /w24146 /w24333 /w24789 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/w24003 /w24005 /w24028 /w24047 /w24090 /w24133 /w24146 /w24333 /w24789 /arch:AVX2 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>Turbo-Base64</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
