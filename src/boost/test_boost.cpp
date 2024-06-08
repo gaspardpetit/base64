@@ -1,3 +1,7 @@
+// workaround for https://github.com/boostorg/serialization/issues/315
+#define BOOST_NO_EXCEPTIONS
+namespace boost { template<class E> void throw_exception(E& e) {} }
+
 #include "../Base64SurveyRegistry.hpp"
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/base64_from_binary.hpp>
