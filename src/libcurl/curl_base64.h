@@ -23,11 +23,12 @@
 ***************************************************************************/
 #include <string>
 
-int Curl_base64_encode(const char *inputbuff, size_t insize,
-	std::string *outptr);
-int Curl_base64url_encode(const char *inputbuff, size_t insize,
-	std::string *outptr);
+int Curl_base64_encode(const char* inputbuff, size_t insize,
+	char** outptr, size_t* outlen);
+int Curl_base64url_encode(const char* inputbuff, size_t insize,
+	char** outptr, size_t* outlen);
 
-int Curl_base64_decode(const char *src, std::string *outStr);
+int Curl_base64_decode(const char* src,
+	unsigned char** outptr, size_t* outlen);
 
 #endif /* HEADER_CURL_BASE64_H */
