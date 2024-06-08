@@ -11,7 +11,7 @@ std::string Base64_encode(unsigned char *bytes, size_t len)
 	size_t d = len % 3;
 	std::string str64(4 * (int(d > 0) + len / 3), '=');
 
-	Base64_encode(bytes, len, (char*)&str64[0], str64.size());
+	Base64_encode((char*)bytes, len, (char*)&str64[0], str64.size());
 
 	return str64;
 }

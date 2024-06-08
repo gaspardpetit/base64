@@ -51,11 +51,11 @@ struct B64_Adapt
 		return encoded;
 	}
 
-	static std::string decode(size_t(*func)(char* dest, const char* src, size_t len), const std::string &encoded)
+	static std::string decode(size_t(*func)(char* dest, const char* src, size_t len, ModpDecodePolicy policy), const std::string &encoded)
 	{
 		size_t decLen = GetDecodedLength(encoded);
 		std::string decoded(decLen, '\0');
-		func((char*)&decoded[0], (const char*)&encoded[0], encoded.length());
+		func((char*)&decoded[0], (const char*)&encoded[0], encoded.length(), ModpDecodePolicy::kStrict);
 		return decoded;
 	}
 };
