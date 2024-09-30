@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <cstdint>
 
 void base64_encode(std::string & out, const std::vector<std::uint8_t>& buf);
 void base64_encode(std::string & out, const std::uint8_t* buf, size_t bufLen);

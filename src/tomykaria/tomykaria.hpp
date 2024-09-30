@@ -24,6 +24,7 @@
  */
 //https://gist.github.com/tomykaira/f0fd86b6c73063283afe550bc5d77594
 #include <string>
+#include <cstdint>
 
 namespace macaron {
 
