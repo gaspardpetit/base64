@@ -1,4 +1,5 @@
 #include <string>
+#include <cstdint>
 /**
  * Given a string, this function will encode it in 64b (with padding)
  */
