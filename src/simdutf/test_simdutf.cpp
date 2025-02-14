@@ -8,16 +8,16 @@ struct simdutfb64
 {
   std::string encode(const std::string& bytes)
   {
-    // For some reason working directly with a std::string leads to unit test failure
-    std::vector<char> buffer(simdutf::base64_length_from_binary(bytes.size()));
+    // There is no string constructor with uninitialised values and resize uses value-initialized characters
+    std::string buffer(simdutf::base64_length_from_binary(bytes.size()),char(0));
     simdutf::binary_to_base64(bytes.data(), bytes.size(), buffer.data());
-    return std::string(buffer.begin(), buffer.end());
+    return buffer;
   }
   
   std::string decode(const std::string& base64)
   {
-    // For some reason working directly with a std::string leads to unit test failure
-    std::vector<char> buffer(simdutf::maximal_binary_length_from_base64(base64.data(), base64.size()));
+    // There is no string constructor with uninitialised values and resize uses value-initialized characters
+    std::string buffer(simdutf::maximal_binary_length_from_base64(base64.data(), base64.size()),char(0));
     simdutf::result r = simdutf::base64_to_binary(base64.data(), base64.size(), buffer.data());
     if(r.error) {
       // We have some error, r.count tells you where the error was encountered in the input if
@@ -27,7 +27,7 @@ struct simdutfb64
     } else {
       buffer.resize(r.count); // resize the buffer according to actual number of bytes
     }
-    return std::string(buffer.begin(), buffer.end());
+    return buffer;
   }
 };
 
