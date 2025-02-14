@@ -29,6 +29,10 @@ A fast C99 implementation with SIMD acceleration
 From https://github.com/tobiaslocker/base64
 A c++ single-header library implementing the approach of Nick Galbreath's in  `modp_b64`
 
+### simdutf
+From https://github.com/simdutf/simdutf
+A unicode validation and transcoding c++ library accelerated using SIMD instructions
+
 ### base64 (Mat Gomes)
 From https://github.com/matheusgomes28/base64pp
 A c++ library written for readibility and supported by a blog post https://matgomes.com/base64-encode-decode-cpp/
@@ -95,10 +99,10 @@ From https://github.com/tplgy/cppcodec
 
 ## Conclusion
 
-- If you want the fastest implementation, go for base64 (Alfred Klomp) noting that the code base is BSD-2
-- If you want a simple single-header c++ file with good performance, go for base64 (Tobias Locker)
+- If you want the fastest implementation, go for [simdutf](https://github.com/simdutf/simdutf) or [base64 (Alfred Klomp)]( https://github.com/aklomp/base64) noting that the code base of the latter is BSD-2
+- If you want a simple single-header c++ file with good performance, go for [base64 (Tobias Locker)](https://github.com/tvercaut/base64)
 - Some other implementations are terrible, the slower ones generally allocate memory dynamically as they convert, even though the output size is deterministic and can be preallocated;
 - libb64 shows very strange performance results - I get the feeling that they are doing something neat but that I am perhaps not using their code right;
 - A lot of implementations are available, everyone claims theirs is better. This test shows that unless you measure, you cannot make any claims about the performance of your code;
 
-Keep in mind that these results were all obtained using Visual Studio and could differ on another compiler.
+Keep in mind that these results were all obtained using a specific compiler and could differ on another compiler.
