@@ -5,7 +5,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\libs\boost\utility\include\;..\..\libs\boost\serialization\include\;..\..\libs\boost\config\include\;..\..\libs\boost\detail\include\;..\..\libs\boost\preprocessor\include\;..\..\libs\boost\core\include\;..\..\libs\boost\type_traits\include\;..\..\libs\boost\iterator\include\;..\..\libs\boost\mpl\include\;..\..\libs\boost\static_assert\include\;..\..\libs\boost\assert\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\libs\boost\utility\include\;..\..\libs\boost\serialization\include\;..\..\libs\boost\config\include\;..\..\libs\boost\detail\include\;..\..\libs\boost\preprocessor\include\;..\..\libs\boost\core\include\;..\..\libs\boost\type_traits\include\;..\..\libs\boost\iterator\include\;..\..\libs\boost\mpl\include\;..\..\libs\boost\static_assert\include\;..\..\libs\boost\assert\include\;..\..\libs\boost\mp11\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />
