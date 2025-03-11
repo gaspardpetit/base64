@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 #ifdef _WIN32
     // try to get more consistent results
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
 #endif // _WIN32
 
     // Run smoke tests on each implementation

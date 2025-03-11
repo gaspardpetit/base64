@@ -92,6 +92,9 @@
     <Filter Include="impl\base64pp">
       <UniqueIdentifier>{8e03b2f0-3dd5-427a-a052-b36af04b0678}</UniqueIdentifier>
     </Filter>
+    <Filter Include="impl\simdutf">
+      <UniqueIdentifier>{5dba14bd-4424-4942-a008-c3bbaaaf4c7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\adp-gmbh.ch\test_adp-gmbh.cpp">
@@ -228,6 +231,9 @@
     </ClCompile>
     <ClCompile Include="..\..\libs\base64pp\base64pp\base64pp.cpp">
       <Filter>impl\base64pp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\simdutf\test_simdutf.cpp">
+      <Filter>impl\simdutf</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

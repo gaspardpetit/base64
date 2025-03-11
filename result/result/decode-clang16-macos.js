@@ -1,4 +1,4 @@
-var decode_result_clang16 = [
+var decode_result_clang16_macos = [
 	{name:'Adition',
 	values:[
 		{len:32,time:0.039189},

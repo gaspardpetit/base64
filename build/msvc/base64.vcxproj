@@ -233,8 +233,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\src\picobase64\test_picobase64.cpp" />
+    <ClCompile Include="..\..\src\picobase64\test_picobase64.cpp">
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpplatest</LanguageStandard>
+    </ClCompile>
     <ClCompile Include="..\..\src\polfosol\test_polfosol.cpp" />
+    <ClCompile Include="..\..\src\simdutf\test_simdutf.cpp" />
     <ClCompile Include="..\..\src\tomykaria\test_tomykaria.cpp" />
     <ClCompile Include="..\..\src\Turbob64\test_turbob64.cpp" />
     <ClCompile Include="..\..\src\user152949\test_user152949.cpp" />

@@ -99,7 +99,7 @@ From https://github.com/tplgy/cppcodec
 
 ## Conclusion
 
-- If you want the fastest implementation, go for [simdutf](https://github.com/simdutf/simdutf) or [base64 (Alfred Klomp)]( https://github.com/aklomp/base64) noting that the code base of the latter is BSD-2
+- If you want the fastest implementation, [Turbo-Base64](https://github.com/powturbo/Turbo-Base64) (GPL-3.0) is the fastest. Slightly behind, and with more permissive licenses, [simdutf](https://github.com/simdutf/simdutf) (MIT License) and [base64 (Alfred Klomp)](https://github.com/aklomp/base64) (BSD-2 License) are both great alternatives.
 - If you want a simple single-header c++ file with good performance, go for [base64 (Tobias Locker)](https://github.com/tvercaut/base64)
 - Some other implementations are terrible, the slower ones generally allocate memory dynamically as they convert, even though the output size is deterministic and can be preallocated;
 - libb64 shows very strange performance results - I get the feeling that they are doing something neat but that I am perhaps not using their code right;

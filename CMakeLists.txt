@@ -24,13 +24,6 @@ set_target_properties(gtest_main PROPERTIES CXX_CLANG_TIDY "")
 set_target_properties(gmock PROPERTIES CXX_CLANG_TIDY "")
 set_target_properties(gmock_main PROPERTIES CXX_CLANG_TIDY "")
 
-# Get simdutf
-FetchContent_Declare(
-  simdutf
-  URL https://github.com/simdutf/simdutf/releases/download/v6.2.0/singleheader.zip
-)
-FetchContent_MakeAvailable(simdutf)
-
 add_subdirectory(./libs/base64pp)
 add_subdirectory(./libs/base64-aklomp)
 
@@ -83,8 +76,6 @@ include_directories(libs/boost/mpl/include)
 include_directories(libs/boost/static_assert/include)
 include_directories(libs/boost/assert/include)
 aux_source_directory(./src/boost CTR_SOURCES)
-
-include_directories(${FETCHCONTENT_BASE_DIR}/simdutf-src)
 
 set_source_files_properties( ${CTR_SOURCES} PROPERTIES LANGUAGE CXX )
 set_source_files_properties( ${C_SOURCES} PROPERTIES LANGUAGE C )

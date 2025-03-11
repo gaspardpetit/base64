@@ -1,7 +1,7 @@
 #include "../Base64SurveyRegistry.hpp"
 #include <gtest/gtest.h>
-#include "simdutf.h"
-#include "simdutf.cpp"
+#include "singleheader-6.3.1/simdutf.h"
+#include "singleheader-6.3.1/simdutf.cpp"
 
 
 struct simdutfb64

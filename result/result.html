@@ -34,10 +34,12 @@
 </head>
 
 <body>
-    <script src="result/encode-msvc1940.js"></script>
-    <script src="result/decode-msvc1940.js"></script>
+    <script src="result/encode-msvc1942.js"></script>
+    <script src="result/decode-msvc1942.js"></script>
     <script src="result/encode-clang15.js"></script>
     <script src="result/decode-clang15.js"></script>
+    <script src="result/encode-clang16-macos.js"></script>
+    <script src="result/decode-clang16-macos.js"></script>
     <script type="text/babel">
         //----------------------------------------------------------------------------- 
         function mergResult(encode, decode) {
@@ -198,16 +200,26 @@
             generateBarCharts("canvas_decode_encode_result_clang15", mergResultVal_clang15, "Decode + Encode Results (Lower is better)");
 
             // MSVC 2022
-            generateResultTable("table_encode_result_msvc1940", encode_result_msvc1940);
-            generateBarCharts("canvas_encode_result_msvc1940", encode_result_msvc1940, "Encode Results (Lower is better)");
+            generateResultTable("table_encode_result_msvc1942", encode_result_msvc1942);
+            generateBarCharts("canvas_encode_result_msvc1942", encode_result_msvc1942, "Encode Results (Lower is better)");
 
-            generateResultTable("table_decode_result_msvc1940", decode_result_msvc1940);
-            generateBarCharts("canvas_decode_result_msvc1940", decode_result_msvc1940, "Decode Results (Lower is better)");
+            generateResultTable("table_decode_result_msvc1942", decode_result_msvc1942);
+            generateBarCharts("canvas_decode_result_msvc1942", decode_result_msvc1942, "Decode Results (Lower is better)");
 
-            let mergResultVal_msvc1940 = mergResult(encode_result_msvc1940, decode_result_msvc1940);
-            generateResultTable("table_decode_encode_result_msvc1940", mergResultVal_msvc1940);
-            generateBarCharts("canvas_decode_encode_result_msvc1940", mergResultVal_msvc1940, "Decode + Encode Results (Lower is better)");
+            let mergResultVal_msvc1942 = mergResult(encode_result_msvc1942, decode_result_msvc1942);
+            generateResultTable("table_decode_encode_result_msvc1942", mergResultVal_msvc1942);
+            generateBarCharts("canvas_decode_encode_result_msvc1942", mergResultVal_msvc1942, "Decode + Encode Results (Lower is better)");
 
+            // MacOS
+            generateResultTable("table_encode_result_clang16_macos", encode_result_clang16_macos);
+            generateBarCharts("canvas_encode_result_clang16_macos", encode_result_clang16_macos, "Encode Results (Lower is better)");
+
+            generateResultTable("table_decode_result_clang16_macos", decode_result_clang16_macos);
+            generateBarCharts("canvas_decode_result_clang16_macos", decode_result_clang16_macos, "Decode Results (Lower is better)");
+
+            let mergResultVal_clang16_macos = mergResult(encode_result_clang16_macos, decode_result_clang16_macos);
+            generateResultTable("table_decode_encode_result_clang16_macos", mergResultVal_clang16_macos);
+            generateBarCharts("canvas_decode_encode_result_clang16_macos", mergResultVal_clang16_macos, "Decode + Encode Results (Lower is better)");
 
 
 
@@ -217,7 +229,7 @@
     <div class="container">
         <div class="py-5 text-center">
             <h1>
-                Benchmark results (Clang 15)
+                Benchmark results (Clang 15 / Ubuntu AMD Ryzen 7 5700G)
             </h1>
         </div>
         <p>
@@ -264,12 +276,12 @@
 
         <div class="py-5 text-center">
             <h1>
-                Benchmark results (MSVC 2022 v17.10 / Intel i9-13900K @ 3.0GHz)
+                Benchmark results (MSVC 2022 v17.12.4 / Intel i9-13900K @ 3.0GHz)
             </h1>
         </div>
         <p>
         <h2>Encode Results</h2>
-        <table class="table table-striped" id="table_encode_result_msvc1940">
+        <table class="table table-striped" id="table_encode_result_msvc1942">
             <thead class="thead-dark">
                 <tr></tr>
             </thead>
@@ -278,12 +290,12 @@
         </p>
 
         <p>
-            <canvas id="canvas_encode_result_msvc1940"></canvas>
+            <canvas id="canvas_encode_result_msvc1942"></canvas>
         </p>
 
         <p>
         <h2>Decode Results</h2>
-        <table class="table table-striped" id="table_decode_result_msvc1940">
+        <table class="table table-striped" id="table_decode_result_msvc1942">
             <thead class="thead-dark">
                 <tr></tr>
             </thead>
@@ -292,12 +304,12 @@
         </p>
 
         <p>
-            <canvas id="canvas_decode_result_msvc1940"></canvas>
+            <canvas id="canvas_decode_result_msvc1942"></canvas>
         </p>
 
         <p>
         <h2>Encode + Decode Results</h2>
-        <table class="table table-striped" id="table_decode_encode_result_msvc1940">
+        <table class="table table-striped" id="table_decode_encode_result_msvc1942">
             <thead class="thead-dark">
                 <tr></tr>
             </thead>
@@ -306,10 +318,60 @@
         </p>
 
         <p>
-            <canvas id="canvas_decode_encode_result_msvc1940"></canvas>
+            <canvas id="canvas_decode_encode_result_msvc1942"></canvas>
         </p>
+
+
+    <div class="py-5 text-center">
+        <h1>
+            Benchmark results (AppleClang 16 / Mac Studio M3 Ultra)
+        </h1>
     </div>
-    <!---Body end -->
+    <p>
+    <h2>Encode Results</h2>
+    <table class="table table-striped" id="table_encode_result_clang16_macos">
+        <thead class="thead-dark">
+            <tr></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    </p>
+
+    <p>
+        <canvas id="canvas_encode_result_clang16_macos"></canvas>
+    </p>
+
+    <p>
+    <h2>Decode Results</h2>
+    <table class="table table-striped" id="table_decode_result_clang16_macos">
+        <thead class="thead-dark">
+            <tr></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    </p>
+
+    <p>
+        <canvas id="canvas_decode_result_clang16_macos"></canvas>
+    </p>
+
+    <p>
+    <h2>Encode + Decode Results</h2>
+    <table class="table table-striped" id="table_decode_encode_result_clang16_macos">
+        <thead class="thead-dark">
+            <tr></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    </p>
+
+    <p>
+        <canvas id="canvas_decode_encode_result_clang16_macos"></canvas>
+    </p>
+</div>
+
+
+<!---Body end -->
 </body>
 
 </html>
