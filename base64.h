@@ -31,11 +31,14 @@ BASE64_API size_t base64_encode(const unsigned char* input, size_t length,
                                 char* output);
 BASE64_API size_t base64url_encode(const unsigned char* input, size_t length,
                                    char* output);
+/* Set support_url_safe to zero for standard '+'/'/' Base64 only. On NEON this
+ * selects the standard decoder without a URL-safe detection pass. */
 BASE64_API size_t base64_decode(const unsigned char* input, size_t length,
-                                unsigned char* output);
+                                unsigned char* output, int support_url_safe);
 BASE64_API size_t base64_decode_unchecked(const unsigned char* input,
                                           size_t length,
-                                          unsigned char* output);
+                                          unsigned char* output,
+                                          int support_url_safe);
 
 #ifdef __cplusplus
 }
@@ -364,11 +367,16 @@ static inline size_t base64_decode_tail_unchecked(const unsigned char* input,
 
 BASE64_API size_t base64_decode(const unsigned char* BASE64_RESTRICT input,
                                 size_t length,
-                                unsigned char* BASE64_RESTRICT output)
+                                unsigned char* BASE64_RESTRICT output,
+                                int support_url_safe)
 {
     unsigned char* const begin = output;
     size_t data_length = length;
     size_t padding = 0U;
+
+    if (!support_url_safe &&
+        (memchr(input, '-', length) != NULL || memchr(input, '_', length) != NULL))
+        return BASE64_ERROR;
 
     if (data_length != 0U && input[data_length - 1U] == '=') {
         --data_length;
@@ -436,11 +444,16 @@ BASE64_API size_t base64_decode(const unsigned char* BASE64_RESTRICT input,
 BASE64_API size_t base64_decode_unchecked(
     const unsigned char* BASE64_RESTRICT input,
     size_t length,
-    unsigned char* BASE64_RESTRICT output)
+    unsigned char* BASE64_RESTRICT output,
+    int support_url_safe)
 {
     unsigned char* const begin = output;
     size_t data_length = length;
     size_t padding = 0U;
+
+    if (!support_url_safe &&
+        (memchr(input, '-', length) != NULL || memchr(input, '_', length) != NULL))
+        return BASE64_ERROR;
 
     if (data_length != 0U && input[data_length - 1U] == '=') {
         --data_length;
