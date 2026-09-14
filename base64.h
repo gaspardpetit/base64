@@ -343,6 +343,25 @@ static inline size_t base64_decode_tail(const unsigned char* input,
     return (size_t)(output - begin) + length - 1U;
 }
 
+static inline size_t base64_decode_tail_unchecked(const unsigned char* input,
+                                                  size_t length,
+                                                  unsigned char* output,
+                                                  unsigned char* begin)
+{
+    uint32_t value;
+    if (length == 0U)
+        return (size_t)(output - begin);
+    if (length == 1U)
+        return BASE64_ERROR;
+    value = base64_decode_0[input[0]] | base64_decode_1[input[1]];
+    if (length == 3U)
+        value |= base64_decode_2[input[2]];
+    output[0] = (unsigned char)value;
+    if (length == 3U)
+        output[1] = (unsigned char)(value >> 8);
+    return (size_t)(output - begin) + length - 1U;
+}
+
 BASE64_API size_t base64_decode(const unsigned char* BASE64_RESTRICT input,
                                 size_t length,
                                 unsigned char* BASE64_RESTRICT output)
