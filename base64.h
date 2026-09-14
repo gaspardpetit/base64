@@ -27,24 +27,27 @@ extern "C" {
 
 BASE64_API size_t base64_encoded_size(size_t input_size);
 BASE64_API size_t base64_decoded_max_size(size_t input_size);
-BASE64_API size_t base64_encode(const unsigned char* input, size_t length,
-                                char* output);
 BASE64_API size_t base64url_encode(const unsigned char* input, size_t length,
                                    char* output);
 /* Set support_url_safe to zero for standard '+'/'/' Base64 only. On NEON this
  * selects the standard decoder without a URL-safe detection pass. */
 #if !defined(BASE64_HEADER_ONLY)
+extern const char base64_alphabet[65];
+extern const char base64_encode_pair[64][64][2];
 extern const uint32_t base64_decode_0[256];
 extern const uint32_t base64_decode_1[256];
 extern const uint32_t base64_decode_2[256];
 extern const uint32_t base64_decode_3[256];
 #endif
 #if !defined(BASE64_IMPLEMENTATION) && !defined(BASE64_HEADER_ONLY)
+extern size_t base64_encode_compiled(const unsigned char*, size_t, char*);
 extern size_t base64_decode_compiled(const unsigned char*, size_t,
                                      unsigned char*, int);
 extern size_t base64_decode_unchecked_compiled(const unsigned char*, size_t,
                                                unsigned char*, int);
 #else
+BASE64_API size_t base64_encode(const unsigned char* input, size_t length,
+                                char* output);
 BASE64_API size_t base64_decode(const unsigned char* input, size_t length,
                                 unsigned char* output, int support_url_safe);
 BASE64_API size_t base64_decode_unchecked(const unsigned char* input,
@@ -69,7 +72,13 @@ BASE64_API size_t base64_decode_unchecked(const unsigned char* input,
 #  define BASE64_RESTRICT restrict
 #endif
 
-static const char base64_alphabet[] =
+#if defined(BASE64_HEADER_ONLY)
+#  define BASE64_ENCODE_TABLE_STORAGE static const
+#else
+#  define BASE64_ENCODE_TABLE_STORAGE extern const
+#endif
+
+BASE64_ENCODE_TABLE_STORAGE char base64_alphabet[65] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 static const char base64url_alphabet[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
@@ -97,7 +106,7 @@ static const char base64url_alphabet[] =
 
 #define BASE64_CHAR_62 '+'
 #define BASE64_CHAR_63 '/'
-static const char base64_encode_pair[64][64][2] = {
+BASE64_ENCODE_TABLE_STORAGE char base64_encode_pair[64][64][2] = {
     BASE64_PAIR_ROW('A'), BASE64_PAIR_ROW('B'), BASE64_PAIR_ROW('C'),
     BASE64_PAIR_ROW('D'), BASE64_PAIR_ROW('E'), BASE64_PAIR_ROW('F'),
     BASE64_PAIR_ROW('G'), BASE64_PAIR_ROW('H'), BASE64_PAIR_ROW('I'),
@@ -121,6 +130,7 @@ static const char base64_encode_pair[64][64][2] = {
     BASE64_PAIR_ROW('8'), BASE64_PAIR_ROW('9'), BASE64_PAIR_ROW('+'),
     BASE64_PAIR_ROW('/')
 };
+#undef BASE64_ENCODE_TABLE_STORAGE
 
 #undef BASE64_CHAR_62
 #undef BASE64_CHAR_63
@@ -682,6 +692,129 @@ BASE64_API size_t base64_decode_unchecked(
 #else
 #  define BASE64_ALWAYS_INLINE static inline
 #endif
+
+BASE64_ALWAYS_INLINE size_t base64_encode_inline_short(
+    const unsigned char* input, size_t length, char* output)
+{
+#define BASE64_INLINE_ENCODE_GROUP(i)                                      \
+    do {                                                                   \
+        const uint32_t value = ((uint32_t)input[(i) * 3U] << 16) |        \
+            ((uint32_t)input[(i) * 3U + 1U] << 8) |                       \
+            input[(i) * 3U + 2U];                                         \
+        memcpy(output + (i) * 4U,                                         \
+               ((const char (*)[2])base64_encode_pair)[value >> 12], 2U); \
+        memcpy(output + (i) * 4U + 2U,                                    \
+               ((const char (*)[2])base64_encode_pair)[value & 0xFFFU],   \
+               2U);                                                        \
+    } while (0)
+#define BASE64_INLINE_ENCODE_TAIL1(i)                                      \
+    do {                                                                   \
+        const uint32_t value = (uint32_t)input[(i) * 3U] << 16;           \
+        memcpy(output + (i) * 4U,                                         \
+               ((const char (*)[2])base64_encode_pair)[value >> 12], 2U); \
+        output[(i) * 4U + 2U] = '=';                                      \
+        output[(i) * 4U + 3U] = '=';                                      \
+    } while (0)
+#define BASE64_INLINE_ENCODE_TAIL2(i)                                      \
+    do {                                                                   \
+        const uint32_t value = ((uint32_t)input[(i) * 3U] << 16) |        \
+            ((uint32_t)input[(i) * 3U + 1U] << 8);                        \
+        memcpy(output + (i) * 4U,                                         \
+               ((const char (*)[2])base64_encode_pair)[value >> 12], 2U); \
+        output[(i) * 4U + 2U] = base64_alphabet[(value >> 6) & 63U];      \
+        output[(i) * 4U + 3U] = '=';                                      \
+    } while (0)
+    switch (length) {
+    case 15:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_GROUP(1);
+        BASE64_INLINE_ENCODE_GROUP(2);
+        BASE64_INLINE_ENCODE_GROUP(3);
+        BASE64_INLINE_ENCODE_GROUP(4);
+        return 20U;
+    case 14:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_GROUP(1);
+        BASE64_INLINE_ENCODE_GROUP(2);
+        BASE64_INLINE_ENCODE_GROUP(3);
+        BASE64_INLINE_ENCODE_TAIL2(4);
+        return 20U;
+    case 13:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_GROUP(1);
+        BASE64_INLINE_ENCODE_GROUP(2);
+        BASE64_INLINE_ENCODE_GROUP(3);
+        BASE64_INLINE_ENCODE_TAIL1(4);
+        return 20U;
+    case 12:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_GROUP(1);
+        BASE64_INLINE_ENCODE_GROUP(2);
+        BASE64_INLINE_ENCODE_GROUP(3);
+        return 16U;
+    case 11:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_GROUP(1);
+        BASE64_INLINE_ENCODE_GROUP(2);
+        BASE64_INLINE_ENCODE_TAIL2(3);
+        return 16U;
+    case 10:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_GROUP(1);
+        BASE64_INLINE_ENCODE_GROUP(2);
+        BASE64_INLINE_ENCODE_TAIL1(3);
+        return 16U;
+    case 9:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_GROUP(1);
+        BASE64_INLINE_ENCODE_GROUP(2);
+        return 12U;
+    case 8:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_GROUP(1);
+        BASE64_INLINE_ENCODE_TAIL2(2);
+        return 12U;
+    case 7:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_GROUP(1);
+        BASE64_INLINE_ENCODE_TAIL1(2);
+        return 12U;
+    case 6:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_GROUP(1);
+        return 8U;
+    case 5:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_TAIL2(1);
+        return 8U;
+    case 4:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        BASE64_INLINE_ENCODE_TAIL1(1);
+        return 8U;
+    case 3:
+        BASE64_INLINE_ENCODE_GROUP(0);
+        return 4U;
+    case 2:
+        BASE64_INLINE_ENCODE_TAIL2(0);
+        return 4U;
+    case 1:
+        BASE64_INLINE_ENCODE_TAIL1(0);
+        return 4U;
+    default:
+        return 0U;
+    }
+#undef BASE64_INLINE_ENCODE_TAIL2
+#undef BASE64_INLINE_ENCODE_TAIL1
+#undef BASE64_INLINE_ENCODE_GROUP
+}
+
+BASE64_ALWAYS_INLINE size_t base64_encode(const unsigned char* input,
+    size_t length, char* output)
+{
+    return length <= 15U
+        ? base64_encode_inline_short(input, length, output)
+        : base64_encode_compiled(input, length, output);
+}
 
 BASE64_ALWAYS_INLINE size_t base64_decode_inline_short(
     const unsigned char* input, size_t length, unsigned char* output,
