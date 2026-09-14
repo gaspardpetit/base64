@@ -84,18 +84,20 @@ are rejected. Input and output buffers must not overlap.
 
 ## Windows AVX2
 
-Compiled-library builds can enable runtime AVX2 dispatch on Windows x64. Build
-the regular implementation with `BASE64_ENABLE_AVX2`, compile
-`base64_avx2.c` separately with `/arch:AVX2`, and link both objects:
+Compiled-library builds use runtime AVX2 dispatch by default on Windows x64.
+Compile `base64_avx2.c` separately with `/arch:AVX2` and link both objects:
 
 ```bat
-cl /O2 /c /DBASE64_ENABLE_AVX2 base64.c
+cl /O2 /c base64.c
 cl /O2 /c /arch:AVX2 base64_avx2.c
 ```
 
-For C++, compile `base64.cpp` with `BASE64_ENABLE_AVX2` instead of `base64.c`.
-The public functions detect AVX2 once and otherwise use the portable scalar
-implementation. Header-only builds remain scalar.
+For C++, compile `base64.cpp` instead of `base64.c`. The public functions detect
+AVX2 once and otherwise use the portable scalar implementation.
+
+Define `BASE64_DISABLE_HARDWARE` when compiling `base64.c` or `base64.cpp` to
+build only the portable implementation without linking `base64_avx2.c`.
+Header-only builds remain scalar and do not require this definition.
 
 ## Technical overview
 
