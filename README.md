@@ -1,11 +1,17 @@
 # base64
 
-An efficient, portable Base64 encoder and decoder for C and C++. At a 32 KiB
-payload size, it is the fastest architecture-neutral encoder and decoder in the
-current Linux, Windows, and macOS results from
-[base64-benchmark](https://github.com/gaspardpetit/base64-benchmark);
-implementations using architecture-specific SIMD instructions are considered
-separately.
+An efficient Base64 encoder and decoder for C and C++, with a portable scalar
+implementation and optional AVX2 and NEON backends. At a 32 KiB payload size,
+the SIMD backend ranks first for combined encoding and decoding throughput in
+the current Windows and Linux results, and second on macOS, from
+[base64-benchmark](https://gaspardpetit.github.io/base64-benchmark/). The
+portable path is the fastest architecture-neutral encoder and decoder in the
+same benchmark results.
+
+Benchmark rankings depend on the processor, compiler, payload size, validation
+requirements, and calling interface. See the
+[benchmark repository](https://github.com/gaspardpetit/base64-benchmark) for
+the source, test conditions, and results for individual operations.
 
 ## C
 
@@ -147,13 +153,16 @@ combined with bitwise OR operations while detecting invalid characters. The
 main loop processes 12 encoded characters at a time and writes the resulting
 nine bytes with packed stores where the platform permits it.
 
-The optional AVX2 backend processes four 24-byte encoding blocks together and
-three 32-byte decoding blocks per iteration. Decoding uses independently
-derived hash tables to translate and validate both RFC 4648 alphabets, followed
-by packed multiply-add operations that assemble the decoded bytes. Checked and
-unchecked decoding use separately specialized loops. Standard-only decoding
-uses dedicated mapping and validation tables, while URL-safe-compatible
-decoding accepts both alphabets in a combined pipeline.
+The optional AVX2 backend processes four 24-byte encoding blocks together. Its
+main encoding loop uses overlapping 256-bit input loads after an initial safe
+load, avoiding the cost of assembling each input vector from two smaller
+loads. The large-input decoder processes four 32-byte blocks per iteration.
+Decoding uses independently derived hash tables to translate and validate both
+RFC 4648 alphabets, followed by packed multiply-add operations that assemble
+the decoded bytes. Checked and unchecked decoding use separately specialized
+loops. Standard-only decoding uses dedicated mapping and validation tables,
+while URL-safe-compatible decoding accepts both alphabets in a combined
+pipeline.
 
 The optional NEON backend processes 48 input bytes per encoding block and 64
 Base64 characters per decoding block. Its checked decoder uses compact lookup
