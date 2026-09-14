@@ -1,2 +1,2 @@
-#define BASE64_BUILD
+#define BASE64_IMPLEMENTATION
 #include "base64.h"

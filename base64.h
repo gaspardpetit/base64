@@ -7,14 +7,14 @@
 
 #define BASE64_ERROR ((size_t)-1)
 
-#if defined(BASE64_BUILD)
+#if defined(BASE64_IMPLEMENTATION)
 #  define BASE64_API
 #  define BASE64_INCLUDE_IMPLEMENTATION
-#elif defined(BASE64_COMPILED)
-#  define BASE64_API extern
-#else
+#elif defined(BASE64_HEADER_ONLY)
 #  define BASE64_API static inline
 #  define BASE64_INCLUDE_IMPLEMENTATION
+#else
+#  define BASE64_API extern
 #endif
 
 #ifdef __cplusplus

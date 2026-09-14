@@ -1,16 +1,16 @@
 #ifndef BASE64_HPP_INCLUDED
 #define BASE64_HPP_INCLUDED
 
-#if defined(BASE64_CPP_COMPILED) && !defined(BASE64_COMPILED)
-#  define BASE64_COMPILED
-#  define BASE64_HPP_DEFINED_COMPILED
+#if defined(BASE64_CPP_HEADER_ONLY) && !defined(BASE64_HEADER_ONLY)
+#  define BASE64_HEADER_ONLY
+#  define BASE64_HPP_DEFINED_HEADER_ONLY
 #endif
 
 #include "base64.h"
 
-#ifdef BASE64_HPP_DEFINED_COMPILED
-#  undef BASE64_COMPILED
-#  undef BASE64_HPP_DEFINED_COMPILED
+#ifdef BASE64_HPP_DEFINED_HEADER_ONLY
+#  undef BASE64_HEADER_ONLY
+#  undef BASE64_HPP_DEFINED_HEADER_ONLY
 #endif
 
 #include <stdexcept>
@@ -18,7 +18,7 @@
 
 namespace base64 {
 
-#if defined(BASE64_CPP_COMPILED) && !defined(BASE64_CPP_BUILD)
+#if !defined(BASE64_CPP_HEADER_ONLY) && !defined(BASE64_CPP_IMPLEMENTATION)
 
 std::string encode(const std::string& input);
 std::string decode(const std::string& input);
@@ -27,7 +27,7 @@ bool decode(const std::string& input, std::string& output);
 
 #else
 
-#if defined(BASE64_CPP_BUILD)
+#if defined(BASE64_CPP_IMPLEMENTATION)
 #  define BASE64_CPP_API
 #else
 #  define BASE64_CPP_API inline

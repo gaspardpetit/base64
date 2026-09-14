@@ -4,17 +4,16 @@ A small Base64 encoder and decoder for C and C++.
 
 ## C
 
-For header-only use:
+Compile `base64.c` and include the header:
 
 ```c
 #include "base64.h"
 ```
 
-To compile the implementation once, compile `base64.c` and define
-`BASE64_COMPILED` before including the header in consumers:
+For header-only use, define `BASE64_HEADER_ONLY` before including the header:
 
 ```c
-#define BASE64_COMPILED
+#define BASE64_HEADER_ONLY
 #include "base64.h"
 ```
 
@@ -25,13 +24,21 @@ for invalid input.
 
 ## C++
 
-For header-only use:
+Compile `base64.cpp` and include the header:
 
 ```cpp
 #include "base64.hpp"
 
 std::string encoded = base64::encode("Hello");
 std::string decoded = base64::decode(encoded);
+```
+
+For header-only use, define `BASE64_CPP_HEADER_ONLY` before including the
+header:
+
+```cpp
+#define BASE64_CPP_HEADER_ONLY
+#include "base64.hpp"
 ```
 
 To reuse caller-owned storage:
@@ -50,6 +57,3 @@ if (!base64::decode(encoded, decoded)) {
 
 These overloads do not allocate when the output string already has sufficient
 capacity. Input and output must be distinct strings.
-
-To compile the implementation once, compile `base64.cpp` and define
-`BASE64_CPP_COMPILED` before including `base64.hpp` in consumers.
