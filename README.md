@@ -138,8 +138,9 @@ unchecked decoding use separately specialized loops.
 
 The optional NEON backend processes 48 input bytes per encoding block and 64
 Base64 characters per decoding block. Its checked decoder uses compact lookup
-tables to validate and translate the standard and URL-safe alphabets in one
-pass; the unchecked variant skips validation for trusted input.
+tables to validate and translate the standard alphabet in one pass; URL-safe
+input falls back to the scalar decoder. The unchecked variant skips validation
+for trusted standard-Base64 input and uses the scalar path for URL-safe input.
 
 The implementation was developed through experiments in the
 [base64-benchmark](https://github.com/gaspardpetit/base64-benchmark) project and
