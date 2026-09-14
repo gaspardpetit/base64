@@ -8,13 +8,19 @@
 #include <stdint.h>
 #include <string.h>
 
+#if defined(_MSC_VER)
+#define BASE64_AVX2_INLINE __forceinline
+#else
+#define BASE64_AVX2_INLINE inline __attribute__((always_inline))
+#endif
+
 size_t base64_scalar_encode(const unsigned char*, size_t, char*);
 size_t base64url_scalar_encode(const unsigned char*, size_t, char*);
 size_t base64_scalar_decode(const unsigned char*, size_t, unsigned char*);
 size_t base64_scalar_decode_unchecked(const unsigned char*, size_t,
                                       unsigned char*);
 
-static __forceinline __m256i encode_unpack(__m256i value)
+static BASE64_AVX2_INLINE __m256i encode_unpack(__m256i value)
 {
     const __m256i a = _mm256_mulhi_epu16(
         _mm256_and_si256(value, _mm256_set1_epi32(0x0fc0fc00)),
@@ -25,7 +31,7 @@ static __forceinline __m256i encode_unpack(__m256i value)
     return _mm256_or_si256(a, b);
 }
 
-static __forceinline __m256i encode_load(const unsigned char* input)
+static BASE64_AVX2_INLINE __m256i encode_load(const unsigned char* input)
 {
     const __m128i lo = _mm_loadu_si128((const __m128i*)input);
     const __m128i hi = _mm_loadu_si128((const __m128i*)(input + 12));
@@ -36,7 +42,7 @@ static __forceinline __m256i encode_load(const unsigned char* input)
         1,0,2,1,4,3,5,4,7,6,8,7,10,9,11,10));
 }
 
-static __forceinline __m256i encode_translate(__m256i value, int url_safe)
+static BASE64_AVX2_INLINE __m256i encode_translate(__m256i value, int url_safe)
 {
     __m256i index = _mm256_subs_epu8(value, _mm256_set1_epi8(51));
     index = _mm256_sub_epi8(index,
@@ -88,7 +94,7 @@ size_t base64url_avx2_encode(const unsigned char* input, size_t length,
 
 #undef BASE64_AVX2_ENCODE_BODY
 
-static __forceinline __m256i decode_map_and_validate(__m256i input,
+static BASE64_AVX2_INLINE __m256i decode_map_and_validate(__m256i input,
                                                      __m256i* invalid,
                                                      int checked)
 {
@@ -121,7 +127,7 @@ static __forceinline __m256i decode_map_and_validate(__m256i input,
     return _mm256_add_epi8(input, _mm256_shuffle_epi8(deltas, hash));
 }
 
-static __forceinline __m256i decode_pack(__m256i value)
+static BASE64_AVX2_INLINE __m256i decode_pack(__m256i value)
 {
     value = _mm256_maddubs_epi16(value, _mm256_set1_epi32(0x01400140));
     value = _mm256_madd_epi16(value, _mm256_set1_epi32(0x00011000));
@@ -130,7 +136,7 @@ static __forceinline __m256i decode_pack(__m256i value)
         2,1,0,6,5,4,10,9,8,14,13,12,-1,-1,-1,-1));
 }
 
-static __forceinline void decode_block(const unsigned char* input,
+static BASE64_AVX2_INLINE void decode_block(const unsigned char* input,
                                        unsigned char* output,
                                        __m256i* invalid, int checked)
 {
@@ -142,7 +148,7 @@ static __forceinline void decode_block(const unsigned char* input,
                      _mm256_extracti128_si256(value, 1));
 }
 
-static __forceinline size_t decode_avx2(const unsigned char* input,
+static BASE64_AVX2_INLINE size_t decode_avx2(const unsigned char* input,
                                         size_t length,
                                         unsigned char* output, int checked)
 {
@@ -187,3 +193,5 @@ size_t base64_avx2_decode_unchecked(const unsigned char* input, size_t length,
 {
     return decode_avx2(input, length, output, 0);
 }
+
+#undef BASE64_AVX2_INLINE
