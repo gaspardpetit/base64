@@ -97,15 +97,6 @@ Link both objects. CPU detection includes OS support for AVX register state.
 Define `BASE64_DISABLE_HARDWARE` when compiling `base64.c` to omit the backend.
 Header-only builds remain scalar.
 
-To run the focused Linux AVX2 checks on an AVX2-capable host (without `NDEBUG`):
-
-```sh
-clang -O1 -g -fsanitize=address,undefined -c base64.c -o /tmp/base64-dispatch.o
-clang -O1 -g -fsanitize=address,undefined -mavx2 -c base64_avx2.c -o /tmp/base64-avx2.o
-clang++ -O1 -g -fsanitize=address,undefined -I. tests/linux_avx2.cpp /tmp/base64-dispatch.o /tmp/base64-avx2.o -o /tmp/base64-avx2-test
-/tmp/base64-avx2-test
-```
-
 ## Windows AVX2
 
 Compiled-library builds use runtime AVX2 dispatch by default on Windows x64.
