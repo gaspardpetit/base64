@@ -2,7 +2,8 @@
  * Copyright (c) 2026 Gaspard Petit
  */
 
-#if defined(BASE64_ENABLE_AVX2) && defined(_MSC_VER) && defined(_M_X64)
+#if defined(_MSC_VER) && defined(_M_X64) && \
+    !defined(BASE64_DISABLE_HARDWARE)
 
 #define base64_encode base64_scalar_encode
 #define base64url_encode base64url_scalar_encode
