@@ -81,7 +81,7 @@ size_t base64url_encode(const unsigned char* input, size_t length, char* output)
 size_t base64_decode(const unsigned char* input, size_t length,
                      unsigned char* output, int support_url_safe)
 {
-    if (length >= 104U && base64_has_avx2())
+    if (length >= 24U && base64_has_avx2())
         return support_url_safe
             ? base64_avx2_decode(input, length, output)
             : base64_avx2_decode_standard(input, length, output);
@@ -91,7 +91,7 @@ size_t base64_decode(const unsigned char* input, size_t length,
 size_t base64_decode_unchecked(const unsigned char* input, size_t length,
                                unsigned char* output, int support_url_safe)
 {
-    if (length >= 104U && base64_has_avx2())
+    if (length >= 24U && base64_has_avx2())
         return support_url_safe
             ? base64_avx2_decode_unchecked(input, length, output)
             : base64_avx2_decode_standard_unchecked(input, length, output);
