@@ -145,17 +145,21 @@ static size_t base64_neon_decode_dispatch(const unsigned char* input,
         vector_length = (length - 4U) & ~(size_t)63U;
     if (vector_length != 0U) {
         if (unchecked) {
-            /* The compact unchecked mapper is specialized for standard
-             * Base64. Retain the API's URL-safe compatibility without adding
-             * per-lane tests to the standard hot path. */
+            /* Select the specialized URL-safe pipeline once.  The standard
+             * loop remains free of URL-safe comparisons. */
             if (memchr(input, '-', vector_length) != NULL ||
                 memchr(input, '_', vector_length) != NULL)
-                return base64_scalar_decode_unchecked(input, length, output);
-            base64_neon_decode_blocks_unchecked(input, vector_length, output);
+                base64url_neon_decode_blocks_unchecked(input, vector_length,
+                                                        output);
+            else
+                base64_neon_decode_blocks_unchecked(input, vector_length, output);
         }
         else if (!base64_neon_decode_blocks(input, vector_length, output)) {
-            /* This also handles a URL-safe character in a SIMD block. */
-            return base64_scalar_decode(input, length, output);
+            /* Avoid a pre-scan on standard input.  A failed standard mapping
+             * may be URL-safe, so retry with its dedicated SIMD pipeline;
+             * scalar validation remains the fallback for invalid input. */
+            if (!base64url_neon_decode_blocks(input, vector_length, output))
+                return base64_scalar_decode(input, length, output);
         }
     }
     {
