@@ -30,7 +30,11 @@ BASE64_NEON_API size_t base64url_neon_encode_blocks(
     const unsigned char* input, size_t length, char* output);
 BASE64_NEON_API int base64_neon_decode_blocks(
     const unsigned char* input, size_t length, unsigned char* output);
+BASE64_NEON_API int base64url_neon_decode_blocks(
+    const unsigned char* input, size_t length, unsigned char* output);
 BASE64_NEON_API void base64_neon_decode_blocks_unchecked(
+    const unsigned char* input, size_t length, unsigned char* output);
+BASE64_NEON_API void base64url_neon_decode_blocks_unchecked(
     const unsigned char* input, size_t length, unsigned char* output);
 
 #if defined(BASE64_NEON_IMPLEMENTATION) || defined(BASE64_NEON_HEADER_ONLY)
@@ -42,17 +46,11 @@ static inline uint8x16_t base64_neon_decode_map(uint8x16_t chars,
                                                   uint8x16_t roll_table,
                                                   uint8x16_t low_mask)
 {
-    uint8x16_t classes = vandq_u8(
+    const uint8x16_t classes = vandq_u8(
         vqtbl1q_u8(lo_table, vandq_u8(chars, low_mask)),
         vqtbl1q_u8(hi_table, vshrq_n_u8(chars, 3)));
-    const uint8x16_t dash = vceqq_u8(chars, vdupq_n_u8('-'));
-    const uint8x16_t underscore = vceqq_u8(chars, vdupq_n_u8('_'));
-    classes = vbslq_u8(dash, vdupq_n_u8(2), classes);
-    classes = vbslq_u8(underscore, vdupq_n_u8(4), classes);
     *minimum = vminq_u8(*minimum, classes);
-    chars = vaddq_u8(chars, vqtbl1q_u8(roll_table, vclzq_u8(classes)));
-    chars = vbslq_u8(dash, vdupq_n_u8(62), chars);
-    return vbslq_u8(underscore, vdupq_n_u8(63), chars);
+    return vaddq_u8(chars, vqtbl1q_u8(roll_table, vclzq_u8(classes)));
 }
 
 static inline size_t base64_neon_encode_blocks_impl(
@@ -99,21 +97,14 @@ BASE64_NEON_API size_t base64url_neon_encode_blocks(
     return base64_neon_encode_blocks_impl(input, length, output, alphabet);
 }
 
-BASE64_NEON_API int base64_neon_decode_blocks(
-    const unsigned char* input, size_t length, unsigned char* output)
+static inline int base64_neon_decode_blocks_impl(
+    const unsigned char* input, size_t length, unsigned char* output,
+    const uint8_t* lut_lo_data, const uint8_t* lut_hi_data,
+    const uint8_t* roll_lut_data)
 {
-    static const uint8_t lut_lo[16] = {
-        0xa9, 0xf8, 0xf8, 0xf8, 0xf8, 0xf8, 0xf8, 0xf8,
-        0xf8, 0xf9, 0xf1, 0xa2, 0xa1, 0xa1, 0xa0, 0xa4};
-    static const uint8_t lut_hi[16] = {
-        0x00, 0x01, 0x00, 0x00, 0x01, 0x06, 0x08, 0x08,
-        0x10, 0x20, 0x20, 0x10, 0x40, 0x80, 0x80, 0x40};
-    static const uint8_t roll_lut[16] = {
-        0xb9, 0xb9, 0xbf, 0xbf, 0x04, 0x10, 0x13, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    const uint8x16_t lo_table = vld1q_u8(lut_lo);
-    const uint8x16_t hi_table = vld1q_u8(lut_hi);
-    const uint8x16_t roll_table = vld1q_u8(roll_lut);
+    const uint8x16_t lo_table = vld1q_u8(lut_lo_data);
+    const uint8x16_t hi_table = vld1q_u8(lut_hi_data);
+    const uint8x16_t roll_table = vld1q_u8(roll_lut_data);
     const uint8x16_t low_mask = vdupq_n_u8(15);
     uint8x16_t minimum = vdupq_n_u8(255);
 
@@ -137,17 +128,48 @@ BASE64_NEON_API int base64_neon_decode_blocks(
     return vminvq_u8(minimum) > 1;
 }
 
-BASE64_NEON_API void base64_neon_decode_blocks_unchecked(
+BASE64_NEON_API int base64_neon_decode_blocks(
     const unsigned char* input, size_t length, unsigned char* output)
+{
+    static const uint8_t lut_lo[16] = {
+        0xa9, 0xf8, 0xf8, 0xf8, 0xf8, 0xf8, 0xf8, 0xf8,
+        0xf8, 0xf9, 0xf1, 0xa2, 0xa1, 0xa1, 0xa0, 0xa4};
+    static const uint8_t roll_lut[16] = {
+        0xb9, 0xb9, 0xbf, 0xbf, 0x04, 0x10, 0x13, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    static const uint8_t lut_hi[16] = {
+        0x00, 0x01, 0x00, 0x00, 0x01, 0x06, 0x08, 0x08,
+        0x10, 0x20, 0x20, 0x10, 0x40, 0x80, 0x80, 0x40};
+    return base64_neon_decode_blocks_impl(input, length, output, lut_lo,
+                                          lut_hi, roll_lut);
+}
+
+BASE64_NEON_API int base64url_neon_decode_blocks(
+    const unsigned char* input, size_t length, unsigned char* output)
+{
+    static const uint8_t lut_lo[16] = {
+        0xa9, 0xf8, 0xf8, 0xf8, 0xf8, 0xf8, 0xf8, 0xf8,
+        0xf8, 0xf9, 0xf1, 0xa2, 0xa1, 0xa3, 0xa0, 0xa4};
+    static const uint8_t roll_lut[16] = {
+        0xb9, 0xb9, 0xbf, 0xbf, 0x04, 0xe0, 0x11, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    static const uint8_t lut_hi[16] = {
+        0x00, 0x01, 0x00, 0x00, 0x01, 0x06, 0x08, 0x08,
+        0x10, 0x20, 0x20, 0x14, 0x40, 0x80, 0x80, 0x40};
+    return base64_neon_decode_blocks_impl(input, length, output, lut_lo,
+                                          lut_hi, roll_lut);
+}
+
+static inline void base64_neon_decode_blocks_unchecked_impl(
+    const unsigned char* input, size_t length, unsigned char* output,
+    unsigned char value_62_char, unsigned char value_63_char)
 {
     static const uint8_t offsets[16] = {
         0, 0, 0, 4, (uint8_t)-65, (uint8_t)-65, (uint8_t)-71, (uint8_t)-71,
         0, 0, 0, 0, 0, 0, 0, 0};
     const uint8x16_t offset_table = vld1q_u8(offsets);
-    const uint8x16_t plus = vdupq_n_u8('+');
-    const uint8x16_t slash = vdupq_n_u8('/');
-    const uint8x16_t dash = vdupq_n_u8('-');
-    const uint8x16_t underscore = vdupq_n_u8('_');
+    const uint8x16_t char_62 = vdupq_n_u8(value_62_char);
+    const uint8x16_t char_63 = vdupq_n_u8(value_63_char);
     const uint8x16_t value_62 = vdupq_n_u8(62);
     const uint8x16_t value_63 = vdupq_n_u8(63);
 
@@ -157,22 +179,14 @@ BASE64_NEON_API void base64_neon_decode_blocks_unchecked(
         uint8x16_t b = vaddq_u8(chars.val[1], vqtbl1q_u8(offset_table, vshrq_n_u8(chars.val[1], 4)));
         uint8x16_t c = vaddq_u8(chars.val[2], vqtbl1q_u8(offset_table, vshrq_n_u8(chars.val[2], 4)));
         uint8x16_t d = vaddq_u8(chars.val[3], vqtbl1q_u8(offset_table, vshrq_n_u8(chars.val[3], 4)));
-        a = vbslq_u8(vceqq_u8(chars.val[0], plus), value_62, a);
-        b = vbslq_u8(vceqq_u8(chars.val[1], plus), value_62, b);
-        c = vbslq_u8(vceqq_u8(chars.val[2], plus), value_62, c);
-        d = vbslq_u8(vceqq_u8(chars.val[3], plus), value_62, d);
-        a = vbslq_u8(vceqq_u8(chars.val[0], slash), value_63, a);
-        b = vbslq_u8(vceqq_u8(chars.val[1], slash), value_63, b);
-        c = vbslq_u8(vceqq_u8(chars.val[2], slash), value_63, c);
-        d = vbslq_u8(vceqq_u8(chars.val[3], slash), value_63, d);
-        a = vbslq_u8(vceqq_u8(chars.val[0], dash), value_62, a);
-        b = vbslq_u8(vceqq_u8(chars.val[1], dash), value_62, b);
-        c = vbslq_u8(vceqq_u8(chars.val[2], dash), value_62, c);
-        d = vbslq_u8(vceqq_u8(chars.val[3], dash), value_62, d);
-        a = vbslq_u8(vceqq_u8(chars.val[0], underscore), value_63, a);
-        b = vbslq_u8(vceqq_u8(chars.val[1], underscore), value_63, b);
-        c = vbslq_u8(vceqq_u8(chars.val[2], underscore), value_63, c);
-        d = vbslq_u8(vceqq_u8(chars.val[3], underscore), value_63, d);
+        a = vbslq_u8(vceqq_u8(chars.val[0], char_62), value_62, a);
+        b = vbslq_u8(vceqq_u8(chars.val[1], char_62), value_62, b);
+        c = vbslq_u8(vceqq_u8(chars.val[2], char_62), value_62, c);
+        d = vbslq_u8(vceqq_u8(chars.val[3], char_62), value_62, d);
+        a = vbslq_u8(vceqq_u8(chars.val[0], char_63), value_63, a);
+        b = vbslq_u8(vceqq_u8(chars.val[1], char_63), value_63, b);
+        c = vbslq_u8(vceqq_u8(chars.val[2], char_63), value_63, c);
+        d = vbslq_u8(vceqq_u8(chars.val[3], char_63), value_63, d);
         const uint8x16x3_t bytes = {{
             vsliq_n_u8(vshrq_n_u8(b, 4), a, 2),
             vsliq_n_u8(vshrq_n_u8(c, 2), b, 4),
@@ -182,6 +196,18 @@ BASE64_NEON_API void base64_neon_decode_blocks_unchecked(
         output += 48;
         length -= 64;
     }
+}
+
+BASE64_NEON_API void base64_neon_decode_blocks_unchecked(
+    const unsigned char* input, size_t length, unsigned char* output)
+{
+    base64_neon_decode_blocks_unchecked_impl(input, length, output, '+', '/');
+}
+
+BASE64_NEON_API void base64url_neon_decode_blocks_unchecked(
+    const unsigned char* input, size_t length, unsigned char* output)
+{
+    base64_neon_decode_blocks_unchecked_impl(input, length, output, '-', '_');
 }
 
 #endif

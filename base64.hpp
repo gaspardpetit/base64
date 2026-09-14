@@ -71,7 +71,7 @@ BASE64_CPP_API bool decode(const std::string& input, std::string& output)
     const size_t size = base64_decode(
         reinterpret_cast<const unsigned char*>(input.data()),
         input.size(),
-        reinterpret_cast<unsigned char*>(output.data()));
+        reinterpret_cast<unsigned char*>(output.data()), true);
     if (size == BASE64_ERROR) {
         output.clear();
         return false;
@@ -89,7 +89,7 @@ BASE64_CPP_API void decode_unchecked(const std::string& input,
     const size_t size = base64_decode_unchecked(
         reinterpret_cast<const unsigned char*>(input.data()),
         input.size(),
-        reinterpret_cast<unsigned char*>(output.data()));
+        reinterpret_cast<unsigned char*>(output.data()), true);
     if (size == BASE64_ERROR) {
         output.clear();
         throw std::invalid_argument("Invalid Base64 length or padding");

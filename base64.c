@@ -78,19 +78,20 @@ size_t base64url_encode(const unsigned char* input, size_t length, char* output)
 }
 
 size_t base64_decode(const unsigned char* input, size_t length,
-                     unsigned char* output)
+                     unsigned char* output, int support_url_safe)
 {
-    return base64_has_avx2() && length >= 104U
+    return support_url_safe && base64_has_avx2() && length >= 104U
         ? base64_avx2_decode(input, length, output)
-        : base64_scalar_decode(input, length, output);
+        : base64_scalar_decode(input, length, output, support_url_safe);
 }
 
 size_t base64_decode_unchecked(const unsigned char* input, size_t length,
-                               unsigned char* output)
+                               unsigned char* output, int support_url_safe)
 {
-    return base64_has_avx2() && length >= 104U
+    return support_url_safe && base64_has_avx2() && length >= 104U
         ? base64_avx2_decode_unchecked(input, length, output)
-        : base64_scalar_decode_unchecked(input, length, output);
+        : base64_scalar_decode_unchecked(input, length, output,
+                                         support_url_safe);
 }
 
 #ifdef __cplusplus
@@ -106,13 +107,17 @@ size_t base64_decode_unchecked(const unsigned char* input, size_t length,
 #define base64_encode base64_scalar_encode
 #define base64url_encode base64url_scalar_encode
 #define base64_decode base64_scalar_decode
+#define base64_decode_ex base64_scalar_decode_ex
 #define base64_decode_unchecked base64_scalar_decode_unchecked
+#define base64_decode_unchecked_ex base64_scalar_decode_unchecked_ex
 #define BASE64_IMPLEMENTATION
 #include "base64.h"
 #undef base64_encode
 #undef base64url_encode
 #undef base64_decode
+#undef base64_decode_ex
 #undef base64_decode_unchecked
+#undef base64_decode_unchecked_ex
 #pragma pop_macro("base64_decode")
 #pragma pop_macro("base64_encode")
 
@@ -137,25 +142,44 @@ static size_t base64_neon_encode_dispatch(const unsigned char* input,
 static size_t base64_neon_decode_dispatch(const unsigned char* input,
                                           size_t length,
                                           unsigned char* output,
-                                          int unchecked)
+                                          int unchecked,
+                                          int support_url_safe)
 {
     size_t vector_length = length & ~(size_t)63U;
     /* Keep the final padded quantum for the scalar frontend. */
     if (length != 0U && input[length - 1U] == '=')
         vector_length = (length - 4U) & ~(size_t)63U;
     if (vector_length != 0U) {
-        if (unchecked)
-            base64_neon_decode_blocks_unchecked(input, vector_length, output);
-        else if (!base64_neon_decode_blocks(input, vector_length, output))
-            return BASE64_ERROR;
+        if (unchecked) {
+            /* Select the specialized URL-safe pipeline once.  The standard
+             * loop remains free of URL-safe comparisons. */
+            if (support_url_safe &&
+                (memchr(input, '-', vector_length) != NULL ||
+                 memchr(input, '_', vector_length) != NULL))
+                base64url_neon_decode_blocks_unchecked(input, vector_length,
+                                                        output);
+            else
+                base64_neon_decode_blocks_unchecked(input, vector_length, output);
+        }
+        else if (!base64_neon_decode_blocks(input, vector_length, output)) {
+            /* Avoid a pre-scan on standard input.  A failed standard mapping
+             * may be URL-safe, so retry with its dedicated SIMD pipeline;
+             * scalar validation remains the fallback for invalid input. */
+            if (!support_url_safe ||
+                !base64url_neon_decode_blocks(input, vector_length, output))
+                return base64_scalar_decode(input, length, output,
+                                            support_url_safe);
+        }
     }
     {
         const size_t tail = unchecked
             ? base64_scalar_decode_unchecked(input + vector_length,
                                              length - vector_length,
-                                             output + vector_length / 4U * 3U)
+                                             output + vector_length / 4U * 3U,
+                                             support_url_safe)
             : base64_scalar_decode(input + vector_length, length - vector_length,
-                                   output + vector_length / 4U * 3U);
+                                   output + vector_length / 4U * 3U,
+                                   support_url_safe);
         return tail == BASE64_ERROR ? BASE64_ERROR
                                     : vector_length / 4U * 3U + tail;
     }
@@ -178,17 +202,20 @@ size_t base64url_encode(const unsigned char* input, size_t length, char* output)
 }
 
 size_t base64_decode(const unsigned char* input, size_t length,
-                     unsigned char* output)
+                     unsigned char* output, int support_url_safe)
 {
-    return length >= 64U ? base64_neon_decode_dispatch(input, length, output, 0)
-                         : base64_scalar_decode(input, length, output);
+    return length >= 64U
+        ? base64_neon_decode_dispatch(input, length, output, 0, support_url_safe)
+        : base64_scalar_decode(input, length, output, support_url_safe);
 }
 
 size_t base64_decode_unchecked(const unsigned char* input, size_t length,
-                               unsigned char* output)
+                               unsigned char* output, int support_url_safe)
 {
-    return length >= 64U ? base64_neon_decode_dispatch(input, length, output, 1)
-                         : base64_scalar_decode_unchecked(input, length, output);
+    return length >= 64U
+        ? base64_neon_decode_dispatch(input, length, output, 1, support_url_safe)
+        : base64_scalar_decode_unchecked(input, length, output,
+                                         support_url_safe);
 }
 
 #ifdef __cplusplus
