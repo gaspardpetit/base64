@@ -161,6 +161,10 @@ static __forceinline size_t decode_avx2(const unsigned char* input,
         decode_block(input + 64, output + 48, &invalid, checked);
         input += 96; output += 72; length -= 96;
     }
+    while (length >= 40U) {
+        decode_block(input, output, &invalid, checked);
+        input += 32; output += 24; length -= 32;
+    }
     if (checked && _mm256_movemask_epi8(invalid) != 0)
         return BASE64_ERROR;
     {
