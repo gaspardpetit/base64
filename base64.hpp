@@ -25,8 +25,10 @@ namespace base64 {
 #if !defined(BASE64_CPP_HEADER_ONLY) && !defined(BASE64_CPP_IMPLEMENTATION)
 
 std::string encode(const std::string& input);
+std::string url_encode(const std::string& input);
 std::string decode(const std::string& input);
 void encode(const std::string& input, std::string& output);
+void url_encode(const std::string& input, std::string& output);
 bool decode(const std::string& input, std::string& output);
 
 #else
@@ -43,6 +45,17 @@ BASE64_CPP_API void encode(const std::string& input, std::string& output)
         throw std::invalid_argument("Base64 input and output must be distinct");
     output.resize(base64_encoded_size(input.size()));
     base64_encode(
+        reinterpret_cast<const unsigned char*>(input.data()),
+        input.size(),
+        output.data());
+}
+
+BASE64_CPP_API void url_encode(const std::string& input, std::string& output)
+{
+    if (&input == &output)
+        throw std::invalid_argument("Base64 input and output must be distinct");
+    output.resize(base64_encoded_size(input.size()));
+    base64url_encode(
         reinterpret_cast<const unsigned char*>(input.data()),
         input.size(),
         output.data());
@@ -69,6 +82,13 @@ BASE64_CPP_API std::string encode(const std::string& input)
 {
     std::string output;
     encode(input, output);
+    return output;
+}
+
+BASE64_CPP_API std::string url_encode(const std::string& input)
+{
+    std::string output;
+    url_encode(input, output);
     return output;
 }
 
