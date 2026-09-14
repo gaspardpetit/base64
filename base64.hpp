@@ -113,6 +113,15 @@ BASE64_CPP_API std::string url_encode(const std::string& input)
 
 BASE64_CPP_API std::string decode(const std::string& input)
 {
+    if (base64_decoded_max_size(input.size()) <= 15U) {
+        unsigned char buffer[16];
+        const size_t size = base64_decode(
+            reinterpret_cast<const unsigned char*>(input.data()),
+            input.size(), buffer, true);
+        if (size == BASE64_ERROR)
+            throw std::invalid_argument("Invalid Base64 input");
+        return std::string(reinterpret_cast<const char*>(buffer), size);
+    }
     std::string output;
     if (!decode(input, output))
         throw std::invalid_argument("Invalid Base64 input");
@@ -121,6 +130,15 @@ BASE64_CPP_API std::string decode(const std::string& input)
 
 BASE64_CPP_API std::string decode_unchecked(const std::string& input)
 {
+    if (base64_decoded_max_size(input.size()) <= 15U) {
+        unsigned char buffer[16];
+        const size_t size = base64_decode_unchecked(
+            reinterpret_cast<const unsigned char*>(input.data()),
+            input.size(), buffer, true);
+        if (size == BASE64_ERROR)
+            throw std::invalid_argument("Invalid Base64 length or padding");
+        return std::string(reinterpret_cast<const char*>(buffer), size);
+    }
     std::string output;
     decode_unchecked(input, output);
     return output;

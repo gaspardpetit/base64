@@ -34,7 +34,7 @@
 static int base64_has_avx2(void)
 {
     static volatile LONG cached = 0;
-    LONG value = InterlockedCompareExchange(&cached, 0, 0);
+    LONG value = cached;
     if (value == 0) {
         int registers[4];
         int supported = 0;
@@ -50,6 +50,7 @@ static int base64_has_avx2(void)
         }
         value = supported ? 2 : 1;
         InterlockedCompareExchange(&cached, value, 0);
+        value = cached;
     }
     return value == 2;
 }
@@ -68,14 +69,14 @@ extern "C" {
 
 size_t base64_encode(const unsigned char* input, size_t length, char* output)
 {
-    return base64_has_avx2() && length >= 100U
+    return length >= 100U && base64_has_avx2()
         ? base64_avx2_encode(input, length, output)
         : base64_scalar_encode(input, length, output);
 }
 
 size_t base64url_encode(const unsigned char* input, size_t length, char* output)
 {
-    return base64_has_avx2() && length >= 100U
+    return length >= 100U && base64_has_avx2()
         ? base64url_avx2_encode(input, length, output)
         : base64url_scalar_encode(input, length, output);
 }
@@ -83,7 +84,7 @@ size_t base64url_encode(const unsigned char* input, size_t length, char* output)
 size_t base64_decode(const unsigned char* input, size_t length,
                      unsigned char* output, int support_url_safe)
 {
-    if (base64_has_avx2() && length >= 104U)
+    if (length >= 24U && base64_has_avx2())
         return support_url_safe
             ? base64_avx2_decode(input, length, output)
             : base64_avx2_decode_standard(input, length, output);
@@ -93,7 +94,7 @@ size_t base64_decode(const unsigned char* input, size_t length,
 size_t base64_decode_unchecked(const unsigned char* input, size_t length,
                                unsigned char* output, int support_url_safe)
 {
-    if (base64_has_avx2() && length >= 104U)
+    if (length >= 24U && base64_has_avx2())
         return support_url_safe
             ? base64_avx2_decode_unchecked(input, length, output)
             : base64_avx2_decode_standard_unchecked(input, length, output);
@@ -233,4 +234,26 @@ size_t base64_decode_unchecked(const unsigned char* input, size_t length,
 #define BASE64_IMPLEMENTATION
 #include "base64.h"
 
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+size_t base64_decode_compiled(const unsigned char* input, size_t length,
+                              unsigned char* output, int support_url_safe)
+{
+    return base64_decode(input, length, output, support_url_safe);
+}
+
+size_t base64_decode_unchecked_compiled(const unsigned char* input,
+                                        size_t length,
+                                        unsigned char* output,
+                                        int support_url_safe)
+{
+    return base64_decode_unchecked(input, length, output, support_url_safe);
+}
+
+#ifdef __cplusplus
+}
 #endif

@@ -33,12 +33,25 @@ BASE64_API size_t base64url_encode(const unsigned char* input, size_t length,
                                    char* output);
 /* Set support_url_safe to zero for standard '+'/'/' Base64 only. On NEON this
  * selects the standard decoder without a URL-safe detection pass. */
+#if !defined(BASE64_HEADER_ONLY)
+extern const uint32_t base64_decode_0[256];
+extern const uint32_t base64_decode_1[256];
+extern const uint32_t base64_decode_2[256];
+extern const uint32_t base64_decode_3[256];
+#endif
+#if !defined(BASE64_IMPLEMENTATION) && !defined(BASE64_HEADER_ONLY)
+extern size_t base64_decode_compiled(const unsigned char*, size_t,
+                                     unsigned char*, int);
+extern size_t base64_decode_unchecked_compiled(const unsigned char*, size_t,
+                                               unsigned char*, int);
+#else
 BASE64_API size_t base64_decode(const unsigned char* input, size_t length,
                                 unsigned char* output, int support_url_safe);
 BASE64_API size_t base64_decode_unchecked(const unsigned char* input,
                                           size_t length,
                                           unsigned char* output,
                                           int support_url_safe);
+#endif
 
 #ifdef __cplusplus
 }
@@ -288,7 +301,12 @@ BASE64_API size_t base64url_encode(
 
 #define BASE64_TABLE_0(v) ((v) == BASE64_INVALID_VALUE                     \
     ? BASE64_BAD_CHARACTER : (uint32_t)(v) << 2)
-static const uint32_t base64_decode_0[256] = {
+#if defined(BASE64_HEADER_ONLY)
+#  define BASE64_DECODE_TABLE_STORAGE static const
+#else
+#  define BASE64_DECODE_TABLE_STORAGE extern const
+#endif
+BASE64_DECODE_TABLE_STORAGE uint32_t base64_decode_0[256] = {
     BASE64_DECODE_VALUES(BASE64_TABLE_0)
 };
 #undef BASE64_TABLE_0
@@ -296,7 +314,7 @@ static const uint32_t base64_decode_0[256] = {
 #define BASE64_TABLE_1(v) ((v) == BASE64_INVALID_VALUE                     \
     ? BASE64_BAD_CHARACTER                                                  \
     : ((uint32_t)(v) >> 4) | (((uint32_t)(v) & 15U) << 12))
-static const uint32_t base64_decode_1[256] = {
+BASE64_DECODE_TABLE_STORAGE uint32_t base64_decode_1[256] = {
     BASE64_DECODE_VALUES(BASE64_TABLE_1)
 };
 #undef BASE64_TABLE_1
@@ -304,17 +322,18 @@ static const uint32_t base64_decode_1[256] = {
 #define BASE64_TABLE_2(v) ((v) == BASE64_INVALID_VALUE                     \
     ? BASE64_BAD_CHARACTER                                                  \
     : (((uint32_t)(v) >> 2) << 8) | (((uint32_t)(v) & 3U) << 22))
-static const uint32_t base64_decode_2[256] = {
+BASE64_DECODE_TABLE_STORAGE uint32_t base64_decode_2[256] = {
     BASE64_DECODE_VALUES(BASE64_TABLE_2)
 };
 #undef BASE64_TABLE_2
 
 #define BASE64_TABLE_3(v) ((v) == BASE64_INVALID_VALUE                     \
     ? BASE64_BAD_CHARACTER : (uint32_t)(v) << 16)
-static const uint32_t base64_decode_3[256] = {
+BASE64_DECODE_TABLE_STORAGE uint32_t base64_decode_3[256] = {
     BASE64_DECODE_VALUES(BASE64_TABLE_3)
 };
 #undef BASE64_TABLE_3
+#undef BASE64_DECODE_TABLE_STORAGE
 
 #undef BASE64_DECODE_VALUES
 #undef BASE64_REPEAT_8
@@ -365,6 +384,120 @@ static inline size_t base64_decode_tail_unchecked(const unsigned char* input,
     return (size_t)(output - begin) + length - 1U;
 }
 
+static inline size_t base64_decode_short(const unsigned char* input,
+                                         size_t length,
+                                         unsigned char* output,
+                                         int support_url_safe)
+{
+    const size_t quartets = length >> 2;
+    const size_t remainder = length & 3U;
+    uint32_t invalid = 0U;
+    uint32_t value;
+
+#define BASE64_DECODE_SHORT_QUARTET(i)                                     \
+    do {                                                                    \
+        value = BASE64_DECODE_VALUE(input + (i) * 4U);                     \
+        if (!support_url_safe &&                                           \
+            (input[(i) * 4U] == '-' || input[(i) * 4U] == '_' ||          \
+             input[(i) * 4U + 1U] == '-' || input[(i) * 4U + 1U] == '_' ||\
+             input[(i) * 4U + 2U] == '-' || input[(i) * 4U + 2U] == '_' ||\
+             input[(i) * 4U + 3U] == '-' || input[(i) * 4U + 3U] == '_')) \
+            value |= BASE64_BAD_CHARACTER;                                \
+        invalid |= value;                                                   \
+        output[(i) * 3U] = (unsigned char)value;                           \
+        output[(i) * 3U + 1U] = (unsigned char)(value >> 8);               \
+        output[(i) * 3U + 2U] = (unsigned char)(value >> 16);              \
+    } while (0)
+
+    switch (quartets) {
+    case 6: BASE64_DECODE_SHORT_QUARTET(5); /* fall through */
+    case 5: BASE64_DECODE_SHORT_QUARTET(4); /* fall through */
+    case 4: BASE64_DECODE_SHORT_QUARTET(3); /* fall through */
+    case 3: BASE64_DECODE_SHORT_QUARTET(2); /* fall through */
+    case 2: BASE64_DECODE_SHORT_QUARTET(1); /* fall through */
+    case 1: BASE64_DECODE_SHORT_QUARTET(0); /* fall through */
+    default: break;
+    }
+#undef BASE64_DECODE_SHORT_QUARTET
+
+    if (invalid >= BASE64_BAD_CHARACTER)
+        return BASE64_ERROR;
+    input += quartets * 4U;
+    output += quartets * 3U;
+    if (remainder == 0U)
+        return quartets * 3U;
+    if (remainder == 1U)
+        return BASE64_ERROR;
+    value = base64_decode_0[input[0]] | base64_decode_1[input[1]];
+    if (remainder == 3U)
+        value |= base64_decode_2[input[2]];
+    if (!support_url_safe &&
+        (input[0] == '-' || input[0] == '_' ||
+         input[1] == '-' || input[1] == '_' ||
+         (remainder == 3U && (input[2] == '-' || input[2] == '_'))))
+        value |= BASE64_BAD_CHARACTER;
+    if (value >= BASE64_BAD_CHARACTER)
+        return BASE64_ERROR;
+    output[0] = (unsigned char)value;
+    if (remainder == 3U)
+        output[1] = (unsigned char)(value >> 8);
+    return quartets * 3U + remainder - 1U;
+}
+
+static inline size_t base64_decode_short_unchecked(
+    const unsigned char* input, size_t length, unsigned char* output,
+    int support_url_safe)
+{
+    const size_t quartets = length >> 2;
+    const size_t remainder = length & 3U;
+    uint32_t invalid_url = 0U;
+    uint32_t value;
+
+#define BASE64_DECODE_SHORT_UNCHECKED_QUARTET(i)                            \
+    do {                                                                    \
+        value = BASE64_DECODE_VALUE(input + (i) * 4U);                     \
+        if (!support_url_safe)                                              \
+            invalid_url |=                                                  \
+                input[(i) * 4U] == '-' || input[(i) * 4U] == '_' ||        \
+                input[(i) * 4U + 1U] == '-' || input[(i) * 4U + 1U] == '_' || \
+                input[(i) * 4U + 2U] == '-' || input[(i) * 4U + 2U] == '_' || \
+                input[(i) * 4U + 3U] == '-' || input[(i) * 4U + 3U] == '_'; \
+        output[(i) * 3U] = (unsigned char)value;                           \
+        output[(i) * 3U + 1U] = (unsigned char)(value >> 8);               \
+        output[(i) * 3U + 2U] = (unsigned char)(value >> 16);              \
+    } while (0)
+
+    switch (quartets) {
+    case 6: BASE64_DECODE_SHORT_UNCHECKED_QUARTET(5); /* fall through */
+    case 5: BASE64_DECODE_SHORT_UNCHECKED_QUARTET(4); /* fall through */
+    case 4: BASE64_DECODE_SHORT_UNCHECKED_QUARTET(3); /* fall through */
+    case 3: BASE64_DECODE_SHORT_UNCHECKED_QUARTET(2); /* fall through */
+    case 2: BASE64_DECODE_SHORT_UNCHECKED_QUARTET(1); /* fall through */
+    case 1: BASE64_DECODE_SHORT_UNCHECKED_QUARTET(0); /* fall through */
+    default: break;
+    }
+#undef BASE64_DECODE_SHORT_UNCHECKED_QUARTET
+
+    input += quartets * 4U;
+    output += quartets * 3U;
+    if (remainder == 0U)
+        return invalid_url ? BASE64_ERROR : quartets * 3U;
+    value = base64_decode_0[input[0]] | base64_decode_1[input[1]];
+    if (remainder == 3U)
+        value |= base64_decode_2[input[2]];
+    if (!support_url_safe)
+        invalid_url |= input[0] == '-' || input[0] == '_' ||
+                       input[1] == '-' || input[1] == '_' ||
+                       (remainder == 3U &&
+                        (input[2] == '-' || input[2] == '_'));
+    if (invalid_url)
+        return BASE64_ERROR;
+    output[0] = (unsigned char)value;
+    if (remainder == 3U)
+        output[1] = (unsigned char)(value >> 8);
+    return quartets * 3U + remainder - 1U;
+}
+
 BASE64_API size_t base64_decode(const unsigned char* BASE64_RESTRICT input,
                                 size_t length,
                                 unsigned char* BASE64_RESTRICT output,
@@ -373,10 +506,6 @@ BASE64_API size_t base64_decode(const unsigned char* BASE64_RESTRICT input,
     unsigned char* const begin = output;
     size_t data_length = length;
     size_t padding = 0U;
-
-    if (!support_url_safe &&
-        (memchr(input, '-', length) != NULL || memchr(input, '_', length) != NULL))
-        return BASE64_ERROR;
 
     if (data_length != 0U && input[data_length - 1U] == '=') {
         --data_length;
@@ -395,6 +524,14 @@ BASE64_API size_t base64_decode(const unsigned char* BASE64_RESTRICT input,
     else if (data_length % 4U == 1U) {
         return BASE64_ERROR;
     }
+
+    if (data_length <= 24U)
+        return base64_decode_short(input, data_length, output,
+                                   support_url_safe);
+    if (!support_url_safe &&
+        (memchr(input, '-', data_length) != NULL ||
+         memchr(input, '_', data_length) != NULL))
+        return BASE64_ERROR;
 
     while (data_length >= 12U) {
         const uint32_t x0 = BASE64_DECODE_VALUE(input);
@@ -451,10 +588,6 @@ BASE64_API size_t base64_decode_unchecked(
     size_t data_length = length;
     size_t padding = 0U;
 
-    if (!support_url_safe &&
-        (memchr(input, '-', length) != NULL || memchr(input, '_', length) != NULL))
-        return BASE64_ERROR;
-
     if (data_length != 0U && input[data_length - 1U] == '=') {
         --data_length;
         ++padding;
@@ -472,6 +605,14 @@ BASE64_API size_t base64_decode_unchecked(
     else if (data_length % 4U == 1U) {
         return BASE64_ERROR;
     }
+
+    if (data_length <= 24U)
+        return base64_decode_short_unchecked(input, data_length, output,
+                                             support_url_safe);
+    if (!support_url_safe &&
+        (memchr(input, '-', data_length) != NULL ||
+         memchr(input, '_', data_length) != NULL))
+        return BASE64_ERROR;
 
     while (data_length >= 12U) {
         const uint32_t x0 = BASE64_DECODE_VALUE(input);
@@ -532,6 +673,97 @@ BASE64_API size_t base64_decode_unchecked(
 #undef BASE64_RESTRICT
 
 #endif /* BASE64_INCLUDE_IMPLEMENTATION */
+
+#if !defined(BASE64_IMPLEMENTATION) && !defined(BASE64_HEADER_ONLY)
+#if defined(_MSC_VER)
+#  define BASE64_ALWAYS_INLINE static __forceinline
+#elif defined(__GNUC__) || defined(__clang__)
+#  define BASE64_ALWAYS_INLINE static inline __attribute__((always_inline))
+#else
+#  define BASE64_ALWAYS_INLINE static inline
+#endif
+
+BASE64_ALWAYS_INLINE size_t base64_decode_inline_short(
+    const unsigned char* input, size_t length, unsigned char* output,
+    int support_url_safe, int checked)
+{
+    size_t data_length = length;
+    size_t padding = 0U;
+    size_t quartets, remainder;
+    uint32_t invalid = 0U, value;
+    if (data_length && input[data_length - 1U] == '=') {
+        --data_length; ++padding;
+        if (data_length && input[data_length - 1U] == '=') {
+            --data_length; ++padding;
+        }
+    }
+    if ((padding && ((length & 3U) != 0U ||
+         data_length % 4U != (padding == 1U ? 3U : 2U))) ||
+        (!padding && data_length % 4U == 1U))
+        return BASE64_ERROR;
+    quartets = data_length >> 2;
+    remainder = data_length & 3U;
+#define BASE64_INLINE_QUARTET(i)                                           \
+    do {                                                                    \
+        const unsigned char* p = input + (i) * 4U;                         \
+        value = base64_decode_0[p[0]] | base64_decode_1[p[1]] |            \
+                base64_decode_2[p[2]] | base64_decode_3[p[3]];             \
+        if (checked) invalid |= value;                                      \
+        if (!support_url_safe &&                                           \
+            (p[0] == '-' || p[0] == '_' || p[1] == '-' || p[1] == '_' || \
+             p[2] == '-' || p[2] == '_' || p[3] == '-' || p[3] == '_'))  \
+            invalid |= 0x01FFFFFFU;                                        \
+        output[(i) * 3U] = (unsigned char)value;                           \
+        output[(i) * 3U + 1U] = (unsigned char)(value >> 8);               \
+        output[(i) * 3U + 2U] = (unsigned char)(value >> 16);              \
+    } while (0)
+    switch (quartets) {
+    case 5: BASE64_INLINE_QUARTET(4); /* fall through */
+    case 4: BASE64_INLINE_QUARTET(3); /* fall through */
+    case 3: BASE64_INLINE_QUARTET(2); /* fall through */
+    case 2: BASE64_INLINE_QUARTET(1); /* fall through */
+    case 1: BASE64_INLINE_QUARTET(0); /* fall through */
+    default: break;
+    }
+#undef BASE64_INLINE_QUARTET
+    if (invalid >= 0x01FFFFFFU)
+        return BASE64_ERROR;
+    input += quartets * 4U;
+    output += quartets * 3U;
+    if (!remainder)
+        return quartets * 3U;
+    value = base64_decode_0[input[0]] | base64_decode_1[input[1]];
+    if (remainder == 3U) value |= base64_decode_2[input[2]];
+    if (checked && value >= 0x01FFFFFFU)
+        return BASE64_ERROR;
+    if (!support_url_safe &&
+        (input[0] == '-' || input[0] == '_' || input[1] == '-' ||
+         input[1] == '_' || (remainder == 3U &&
+         (input[2] == '-' || input[2] == '_'))))
+        return BASE64_ERROR;
+    output[0] = (unsigned char)value;
+    if (remainder == 3U) output[1] = (unsigned char)(value >> 8);
+    return quartets * 3U + remainder - 1U;
+}
+
+BASE64_ALWAYS_INLINE size_t base64_decode(const unsigned char* input,
+    size_t length, unsigned char* output, int support_url_safe)
+{
+    return length <= 20U
+        ? base64_decode_inline_short(input, length, output, support_url_safe, 1)
+        : base64_decode_compiled(input, length, output, support_url_safe);
+}
+
+BASE64_ALWAYS_INLINE size_t base64_decode_unchecked(const unsigned char* input,
+    size_t length, unsigned char* output, int support_url_safe)
+{
+    return length <= 20U
+        ? base64_decode_inline_short(input, length, output, support_url_safe, 0)
+        : base64_decode_unchecked_compiled(input, length, output,
+                                           support_url_safe);
+}
+#undef BASE64_ALWAYS_INLINE
+#endif
 
 #undef BASE64_INCLUDE_IMPLEMENTATION
 #undef BASE64_API
