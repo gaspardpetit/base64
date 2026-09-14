@@ -151,7 +151,9 @@ The optional AVX2 backend processes four 24-byte encoding blocks together and
 three 32-byte decoding blocks per iteration. Decoding uses independently
 derived hash tables to translate and validate both RFC 4648 alphabets, followed
 by packed multiply-add operations that assemble the decoded bytes. Checked and
-unchecked decoding use separately specialized loops.
+unchecked decoding use separately specialized loops. Standard-only decoding
+uses dedicated mapping and validation tables, while URL-safe-compatible
+decoding accepts both alphabets in a combined pipeline.
 
 The optional NEON backend processes 48 input bytes per encoding block and 64
 Base64 characters per decoding block. Its checked decoder uses compact lookup
