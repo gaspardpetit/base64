@@ -30,6 +30,10 @@ for invalid input.
 Use `base64url_encode` to produce URL-safe Base64. It has the same buffer-size
 and return-value contract as `base64_encode`.
 
+`base64_decode_unchecked` skips character validation when the input is already
+trusted. It remains bounds-safe and checks the encoded length and padding, but
+invalid alphabet characters produce unspecified decoded bytes.
+
 ## C++
 
 Compile `base64.cpp` and include the header:
@@ -64,6 +68,9 @@ if (!base64::decode(encoded, decoded)) {
 }
 ```
 
+For trusted input, `base64::decode_unchecked` provides returning-string and
+caller-owned-output overloads equivalent to `base64::decode`.
+
 These overloads do not allocate when the output string already has sufficient
 capacity. Input and output must be distinct strings.
 
@@ -74,6 +81,21 @@ capacity. Input and output must be distinct strings.
 the standard (`+` and `/`) and URL-safe (`-` and `_`) alphabets, with or without
 padding. Mixed alphabets are also accepted. Whitespace and line-wrapped input
 are rejected. Input and output buffers must not overlap.
+
+## Windows AVX2
+
+Compiled-library builds can enable runtime AVX2 dispatch on Windows x64. Build
+the regular implementation with `BASE64_ENABLE_AVX2`, compile
+`base64_avx2.c` separately with `/arch:AVX2`, and link both objects:
+
+```bat
+cl /O2 /c /DBASE64_ENABLE_AVX2 base64.c
+cl /O2 /c /arch:AVX2 base64_avx2.c
+```
+
+For C++, compile `base64.cpp` with `BASE64_ENABLE_AVX2` instead of `base64.c`.
+The public functions detect AVX2 once and otherwise use the portable scalar
+implementation. Header-only builds remain scalar.
 
 ## Technical overview
 
@@ -92,12 +114,18 @@ combined with bitwise OR operations while detecting invalid characters. The
 main loop processes 12 encoded characters at a time and writes the resulting
 nine bytes with packed stores where the platform permits it.
 
+The optional AVX2 backend processes four 24-byte encoding blocks together and
+three 32-byte decoding blocks per iteration. Decoding uses independently
+derived hash tables to translate and validate both RFC 4648 alphabets, followed
+by packed multiply-add operations that assemble the decoded bytes. Checked and
+unchecked decoding use separately specialized loops.
+
 The implementation was developed through experiments in the
 [base64-benchmark](https://github.com/gaspardpetit/base64-benchmark) project and
 was informed by the table-driven and unrolled approaches used by
 [Chromium's `modp_b64`](https://chromium.googlesource.com/chromium/src/third_party/modp_b64/)
-and [TurboBase64](https://github.com/powturbo/Turbo-Base64). It does not require
-architecture-specific intrinsics.
+and [TurboBase64](https://github.com/powturbo/Turbo-Base64). The portable path
+does not require architecture-specific intrinsics.
 
 ## License
 

@@ -33,6 +33,9 @@ BASE64_API size_t base64url_encode(const unsigned char* input, size_t length,
                                    char* output);
 BASE64_API size_t base64_decode(const unsigned char* input, size_t length,
                                 unsigned char* output);
+BASE64_API size_t base64_decode_unchecked(const unsigned char* input,
+                                          size_t length,
+                                          unsigned char* output);
 
 #ifdef __cplusplus
 }
@@ -409,6 +412,85 @@ BASE64_API size_t base64_decode(const unsigned char* BASE64_RESTRICT input,
         data_length -= 4;
     }
     return base64_decode_tail(input, data_length, output, begin);
+}
+
+BASE64_API size_t base64_decode_unchecked(
+    const unsigned char* BASE64_RESTRICT input,
+    size_t length,
+    unsigned char* BASE64_RESTRICT output)
+{
+    unsigned char* const begin = output;
+    size_t data_length = length;
+    size_t padding = 0U;
+
+    if (data_length != 0U && input[data_length - 1U] == '=') {
+        --data_length;
+        ++padding;
+        if (data_length != 0U && input[data_length - 1U] == '=') {
+            --data_length;
+            ++padding;
+        }
+    }
+    if (padding != 0U) {
+        const size_t expected_remainder = padding == 1U ? 3U : 2U;
+        if ((length & 3U) != 0U ||
+            data_length % 4U != expected_remainder)
+            return BASE64_ERROR;
+    }
+    else if (data_length % 4U == 1U) {
+        return BASE64_ERROR;
+    }
+
+    while (data_length >= 12U) {
+        const uint32_t x0 = BASE64_DECODE_VALUE(input);
+        const uint32_t x1 = BASE64_DECODE_VALUE(input + 4);
+        const uint32_t x2 = BASE64_DECODE_VALUE(input + 8);
+#if defined(WORDS_BIGENDIAN) || \
+    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+        output[0] = (unsigned char)x0;
+        output[1] = (unsigned char)(x0 >> 8);
+        output[2] = (unsigned char)(x0 >> 16);
+        output[3] = (unsigned char)x1;
+        output[4] = (unsigned char)(x1 >> 8);
+        output[5] = (unsigned char)(x1 >> 16);
+        output[6] = (unsigned char)x2;
+        output[7] = (unsigned char)(x2 >> 8);
+        output[8] = (unsigned char)(x2 >> 16);
+#else
+        {
+            const uint64_t word =
+                (uint64_t)(x0 & 0x00FFFFFFU) |
+                ((uint64_t)(x1 & 0x00FFFFFFU) << 24) |
+                ((uint64_t)(x2 & 0xFFFFU) << 48);
+            memcpy(output, &word, 8);
+            output[8] = (unsigned char)(x2 >> 16);
+        }
+#endif
+        input += 12;
+        output += 9;
+        data_length -= 12;
+    }
+    while (data_length >= 4U) {
+        const uint32_t value = BASE64_DECODE_VALUE(input);
+        output[0] = (unsigned char)value;
+        output[1] = (unsigned char)(value >> 8);
+        output[2] = (unsigned char)(value >> 16);
+        input += 4;
+        output += 3;
+        data_length -= 4;
+    }
+    if (data_length == 0U)
+        return (size_t)(output - begin);
+    {
+        uint32_t value = base64_decode_0[input[0]] |
+                         base64_decode_1[input[1]];
+        if (data_length == 3U)
+            value |= base64_decode_2[input[2]];
+        output[0] = (unsigned char)value;
+        if (data_length == 3U)
+            output[1] = (unsigned char)(value >> 8);
+    }
+    return (size_t)(output - begin) + data_length - 1U;
 }
 
 #undef BASE64_DECODE_VALUE

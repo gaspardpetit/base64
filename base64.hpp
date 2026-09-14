@@ -27,9 +27,11 @@ namespace base64 {
 std::string encode(const std::string& input);
 std::string url_encode(const std::string& input);
 std::string decode(const std::string& input);
+std::string decode_unchecked(const std::string& input);
 void encode(const std::string& input, std::string& output);
 void url_encode(const std::string& input, std::string& output);
 bool decode(const std::string& input, std::string& output);
+void decode_unchecked(const std::string& input, std::string& output);
 
 #else
 
@@ -78,6 +80,23 @@ BASE64_CPP_API bool decode(const std::string& input, std::string& output)
     return true;
 }
 
+BASE64_CPP_API void decode_unchecked(const std::string& input,
+                                     std::string& output)
+{
+    if (&input == &output)
+        throw std::invalid_argument("Base64 input and output must be distinct");
+    output.resize(base64_decoded_max_size(input.size()));
+    const size_t size = base64_decode_unchecked(
+        reinterpret_cast<const unsigned char*>(input.data()),
+        input.size(),
+        reinterpret_cast<unsigned char*>(output.data()));
+    if (size == BASE64_ERROR) {
+        output.clear();
+        throw std::invalid_argument("Invalid Base64 length or padding");
+    }
+    output.resize(size);
+}
+
 BASE64_CPP_API std::string encode(const std::string& input)
 {
     std::string output;
@@ -97,6 +116,13 @@ BASE64_CPP_API std::string decode(const std::string& input)
     std::string output;
     if (!decode(input, output))
         throw std::invalid_argument("Invalid Base64 input");
+    return output;
+}
+
+BASE64_CPP_API std::string decode_unchecked(const std::string& input)
+{
+    std::string output;
+    decode_unchecked(input, output);
     return output;
 }
 
