@@ -82,6 +82,21 @@ the standard (`+` and `/`) and URL-safe (`-` and `_`) alphabets, with or without
 padding. Mixed alphabets are also accepted. Whitespace and line-wrapped input
 are rejected. Input and output buffers must not overlap.
 
+## Linux AVX2
+
+Compiled-library builds use runtime AVX2 dispatch on x86-64 with GCC or Clang.
+Compile the backend separately so the public API and scalar fallback remain
+usable on processors without AVX2:
+
+```sh
+clang -O3 -c base64.c
+clang -O3 -mavx2 -c base64_avx2.c
+```
+
+Link both objects. CPU detection includes OS support for AVX register state.
+Define `BASE64_DISABLE_HARDWARE` when compiling `base64.c` to omit the backend.
+Header-only builds remain scalar.
+
 ## Windows AVX2
 
 Compiled-library builds use runtime AVX2 dispatch by default on Windows x64.

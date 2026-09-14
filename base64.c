@@ -2,9 +2,14 @@
  * Copyright (c) 2026 Gaspard Petit
  */
 
-#if defined(_MSC_VER) && defined(_M_X64) && \
+#if ((defined(_MSC_VER) && defined(_M_X64)) || \
+     ((defined(__GNUC__) || defined(__clang__)) && defined(__x86_64__))) && \
     !defined(BASE64_DISABLE_HARDWARE)
 
+#pragma push_macro("base64_encode")
+#pragma push_macro("base64_decode")
+#undef base64_encode
+#undef base64_decode
 #define base64_encode base64_scalar_encode
 #define base64url_encode base64url_scalar_encode
 #define base64_decode base64_scalar_decode
@@ -15,8 +20,11 @@
 #undef base64url_encode
 #undef base64_decode
 #undef base64_decode_unchecked
+#pragma pop_macro("base64_decode")
+#pragma pop_macro("base64_encode")
 
 #include "base64_avx2.h"
+#if defined(_MSC_VER)
 #include <intrin.h>
 #include <windows.h>
 
@@ -42,6 +50,14 @@ static int base64_has_avx2(void)
     }
     return value == 2;
 }
+
+#else
+static int base64_has_avx2(void)
+{
+    /* Compiler CPU detection also checks OS support for AVX state. */
+    return __builtin_cpu_supports("avx2") != 0;
+}
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -83,6 +99,10 @@ size_t base64_decode_unchecked(const unsigned char* input, size_t length,
 
 #elif defined(__aarch64__) && !defined(BASE64_DISABLE_HARDWARE)
 
+#pragma push_macro("base64_encode")
+#pragma push_macro("base64_decode")
+#undef base64_encode
+#undef base64_decode
 #define base64_encode base64_scalar_encode
 #define base64url_encode base64url_scalar_encode
 #define base64_decode base64_scalar_decode
@@ -93,6 +113,8 @@ size_t base64_decode_unchecked(const unsigned char* input, size_t length,
 #undef base64url_encode
 #undef base64_decode
 #undef base64_decode_unchecked
+#pragma pop_macro("base64_decode")
+#pragma pop_macro("base64_encode")
 
 #include "base64_neon.h"
 
