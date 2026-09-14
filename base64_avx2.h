@@ -16,6 +16,10 @@ size_t base64url_avx2_encode(const unsigned char*, size_t, char*);
 size_t base64_avx2_decode(const unsigned char*, size_t, unsigned char*);
 size_t base64_avx2_decode_unchecked(const unsigned char*, size_t,
                                     unsigned char*);
+size_t base64_avx2_decode_standard(const unsigned char*, size_t,
+                                   unsigned char*);
+size_t base64_avx2_decode_standard_unchecked(const unsigned char*, size_t,
+                                             unsigned char*);
 
 #ifdef __cplusplus
 }

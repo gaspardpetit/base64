@@ -1,6 +1,7 @@
 # Third-party notices
 
-The AVX2 and NEON decoder validation tables are adapted from simdutf:
+The AVX2 decoder mapping and validation tables and the NEON decoder validation
+tables are adapted from simdutf:
 https://github.com/simdutf/simdutf
 
 Copyright 2021 The simdutf authors

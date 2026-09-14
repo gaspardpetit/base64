@@ -16,9 +16,9 @@
 
 size_t base64_scalar_encode(const unsigned char*, size_t, char*);
 size_t base64url_scalar_encode(const unsigned char*, size_t, char*);
-size_t base64_scalar_decode(const unsigned char*, size_t, unsigned char*);
+size_t base64_scalar_decode(const unsigned char*, size_t, unsigned char*, int);
 size_t base64_scalar_decode_unchecked(const unsigned char*, size_t,
-                                      unsigned char*);
+                                      unsigned char*, int);
 
 static BASE64_AVX2_INLINE __m256i encode_unpack(__m256i value)
 {
@@ -95,36 +95,66 @@ size_t base64url_avx2_encode(const unsigned char* input, size_t length,
 #undef BASE64_AVX2_ENCODE_BODY
 
 static BASE64_AVX2_INLINE __m256i decode_map_and_validate(__m256i input,
-                                                     __m256i* invalid,
-                                                     int checked)
+                                                          __m256i* invalid,
+                                                          int checked,
+                                                          int support_url_safe)
 {
-    const __m256i association = _mm256_setr_epi8(
-        1,1,1,1,1,1,1,1,0,0,0,0,0,12,0,18,
-        1,1,1,1,1,1,1,1,0,0,0,0,0,12,0,18);
-    const __m256i deltas = _mm256_setr_epi8(
-        -71,0,0,19,4,-65,-65,-71,-71,17,0,-65,16,-71,-65,-32,
-        -71,0,0,19,4,-65,-65,-71,-71,17,0,-65,16,-71,-65,-32);
-    /* Validation tables adapted from simdutf's hybrid Base64 decoder.
-     * See THIRD_PARTY_NOTICES.md. */
-    const __m256i check_association = _mm256_setr_epi8(
-        13,1,1,1,1,1,1,1,1,1,3,7,11,14,11,6,
-        13,1,1,1,1,1,1,1,1,1,3,7,11,14,11,6);
-    const __m256i check_values = _mm256_setr_epi8(
-        -128,-128,-128,-128,-49,-65,-43,-90,
-        -75,-95,0,-128,0,-128,0,-128,
-        -128,-128,-128,-128,-49,-65,-43,-90,
-        -75,-95,0,-128,0,-128,0,-128);
     const __m256i shifted = _mm256_srli_epi32(input, 3);
-    const __m256i hash = _mm256_and_si256(
-        _mm256_avg_epu8(_mm256_shuffle_epi8(association, input), shifted),
-        _mm256_set1_epi8(0x0f));
-    if (checked) {
-        const __m256i check_hash = _mm256_avg_epu8(
-            _mm256_shuffle_epi8(check_association, input), shifted);
-        *invalid = _mm256_or_si256(*invalid, _mm256_adds_epi8(
-            _mm256_shuffle_epi8(check_values, check_hash), input));
+    if (support_url_safe) {
+        const __m256i association = _mm256_setr_epi8(
+            1,1,1,1,1,1,1,1,0,0,0,0,0,12,0,18,
+            1,1,1,1,1,1,1,1,0,0,0,0,0,12,0,18);
+        const __m256i deltas = _mm256_setr_epi8(
+            -71,0,0,19,4,-65,-65,-71,-71,17,0,-65,16,-71,-65,-32,
+            -71,0,0,19,4,-65,-65,-71,-71,17,0,-65,16,-71,-65,-32);
+        /* Validation tables adapted from simdutf's hybrid Base64 decoder.
+         * See THIRD_PARTY_NOTICES.md. */
+        const __m256i check_association = _mm256_setr_epi8(
+            13,1,1,1,1,1,1,1,1,1,3,7,11,14,11,6,
+            13,1,1,1,1,1,1,1,1,1,3,7,11,14,11,6);
+        const __m256i check_values = _mm256_setr_epi8(
+            -128,-128,-128,-128,-49,-65,-43,-90,
+            -75,-95,0,-128,0,-128,0,-128,
+            -128,-128,-128,-128,-49,-65,-43,-90,
+            -75,-95,0,-128,0,-128,0,-128);
+        const __m256i hash = _mm256_and_si256(
+            _mm256_avg_epu8(_mm256_shuffle_epi8(association, input), shifted),
+            _mm256_set1_epi8(0x0f));
+        if (checked) {
+            const __m256i check_hash = _mm256_avg_epu8(
+                _mm256_shuffle_epi8(check_association, input), shifted);
+            *invalid = _mm256_or_si256(*invalid, _mm256_adds_epi8(
+                _mm256_shuffle_epi8(check_values, check_hash), input));
+        }
+        return _mm256_add_epi8(input, _mm256_shuffle_epi8(deltas, hash));
     }
-    return _mm256_add_epi8(input, _mm256_shuffle_epi8(deltas, hash));
+    else {
+        /* Standard-alphabet mapping and validation tables adapted from
+         * simdutf. See THIRD_PARTY_NOTICES.md. */
+        const __m256i association = _mm256_setr_epi8(
+            1,1,1,1,1,1,1,1,0,0,0,0,0,15,0,15,
+            1,1,1,1,1,1,1,1,0,0,0,0,0,15,0,15);
+        const __m256i deltas = _mm256_setr_epi8(
+            0,0,0,19,4,-65,-65,-71,-71,0,16,-61,-65,-65,-71,-71,
+            0,0,0,19,4,-65,-65,-71,-71,0,16,-61,-65,-65,-71,-71);
+        const __m256i check_association = _mm256_setr_epi8(
+            13,1,1,1,1,1,1,1,1,1,3,7,11,11,11,15,
+            13,1,1,1,1,1,1,1,1,1,3,7,11,11,11,15);
+        const __m256i check_values = _mm256_setr_epi8(
+            -128,-128,-128,-128,-49,-65,-43,-90,
+            -75,-122,-47,-128,-79,-128,-111,-128,
+            -128,-128,-128,-128,-49,-65,-43,-90,
+            -75,-122,-47,-128,-79,-128,-111,-128);
+        const __m256i hash = _mm256_avg_epu8(
+            _mm256_shuffle_epi8(association, input), shifted);
+        if (checked) {
+            const __m256i check_hash = _mm256_avg_epu8(
+                _mm256_shuffle_epi8(check_association, input), shifted);
+            *invalid = _mm256_or_si256(*invalid, _mm256_adds_epi8(
+                _mm256_shuffle_epi8(check_values, check_hash), input));
+        }
+        return _mm256_add_epi8(input, _mm256_shuffle_epi8(deltas, hash));
+    }
 }
 
 static BASE64_AVX2_INLINE __m256i decode_pack(__m256i value)
@@ -137,11 +167,13 @@ static BASE64_AVX2_INLINE __m256i decode_pack(__m256i value)
 }
 
 static BASE64_AVX2_INLINE void decode_block(const unsigned char* input,
-                                       unsigned char* output,
-                                       __m256i* invalid, int checked)
+                                             unsigned char* output,
+                                             __m256i* invalid, int checked,
+                                             int support_url_safe)
 {
     const __m256i source = _mm256_loadu_si256((const __m256i*)input);
-    const __m256i mapped = decode_map_and_validate(source, invalid, checked);
+    const __m256i mapped = decode_map_and_validate(
+        source, invalid, checked, support_url_safe);
     const __m256i value = decode_pack(mapped);
     _mm_storeu_si128((__m128i*)output, _mm256_castsi256_si128(value));
     _mm_storeu_si128((__m128i*)(output + 12),
@@ -149,34 +181,42 @@ static BASE64_AVX2_INLINE void decode_block(const unsigned char* input,
 }
 
 static BASE64_AVX2_INLINE size_t decode_avx2(const unsigned char* input,
-                                        size_t length,
-                                        unsigned char* output, int checked)
+                                              size_t length,
+                                              unsigned char* output,
+                                              int checked,
+                                              int support_url_safe)
 {
     unsigned char* const begin = output;
     __m256i invalid = _mm256_setzero_si256();
     while (length >= 136U) {
-        decode_block(input, output, &invalid, checked);
-        decode_block(input + 32, output + 24, &invalid, checked);
-        decode_block(input + 64, output + 48, &invalid, checked);
-        decode_block(input + 96, output + 72, &invalid, checked);
+        decode_block(input, output, &invalid, checked, support_url_safe);
+        decode_block(input + 32, output + 24, &invalid, checked,
+                     support_url_safe);
+        decode_block(input + 64, output + 48, &invalid, checked,
+                     support_url_safe);
+        decode_block(input + 96, output + 72, &invalid, checked,
+                     support_url_safe);
         input += 128; output += 96; length -= 128;
     }
     while (length >= 104U) {
-        decode_block(input, output, &invalid, checked);
-        decode_block(input + 32, output + 24, &invalid, checked);
-        decode_block(input + 64, output + 48, &invalid, checked);
+        decode_block(input, output, &invalid, checked, support_url_safe);
+        decode_block(input + 32, output + 24, &invalid, checked,
+                     support_url_safe);
+        decode_block(input + 64, output + 48, &invalid, checked,
+                     support_url_safe);
         input += 96; output += 72; length -= 96;
     }
     while (length >= 40U) {
-        decode_block(input, output, &invalid, checked);
+        decode_block(input, output, &invalid, checked, support_url_safe);
         input += 32; output += 24; length -= 32;
     }
     if (checked && _mm256_movemask_epi8(invalid) != 0)
         return BASE64_ERROR;
     {
         const size_t tail = checked
-            ? base64_scalar_decode(input, length, output)
-            : base64_scalar_decode_unchecked(input, length, output);
+            ? base64_scalar_decode(input, length, output, support_url_safe)
+            : base64_scalar_decode_unchecked(input, length, output,
+                                             support_url_safe);
         return tail == BASE64_ERROR ? BASE64_ERROR
                                     : (size_t)(output - begin) + tail;
     }
@@ -185,13 +225,26 @@ static BASE64_AVX2_INLINE size_t decode_avx2(const unsigned char* input,
 size_t base64_avx2_decode(const unsigned char* input, size_t length,
                           unsigned char* output)
 {
-    return decode_avx2(input, length, output, 1);
+    return decode_avx2(input, length, output, 1, 1);
 }
 
 size_t base64_avx2_decode_unchecked(const unsigned char* input, size_t length,
                                     unsigned char* output)
 {
-    return decode_avx2(input, length, output, 0);
+    return decode_avx2(input, length, output, 0, 1);
+}
+
+size_t base64_avx2_decode_standard(const unsigned char* input, size_t length,
+                                   unsigned char* output)
+{
+    return decode_avx2(input, length, output, 1, 0);
+}
+
+size_t base64_avx2_decode_standard_unchecked(const unsigned char* input,
+                                             size_t length,
+                                             unsigned char* output)
+{
+    return decode_avx2(input, length, output, 0, 0);
 }
 
 #undef BASE64_AVX2_INLINE

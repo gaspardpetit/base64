@@ -80,18 +80,22 @@ size_t base64url_encode(const unsigned char* input, size_t length, char* output)
 size_t base64_decode(const unsigned char* input, size_t length,
                      unsigned char* output, int support_url_safe)
 {
-    return support_url_safe && base64_has_avx2() && length >= 104U
-        ? base64_avx2_decode(input, length, output)
-        : base64_scalar_decode(input, length, output, support_url_safe);
+    if (base64_has_avx2() && length >= 104U)
+        return support_url_safe
+            ? base64_avx2_decode(input, length, output)
+            : base64_avx2_decode_standard(input, length, output);
+    return base64_scalar_decode(input, length, output, support_url_safe);
 }
 
 size_t base64_decode_unchecked(const unsigned char* input, size_t length,
                                unsigned char* output, int support_url_safe)
 {
-    return support_url_safe && base64_has_avx2() && length >= 104U
-        ? base64_avx2_decode_unchecked(input, length, output)
-        : base64_scalar_decode_unchecked(input, length, output,
-                                         support_url_safe);
+    if (base64_has_avx2() && length >= 104U)
+        return support_url_safe
+            ? base64_avx2_decode_unchecked(input, length, output)
+            : base64_avx2_decode_standard_unchecked(input, length, output);
+    return base64_scalar_decode_unchecked(input, length, output,
+                                          support_url_safe);
 }
 
 #ifdef __cplusplus
