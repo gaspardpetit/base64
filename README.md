@@ -27,6 +27,9 @@ Allocate `base64_encoded_size(input_size)` bytes for encoding or
 return the number of bytes written. `base64_decode` returns `BASE64_ERROR`
 for invalid input.
 
+Use `base64url_encode` to produce URL-safe Base64. It has the same buffer-size
+and return-value contract as `base64_encode`.
+
 ## C++
 
 Compile `base64.cpp` and include the header:
@@ -35,6 +38,7 @@ Compile `base64.cpp` and include the header:
 #include "base64.hpp"
 
 std::string encoded = base64::encode("Hello");
+std::string url_encoded = base64::url_encode("Hello");
 std::string decoded = base64::decode(encoded);
 ```
 
@@ -65,9 +69,11 @@ capacity. Input and output must be distinct strings.
 
 ## Supported format
 
-This library implements standard padded Base64 as defined by RFC 4648. It does
-not accept the URL-safe alphabet, whitespace, or line-wrapped input. Input and
-output buffers must not overlap.
+`base64_encode` produces standard padded Base64 as defined by RFC 4648;
+`base64url_encode` produces its padded URL-safe variant. Decoding accepts both
+the standard (`+` and `/`) and URL-safe (`-` and `_`) alphabets, with or without
+padding. Mixed alphabets are also accepted. Whitespace and line-wrapped input
+are rejected. Input and output buffers must not overlap.
 
 ## Technical overview
 
