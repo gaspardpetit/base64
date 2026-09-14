@@ -80,6 +80,99 @@ size_t base64_decode_unchecked(const unsigned char* input, size_t length,
 }
 #endif
 
+#elif defined(BASE64_ENABLE_NEON) && defined(__aarch64__) && \
+    !defined(BASE64_DISABLE_HARDWARE)
+
+#define base64_encode base64_scalar_encode
+#define base64url_encode base64url_scalar_encode
+#define base64_decode base64_scalar_decode
+#define base64_decode_unchecked base64_scalar_decode_unchecked
+#define BASE64_IMPLEMENTATION
+#include "base64.h"
+#undef base64_encode
+#undef base64url_encode
+#undef base64_decode
+#undef base64_decode_unchecked
+
+#include "base64_neon.h"
+
+static size_t base64_neon_encode_dispatch(const unsigned char* input,
+                                          size_t length, char* output,
+                                          int url_safe)
+{
+    const size_t vector_length = length & ~(size_t)47U;
+    const size_t consumed = url_safe
+        ? base64url_neon_encode_blocks(input, vector_length, output)
+        : base64_neon_encode_blocks(input, vector_length, output);
+    const size_t written = consumed / 3U * 4U;
+    return written + (url_safe
+        ? base64url_scalar_encode(input + consumed, length - consumed,
+                                  output + written)
+        : base64_scalar_encode(input + consumed, length - consumed,
+                               output + written));
+}
+
+static size_t base64_neon_decode_dispatch(const unsigned char* input,
+                                          size_t length,
+                                          unsigned char* output,
+                                          int unchecked)
+{
+    size_t vector_length = length & ~(size_t)63U;
+    /* Keep the final padded quantum for the scalar frontend. */
+    if (length != 0U && input[length - 1U] == '=')
+        vector_length = (length - 4U) & ~(size_t)63U;
+    if (vector_length != 0U) {
+        if (unchecked)
+            base64_neon_decode_blocks_unchecked(input, vector_length, output);
+        else if (!base64_neon_decode_blocks(input, vector_length, output))
+            return BASE64_ERROR;
+    }
+    {
+        const size_t tail = unchecked
+            ? base64_scalar_decode_unchecked(input + vector_length,
+                                             length - vector_length,
+                                             output + vector_length / 4U * 3U)
+            : base64_scalar_decode(input + vector_length, length - vector_length,
+                                   output + vector_length / 4U * 3U);
+        return tail == BASE64_ERROR ? BASE64_ERROR
+                                    : vector_length / 4U * 3U + tail;
+    }
+}
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+size_t base64_encode(const unsigned char* input, size_t length, char* output)
+{
+    return length >= 48U ? base64_neon_encode_dispatch(input, length, output, 0)
+                         : base64_scalar_encode(input, length, output);
+}
+
+size_t base64url_encode(const unsigned char* input, size_t length, char* output)
+{
+    return length >= 48U ? base64_neon_encode_dispatch(input, length, output, 1)
+                         : base64url_scalar_encode(input, length, output);
+}
+
+size_t base64_decode(const unsigned char* input, size_t length,
+                     unsigned char* output)
+{
+    return length >= 64U ? base64_neon_decode_dispatch(input, length, output, 0)
+                         : base64_scalar_decode(input, length, output);
+}
+
+size_t base64_decode_unchecked(const unsigned char* input, size_t length,
+                               unsigned char* output)
+{
+    return length >= 64U ? base64_neon_decode_dispatch(input, length, output, 1)
+                         : base64_scalar_decode_unchecked(input, length, output);
+}
+
+#ifdef __cplusplus
+}
+#endif
+
 #else
 
 #define BASE64_IMPLEMENTATION

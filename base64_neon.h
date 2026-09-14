@@ -26,6 +26,8 @@
  * padding, so callers pass a multiple of 48 / 64 bytes respectively. */
 BASE64_NEON_API size_t base64_neon_encode_blocks(
     const unsigned char* input, size_t length, char* output);
+BASE64_NEON_API size_t base64url_neon_encode_blocks(
+    const unsigned char* input, size_t length, char* output);
 BASE64_NEON_API int base64_neon_decode_blocks(
     const unsigned char* input, size_t length, unsigned char* output);
 BASE64_NEON_API void base64_neon_decode_blocks_unchecked(
@@ -40,18 +42,23 @@ static inline uint8x16_t base64_neon_decode_map(uint8x16_t chars,
                                                   uint8x16_t roll_table,
                                                   uint8x16_t low_mask)
 {
-    const uint8x16_t classes = vandq_u8(
+    uint8x16_t classes = vandq_u8(
         vqtbl1q_u8(lo_table, vandq_u8(chars, low_mask)),
         vqtbl1q_u8(hi_table, vshrq_n_u8(chars, 3)));
+    const uint8x16_t dash = vceqq_u8(chars, vdupq_n_u8('-'));
+    const uint8x16_t underscore = vceqq_u8(chars, vdupq_n_u8('_'));
+    classes = vbslq_u8(dash, vdupq_n_u8(2), classes);
+    classes = vbslq_u8(underscore, vdupq_n_u8(4), classes);
     *minimum = vminq_u8(*minimum, classes);
-    return vaddq_u8(chars, vqtbl1q_u8(roll_table, vclzq_u8(classes)));
+    chars = vaddq_u8(chars, vqtbl1q_u8(roll_table, vclzq_u8(classes)));
+    chars = vbslq_u8(dash, vdupq_n_u8(62), chars);
+    return vbslq_u8(underscore, vdupq_n_u8(63), chars);
 }
 
-BASE64_NEON_API size_t base64_neon_encode_blocks(
-    const unsigned char* input, size_t length, char* output)
+static inline size_t base64_neon_encode_blocks_impl(
+    const unsigned char* input, size_t length, char* output,
+    const uint8_t* alphabet)
 {
-    static const uint8_t alphabet[65] =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     const uint8x16x4_t table = {{
         vld1q_u8(alphabet), vld1q_u8(alphabet + 16),
         vld1q_u8(alphabet + 32), vld1q_u8(alphabet + 48)}};
@@ -74,6 +81,22 @@ BASE64_NEON_API size_t base64_neon_encode_blocks(
         length -= 48;
     }
     return (size_t)(input - begin);
+}
+
+BASE64_NEON_API size_t base64_neon_encode_blocks(
+    const unsigned char* input, size_t length, char* output)
+{
+    static const uint8_t alphabet[65] =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    return base64_neon_encode_blocks_impl(input, length, output, alphabet);
+}
+
+BASE64_NEON_API size_t base64url_neon_encode_blocks(
+    const unsigned char* input, size_t length, char* output)
+{
+    static const uint8_t alphabet[65] =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+    return base64_neon_encode_blocks_impl(input, length, output, alphabet);
 }
 
 BASE64_NEON_API int base64_neon_decode_blocks(
@@ -123,6 +146,8 @@ BASE64_NEON_API void base64_neon_decode_blocks_unchecked(
     const uint8x16_t offset_table = vld1q_u8(offsets);
     const uint8x16_t plus = vdupq_n_u8('+');
     const uint8x16_t slash = vdupq_n_u8('/');
+    const uint8x16_t dash = vdupq_n_u8('-');
+    const uint8x16_t underscore = vdupq_n_u8('_');
     const uint8x16_t value_62 = vdupq_n_u8(62);
     const uint8x16_t value_63 = vdupq_n_u8(63);
 
@@ -140,6 +165,14 @@ BASE64_NEON_API void base64_neon_decode_blocks_unchecked(
         b = vbslq_u8(vceqq_u8(chars.val[1], slash), value_63, b);
         c = vbslq_u8(vceqq_u8(chars.val[2], slash), value_63, c);
         d = vbslq_u8(vceqq_u8(chars.val[3], slash), value_63, d);
+        a = vbslq_u8(vceqq_u8(chars.val[0], dash), value_62, a);
+        b = vbslq_u8(vceqq_u8(chars.val[1], dash), value_62, b);
+        c = vbslq_u8(vceqq_u8(chars.val[2], dash), value_62, c);
+        d = vbslq_u8(vceqq_u8(chars.val[3], dash), value_62, d);
+        a = vbslq_u8(vceqq_u8(chars.val[0], underscore), value_63, a);
+        b = vbslq_u8(vceqq_u8(chars.val[1], underscore), value_63, b);
+        c = vbslq_u8(vceqq_u8(chars.val[2], underscore), value_63, c);
+        d = vbslq_u8(vceqq_u8(chars.val[3], underscore), value_63, d);
         const uint8x16x3_t bytes = {{
             vsliq_n_u8(vshrq_n_u8(b, 4), a, 2),
             vsliq_n_u8(vshrq_n_u8(c, 2), b, 4),

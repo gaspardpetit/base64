@@ -97,6 +97,22 @@ For C++, compile `base64.cpp` with `BASE64_ENABLE_AVX2` instead of `base64.c`.
 The public functions detect AVX2 once and otherwise use the portable scalar
 implementation. Header-only builds remain scalar.
 
+## Apple NEON
+
+Compiled-library builds can enable the NEON backend on Apple Silicon and other
+AArch64 targets. Compile the regular implementation with `BASE64_ENABLE_NEON`,
+compile `base64_neon.c`, and link both objects:
+
+```sh
+clang -O3 -c -DBASE64_ENABLE_NEON base64.c
+clang -O3 -c base64_neon.c
+```
+
+For C++, compile `base64.cpp` with `BASE64_ENABLE_NEON` instead of `base64.c`.
+The backend is selected at compile time because NEON is required by AArch64.
+Define `BASE64_DISABLE_HARDWARE` while compiling `base64.c` to force the
+portable scalar path. Header-only builds remain scalar.
+
 ## Technical overview
 
 The C API writes directly to caller-provided buffers and performs no dynamic
@@ -119,6 +135,11 @@ three 32-byte decoding blocks per iteration. Decoding uses independently
 derived hash tables to translate and validate both RFC 4648 alphabets, followed
 by packed multiply-add operations that assemble the decoded bytes. Checked and
 unchecked decoding use separately specialized loops.
+
+The optional NEON backend processes 48 input bytes per encoding block and 64
+Base64 characters per decoding block. Its checked decoder uses compact lookup
+tables to validate and translate the standard and URL-safe alphabets in one
+pass; the unchecked variant skips validation for trusted input.
 
 The implementation was developed through experiments in the
 [base64-benchmark](https://github.com/gaspardpetit/base64-benchmark) project and
