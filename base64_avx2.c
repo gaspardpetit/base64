@@ -42,6 +42,17 @@ static BASE64_AVX2_INLINE __m256i encode_load(const unsigned char* input)
         1,0,2,1,4,3,5,4,7,6,8,7,10,9,11,10));
 }
 
+/* After the first block, four preceding bytes are available. A single
+ * overlapping load places 12 useful bytes in each 128-bit lane. The caller
+ * must retain four bytes after the 24-byte block as well. */
+static BASE64_AVX2_INLINE __m256i encode_load_overlap(const unsigned char* input)
+{
+    const __m256i value = _mm256_loadu_si256((const __m256i*)(input - 4));
+    return _mm256_shuffle_epi8(value, _mm256_setr_epi8(
+        5,4,6,5,8,7,9,8,11,10,12,11,14,13,15,14,
+        1,0,2,1,4,3,5,4,7,6,8,7,10,9,11,10));
+}
+
 static BASE64_AVX2_INLINE __m256i encode_translate(__m256i value, int url_safe)
 {
     __m256i index = _mm256_subs_epu8(value, _mm256_set1_epi8(51));
@@ -116,11 +127,17 @@ static BASE64_AVX2_INLINE void encode_block_128_safe12(
 
 #define BASE64_AVX2_ENCODE_BODY(url_safe, scalar_tail)                       \
     char* const begin = output;                                              \
+    if (length >= 100U) {                                                  \
+        const __m256i first = encode_translate(                             \
+            encode_unpack(encode_load(input)), url_safe);                   \
+        _mm256_storeu_si256((__m256i*)output, first);                        \
+        input += 24; output += 32; length -= 24;                            \
+    }                                                                      \
     while (length >= 100U) {                                                 \
-        __m256i v0 = encode_unpack(encode_load(input));                       \
-        __m256i v1 = encode_unpack(encode_load(input + 24));                  \
-        __m256i v2 = encode_unpack(encode_load(input + 48));                  \
-        __m256i v3 = encode_unpack(encode_load(input + 72));                  \
+        __m256i v0 = encode_unpack(encode_load_overlap(input));                       \
+        __m256i v1 = encode_unpack(encode_load_overlap(input + 24));                  \
+        __m256i v2 = encode_unpack(encode_load_overlap(input + 48));                  \
+        __m256i v3 = encode_unpack(encode_load_overlap(input + 72));                  \
         v0 = encode_translate(v0, url_safe);                                  \
         v1 = encode_translate(v1, url_safe);                                  \
         v2 = encode_translate(v2, url_safe);                                  \
