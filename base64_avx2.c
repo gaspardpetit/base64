@@ -97,8 +97,9 @@ static __forceinline __m256i decode_map(__m256i input)
         -71,0,0,19,4,-65,-65,-71,-71,17,0,-65,16,-71,-65,-32,
         -71,0,0,19,4,-65,-65,-71,-71,17,0,-65,16,-71,-65,-32);
     const __m256i shifted = _mm256_srli_epi32(input, 3);
-    const __m256i hash = _mm256_avg_epu8(
-        _mm256_shuffle_epi8(association, input), shifted);
+    const __m256i hash = _mm256_and_si256(
+        _mm256_avg_epu8(_mm256_shuffle_epi8(association, input), shifted),
+        _mm256_set1_epi8(0x0f));
     return _mm256_add_epi8(input, _mm256_shuffle_epi8(deltas, hash));
 }
 
@@ -113,8 +114,9 @@ static __forceinline __m256i decode_invalid(__m256i input)
         -45,-94,-47,-128,0,-128,-27,-128,
         -128,-40,-26,-42,-36,-41,-17,-64);
     const __m256i shifted = _mm256_srli_epi32(input, 3);
-    const __m256i hash = _mm256_avg_epu8(
-        _mm256_shuffle_epi8(association, input), shifted);
+    const __m256i hash = _mm256_and_si256(
+        _mm256_avg_epu8(_mm256_shuffle_epi8(association, input), shifted),
+        _mm256_set1_epi8(0x0f));
     return _mm256_adds_epi8(_mm256_shuffle_epi8(values, hash), input);
 }
 
