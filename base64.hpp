@@ -22,6 +22,8 @@ namespace base64 {
 
 std::string encode(const std::string& input);
 std::string decode(const std::string& input);
+void encode(const std::string& input, std::string& output);
+bool decode(const std::string& input, std::string& output);
 
 #else
 
@@ -31,26 +33,46 @@ std::string decode(const std::string& input);
 #  define BASE64_CPP_API inline
 #endif
 
-BASE64_CPP_API std::string encode(const std::string& input)
+BASE64_CPP_API void encode(const std::string& input, std::string& output)
 {
-    std::string output(base64_encoded_size(input.size()), '\0');
+    if (&input == &output)
+        throw std::invalid_argument("Base64 input and output must be distinct");
+    output.resize(base64_encoded_size(input.size()));
     base64_encode(
         reinterpret_cast<const unsigned char*>(input.data()),
         input.size(),
         output.data());
+}
+
+BASE64_CPP_API bool decode(const std::string& input, std::string& output)
+{
+    if (&input == &output)
+        throw std::invalid_argument("Base64 input and output must be distinct");
+    output.resize(base64_decoded_max_size(input.size()));
+    const size_t size = base64_decode(
+        reinterpret_cast<const unsigned char*>(input.data()),
+        input.size(),
+        reinterpret_cast<unsigned char*>(output.data()));
+    if (size == BASE64_ERROR) {
+        output.clear();
+        return false;
+    }
+    output.resize(size);
+    return true;
+}
+
+BASE64_CPP_API std::string encode(const std::string& input)
+{
+    std::string output;
+    encode(input, output);
     return output;
 }
 
 BASE64_CPP_API std::string decode(const std::string& input)
 {
-    std::string output(base64_decoded_max_size(input.size()), '\0');
-    const size_t size = base64_decode(
-        reinterpret_cast<const unsigned char*>(input.data()),
-        input.size(),
-        reinterpret_cast<unsigned char*>(output.data()));
-    if (size == BASE64_ERROR)
+    std::string output;
+    if (!decode(input, output))
         throw std::invalid_argument("Invalid Base64 input");
-    output.resize(size);
     return output;
 }
 
