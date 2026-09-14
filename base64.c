@@ -80,8 +80,7 @@ size_t base64_decode_unchecked(const unsigned char* input, size_t length,
 }
 #endif
 
-#elif defined(BASE64_ENABLE_NEON) && defined(__aarch64__) && \
-    !defined(BASE64_DISABLE_HARDWARE)
+#elif defined(__aarch64__) && !defined(BASE64_DISABLE_HARDWARE)
 
 #define base64_encode base64_scalar_encode
 #define base64url_encode base64url_scalar_encode

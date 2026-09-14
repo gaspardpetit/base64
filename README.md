@@ -99,19 +99,19 @@ implementation. Header-only builds remain scalar.
 
 ## Apple NEON
 
-Compiled-library builds can enable the NEON backend on Apple Silicon and other
-AArch64 targets. Compile the regular implementation with `BASE64_ENABLE_NEON`,
-compile `base64_neon.c`, and link both objects:
+Compiled-library builds use the NEON backend by default on Apple Silicon and
+other AArch64 targets. Compile `base64_neon.c` and link both objects:
 
 ```sh
-clang -O3 -c -DBASE64_ENABLE_NEON base64.c
+clang -O3 -c base64.c
 clang -O3 -c base64_neon.c
 ```
 
-For C++, compile `base64.cpp` with `BASE64_ENABLE_NEON` instead of `base64.c`.
-The backend is selected at compile time because NEON is required by AArch64.
-Define `BASE64_DISABLE_HARDWARE` while compiling `base64.c` to force the
-portable scalar path. Header-only builds remain scalar.
+For C++, compile `base64.cpp` instead of `base64.c`. The backend is selected at
+compile time because NEON is required by AArch64. Define
+`BASE64_DISABLE_HARDWARE` when compiling `base64.c` or `base64.cpp` to build
+only the portable implementation without linking `base64_neon.c`. Header-only
+builds remain scalar and do not require this definition.
 
 ## Technical overview
 
