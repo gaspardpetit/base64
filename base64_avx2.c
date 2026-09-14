@@ -401,14 +401,13 @@ static BASE64_AVX2_INLINE size_t decode_short_anchored_avx_standard(
 
 static BASE64_AVX2_INLINE size_t decode_sse_anchored_standard(
     const unsigned char* input, size_t length, unsigned char* output,
-    int checked)
+    int checked, __m256i invalid256)
 {
     const size_t padding = input[length - 1] == '='
         ? 1U + (input[length - 2] == '=') : 0U;
     const size_t last_offset = length - 16U;
     const size_t last_output_offset = last_offset / 4U * 3U;
     size_t offset = 0U;
-    __m256i invalid256 = _mm256_setzero_si256();
     __m128i invalid = _mm_setzero_si128();
     __m128i last_source;
     __m128i equals;
@@ -471,6 +470,35 @@ static BASE64_AVX2_INLINE size_t decode_sse_anchored_standard(
     return length / 4U * 3U - padding;
 }
 
+static BASE64_AVX2_INLINE size_t decode_projected_standard(
+    const unsigned char* input, size_t length, unsigned char* output,
+    int checked)
+{
+    unsigned char* const begin = output;
+    __m256i invalid = _mm256_setzero_si256();
+    while (length > 212U) {
+        decode_block(input, output, &invalid, checked, 0);
+        decode_block(input + 32U, output + 24U, &invalid, checked, 0);
+        decode_block(input + 64U, output + 48U, &invalid, checked, 0);
+        decode_block(input + 96U, output + 72U, &invalid, checked, 0);
+        input += 128U;
+        output += 96U;
+        length -= 128U;
+    }
+    while (length > 84U) {
+        decode_block(input, output, &invalid, checked, 0);
+        input += 32U;
+        output += 24U;
+        length -= 32U;
+    }
+    {
+        const size_t tail = decode_sse_anchored_standard(
+            input, length, output, checked, invalid);
+        return tail == BASE64_ERROR ? BASE64_ERROR
+                                    : (size_t)(output - begin) + tail;
+    }
+}
+
 static BASE64_AVX2_INLINE void decode_block(const unsigned char* input,
                                              unsigned char* output,
                                              __m256i* invalid, int checked,
@@ -500,7 +528,10 @@ static BASE64_AVX2_INLINE size_t decode_avx2(const unsigned char* input,
                                                   checked);
     if (!support_url_safe && length >= 48U && length <= 84U &&
         (length & 3U) == 0U)
-        return decode_sse_anchored_standard(input, length, output, checked);
+        return decode_sse_anchored_standard(
+            input, length, output, checked, _mm256_setzero_si256());
+    if (!support_url_safe && length > 84U && (length & 3U) == 0U)
+        return decode_projected_standard(input, length, output, checked);
     __m256i invalid = _mm256_setzero_si256();
     while (length >= 136U) {
         decode_block(input, output, &invalid, checked, support_url_safe);
