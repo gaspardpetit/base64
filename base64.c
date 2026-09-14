@@ -8,8 +8,10 @@
 
 #pragma push_macro("base64_encode")
 #pragma push_macro("base64_decode")
+#pragma push_macro("base64_decode_unchecked")
 #undef base64_encode
 #undef base64_decode
+#undef base64_decode_unchecked
 #define base64_encode base64_scalar_encode
 #define base64url_encode base64url_scalar_encode
 #define base64_decode base64_scalar_decode
@@ -20,6 +22,7 @@
 #undef base64url_encode
 #undef base64_decode
 #undef base64_decode_unchecked
+#pragma pop_macro("base64_decode_unchecked")
 #pragma pop_macro("base64_decode")
 #pragma pop_macro("base64_encode")
 
@@ -106,22 +109,21 @@ size_t base64_decode_unchecked(const unsigned char* input, size_t length,
 
 #pragma push_macro("base64_encode")
 #pragma push_macro("base64_decode")
+#pragma push_macro("base64_decode_unchecked")
 #undef base64_encode
 #undef base64_decode
+#undef base64_decode_unchecked
 #define base64_encode base64_scalar_encode
 #define base64url_encode base64url_scalar_encode
 #define base64_decode base64_scalar_decode
-#define base64_decode_ex base64_scalar_decode_ex
 #define base64_decode_unchecked base64_scalar_decode_unchecked
-#define base64_decode_unchecked_ex base64_scalar_decode_unchecked_ex
 #define BASE64_IMPLEMENTATION
 #include "base64.h"
 #undef base64_encode
 #undef base64url_encode
 #undef base64_decode
-#undef base64_decode_ex
 #undef base64_decode_unchecked
-#undef base64_decode_unchecked_ex
+#pragma pop_macro("base64_decode_unchecked")
 #pragma pop_macro("base64_decode")
 #pragma pop_macro("base64_encode")
 
