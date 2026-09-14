@@ -69,16 +69,18 @@ extern "C" {
 
 size_t base64_encode(const unsigned char* input, size_t length, char* output)
 {
-    return length >= 100U && base64_has_avx2()
-        ? base64_avx2_encode(input, length, output)
-        : base64_scalar_encode(input, length, output);
+    if (length >= 16U && base64_has_avx2())
+        return length < 28U ? base64_avx128_encode(input, length, output)
+                            : base64_avx2_encode(input, length, output);
+    return base64_scalar_encode(input, length, output);
 }
 
 size_t base64url_encode(const unsigned char* input, size_t length, char* output)
 {
-    return length >= 100U && base64_has_avx2()
-        ? base64url_avx2_encode(input, length, output)
-        : base64url_scalar_encode(input, length, output);
+    if (length >= 16U && base64_has_avx2())
+        return length < 28U ? base64url_avx128_encode(input, length, output)
+                            : base64url_avx2_encode(input, length, output);
+    return base64url_scalar_encode(input, length, output);
 }
 
 size_t base64_decode(const unsigned char* input, size_t length,
@@ -244,6 +246,12 @@ size_t base64_decode_compiled(const unsigned char* input, size_t length,
                               unsigned char* output, int support_url_safe)
 {
     return base64_decode(input, length, output, support_url_safe);
+}
+
+size_t base64_encode_compiled(const unsigned char* input, size_t length,
+                              char* output)
+{
+    return base64_encode(input, length, output);
 }
 
 size_t base64_decode_unchecked_compiled(const unsigned char* input,

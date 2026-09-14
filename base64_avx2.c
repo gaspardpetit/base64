@@ -61,6 +61,59 @@ static BASE64_AVX2_INLINE __m256i encode_translate(__m256i value, int url_safe)
     }
 }
 
+static BASE64_AVX2_INLINE __m128i encode_unpack_128(__m128i value)
+{
+    const __m128i a = _mm_mulhi_epu16(
+        _mm_and_si128(value, _mm_set1_epi32(0x0fc0fc00)),
+        _mm_set1_epi32(0x04000040));
+    const __m128i b = _mm_mullo_epi16(
+        _mm_and_si128(value, _mm_set1_epi32(0x003f03f0)),
+        _mm_set1_epi32(0x01000010));
+    return _mm_or_si128(a, b);
+}
+
+static BASE64_AVX2_INLINE __m128i encode_translate_128(
+    __m128i value, int url_safe)
+{
+    __m128i index = _mm_subs_epu8(value, _mm_set1_epi8(51));
+    index = _mm_sub_epi8(index, _mm_cmpgt_epi8(value, _mm_set1_epi8(25)));
+    if (url_safe) {
+        const __m128i offsets = _mm_setr_epi8(
+            65,71,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-17,32,0,0);
+        return _mm_add_epi8(value, _mm_shuffle_epi8(offsets, index));
+    }
+    else {
+        const __m128i offsets = _mm_setr_epi8(
+            65,71,-4,-4,-4,-4,-4,-4,-4,-4,-4,-4,-19,-16,0,0);
+        return _mm_add_epi8(value, _mm_shuffle_epi8(offsets, index));
+    }
+}
+
+static BASE64_AVX2_INLINE void encode_block_128(
+    const unsigned char* input, char* output, int url_safe)
+{
+    __m128i value = _mm_loadu_si128((const __m128i*)input);
+    value = _mm_shuffle_epi8(value, _mm_setr_epi8(
+        1,0,2,1,4,3,5,4,7,6,8,7,10,9,11,10));
+    value = encode_unpack_128(value);
+    value = encode_translate_128(value, url_safe);
+    _mm_storeu_si128((__m128i*)output, value);
+}
+
+static BASE64_AVX2_INLINE void encode_block_128_safe12(
+    const unsigned char* input, char* output, int url_safe)
+{
+    uint32_t tail;
+    __m128i value = _mm_loadl_epi64((const __m128i*)input);
+    memcpy(&tail, input + 8, sizeof(tail));
+    value = _mm_insert_epi32(value, (int)tail, 2);
+    value = _mm_shuffle_epi8(value, _mm_setr_epi8(
+        1,0,2,1,4,3,5,4,7,6,8,7,10,9,11,10));
+    value = encode_unpack_128(value);
+    value = encode_translate_128(value, url_safe);
+    _mm_storeu_si128((__m128i*)output, value);
+}
+
 #define BASE64_AVX2_ENCODE_BODY(url_safe, scalar_tail)                       \
     char* const begin = output;                                              \
     while (length >= 100U) {                                                 \
@@ -78,7 +131,24 @@ static BASE64_AVX2_INLINE __m256i encode_translate(__m256i value, int url_safe)
         _mm256_storeu_si256((__m256i*)(output + 96), v3);                     \
         input += 96; output += 128; length -= 96;                             \
     }                                                                         \
-    return (size_t)(output - begin) + scalar_tail(input, length, output)
+    while (length >= 28U) {                                                   \
+        __m256i value = encode_unpack(encode_load(input));                    \
+        value = encode_translate(value, url_safe);                            \
+        _mm256_storeu_si256((__m256i*)output, value);                         \
+        input += 24; output += 32; length -= 24;                              \
+    }                                                                         \
+    if (length >= 16U) {                                                      \
+        encode_block_128(input, output, url_safe);                            \
+        input += 12; output += 16; length -= 12;                              \
+    }                                                                         \
+    if (length >= 12U) {                                                      \
+        encode_block_128_safe12(input, output, url_safe);                     \
+        input += 12; output += 16; length -= 12;                              \
+    }                                                                         \
+    return (size_t)(output - begin) +                                      \
+        (url_safe                                                        \
+            ? scalar_tail(input, length, output)                           \
+            : base64_encode_inline_short(input, length, output))
 
 size_t base64_avx2_encode(const unsigned char* input, size_t length,
                           char* output)
@@ -90,6 +160,22 @@ size_t base64url_avx2_encode(const unsigned char* input, size_t length,
                              char* output)
 {
     BASE64_AVX2_ENCODE_BODY(1, base64url_scalar_encode);
+}
+
+size_t base64_avx128_encode(const unsigned char* input, size_t length,
+                            char* output)
+{
+    encode_block_128(input, output, 0);
+    return 16U + base64_encode_inline_short(
+        input + 12U, length - 12U, output + 16U);
+}
+
+size_t base64url_avx128_encode(const unsigned char* input, size_t length,
+                               char* output)
+{
+    encode_block_128(input, output, 1);
+    return 16U + base64url_scalar_encode(
+        input + 12U, length - 12U, output + 16U);
 }
 
 #undef BASE64_AVX2_ENCODE_BODY
