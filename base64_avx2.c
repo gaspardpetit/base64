@@ -217,6 +217,19 @@ static BASE64_AVX2_INLINE void decode_block_128(
     _mm_storeu_si128((__m128i*)output, value);
 }
 
+static BASE64_AVX2_INLINE uint32_t contains_url_character4(
+    const unsigned char* input)
+{
+    uint32_t word;
+    uint32_t minus;
+    uint32_t underscore;
+    memcpy(&word, input, sizeof(word));
+    minus = word ^ 0x2d2d2d2dU;
+    underscore = word ^ 0x5f5f5f5fU;
+    return ((minus - 0x01010101U) & ~minus & 0x80808080U) |
+           ((underscore - 0x01010101U) & ~underscore & 0x80808080U);
+}
+
 static BASE64_AVX2_INLINE size_t decode_short_standard_tail(
     const unsigned char* input, size_t length, unsigned char* output,
     int checked)
@@ -243,9 +256,7 @@ static BASE64_AVX2_INLINE size_t decode_short_standard_tail(
             base64_decode_1[p[1]] | base64_decode_2[p[2]] |                \
             base64_decode_3[p[3]];                                         \
         invalid |= value;                                                   \
-        invalid |= (uint32_t)(p[0] == '-' || p[0] == '_' ||               \
-            p[1] == '-' || p[1] == '_' || p[2] == '-' || p[2] == '_' ||  \
-            p[3] == '-' || p[3] == '_') * 0x01FFFFFFU;                    \
+        invalid |= contains_url_character4(p) ? 0x01FFFFFFU : 0U;          \
         output[0] = (unsigned char)value;                                  \
         output[1] = (unsigned char)(value >> 8);                           \
         output[2] = (unsigned char)(value >> 16);                          \
@@ -388,6 +399,78 @@ static BASE64_AVX2_INLINE size_t decode_short_anchored_avx_standard(
     return length / 4U * 3U - padding;
 }
 
+static BASE64_AVX2_INLINE size_t decode_sse_anchored_standard(
+    const unsigned char* input, size_t length, unsigned char* output,
+    int checked)
+{
+    const size_t padding = input[length - 1] == '='
+        ? 1U + (input[length - 2] == '=') : 0U;
+    const size_t last_offset = length - 16U;
+    const size_t last_output_offset = last_offset / 4U * 3U;
+    size_t offset = 0U;
+    __m256i invalid256 = _mm256_setzero_si256();
+    __m128i invalid = _mm_setzero_si128();
+    __m128i last_source;
+    __m128i equals;
+    __m128i last;
+    unsigned equals_mask;
+    unsigned expected_mask;
+    uint32_t high;
+    decode_block(input, output, &invalid256, checked, 0);
+    offset = 32U;
+    if (length >= 80U) {
+        decode_block(input + 32U, output + 24U, &invalid256, checked, 0);
+        offset = 64U;
+    }
+    else if (length >= 64U) {
+        decode_block_128(input + 32U, output + 24U, &invalid, checked, 0);
+        offset = 48U;
+    }
+    last_source = _mm_loadu_si128((const __m128i*)(input + last_offset));
+    equals = _mm_cmpeq_epi8(last_source, _mm_set1_epi8('='));
+    equals_mask = (unsigned)_mm_movemask_epi8(equals);
+    expected_mask = padding == 2U ? 0xc000U
+        : padding == 1U ? 0x8000U : 0U;
+    last_source = _mm_or_si128(_mm_and_si128(equals, _mm_set1_epi8('A')),
+                               _mm_andnot_si128(equals, last_source));
+    if (offset != last_offset) {
+        const __m128i bridge = _mm_loadu_si128(
+            (const __m128i*)(input + offset));
+        __m256i pair = _mm256_inserti128_si256(
+            _mm256_castsi128_si256(bridge), last_source, 1);
+        uint32_t bridge_high;
+        pair = decode_pack(decode_map_and_validate(
+            pair, &invalid256, checked, 0));
+        _mm_storel_epi64((__m128i*)(output + offset / 4U * 3U),
+                         _mm256_castsi256_si128(pair));
+        bridge_high = (uint32_t)_mm256_extract_epi32(pair, 2);
+        memcpy(output + offset / 4U * 3U + 8U, &bridge_high, 4U);
+        last = _mm256_extracti128_si256(pair, 1);
+    }
+    else {
+        last = decode_pack_128(decode_map_and_validate_128(
+            last_source, &invalid, checked, 0));
+    }
+    _mm_storel_epi64((__m128i*)(output + last_output_offset), last);
+    high = (uint32_t)_mm_extract_epi32(last, 2);
+    if (padding == 0U)
+        memcpy(output + last_output_offset + 8U, &high, 4U);
+    else {
+        const uint16_t pair = (uint16_t)high;
+        memcpy(output + last_output_offset + 8U, &pair, 2U);
+        if (padding == 1U)
+            output[last_output_offset + 10U] = (unsigned char)(high >> 16);
+    }
+    if (checked) {
+        invalid256 = _mm256_or_si256(invalid256,
+            _mm256_inserti128_si256(_mm256_setzero_si256(), invalid, 0));
+    }
+    if (equals_mask != expected_mask ||
+        (checked && _mm256_movemask_epi8(invalid256) != 0))
+        return BASE64_ERROR;
+    return length / 4U * 3U - padding;
+}
+
 static BASE64_AVX2_INLINE void decode_block(const unsigned char* input,
                                              unsigned char* output,
                                              __m256i* invalid, int checked,
@@ -415,6 +498,9 @@ static BASE64_AVX2_INLINE size_t decode_avx2(const unsigned char* input,
     if (!support_url_safe && (length == 40U || length == 44U))
         return decode_short_anchored_avx_standard(input, length, output,
                                                   checked);
+    if (!support_url_safe && length >= 48U && length <= 84U &&
+        (length & 3U) == 0U)
+        return decode_sse_anchored_standard(input, length, output, checked);
     __m256i invalid = _mm256_setzero_si256();
     while (length >= 136U) {
         decode_block(input, output, &invalid, checked, support_url_safe);
