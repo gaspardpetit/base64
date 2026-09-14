@@ -2,8 +2,7 @@
  * Copyright (c) 2026 Gaspard Petit
  */
 
-#define BASE64_IMPLEMENTATION
-#include "base64.h"
+#include "base64.c"
 
 #define BASE64_CPP_IMPLEMENTATION
 #include "base64.hpp"
