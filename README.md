@@ -40,6 +40,21 @@ and return-value contract as `base64_encode`.
 trusted. It remains bounds-safe and checks the encoded length and padding, but
 invalid alphabet characters produce unspecified decoded bytes.
 
+`base64_compact` removes every byte from `0x00` through ASCII space (`0x20`),
+which efficiently strips common control-character and whitespace contamination
+before decoding. It modifies the supplied buffer in place and returns its new
+length. A buffer containing no removable bytes is not written.
+
+`base64_decode_whitespace` composes this operation with checked decoding for a
+complete in-memory message. It modifies the encoded input buffer in place and
+returns the decoded size, or `BASE64_ERROR` when malformed or when invalid
+non-whitespace characters remain.
+
+```c
+size_t decoded_size = base64_decode_whitespace(
+    encoded, encoded_size, decoded, 0);
+```
+
 ## C++
 
 Compile `base64.cpp` and include the header:
@@ -80,13 +95,20 @@ caller-owned-output overloads equivalent to `base64::decode`.
 These overloads do not allocate when the output string already has sufficient
 capacity. Input and output must be distinct strings.
 
+## Command line
+
+The [`cli`](cli) directory builds a streaming command compatible with the GNU
+coreutils `base64` interface. It includes standalone CMake configuration,
+differential tests against GNU `base64`, and cross-platform release workflows.
+
 ## Supported format
 
 `base64_encode` produces standard padded Base64 as defined by RFC 4648;
 `base64url_encode` produces its padded URL-safe variant. Decoding accepts both
 the standard (`+` and `/`) and URL-safe (`-` and `_`) alphabets, with or without
 padding. Mixed alphabets are also accepted. Whitespace and line-wrapped input
-are rejected. Input and output buffers must not overlap.
+are rejected unless the caller first uses `base64_compact`. Encode and decode
+input and output buffers must not overlap.
 
 ## Linux AVX2
 

@@ -19,6 +19,74 @@ size_t base64url_scalar_encode(const unsigned char*, size_t, char*);
 size_t base64_scalar_decode(const unsigned char*, size_t, unsigned char*, int);
 size_t base64_scalar_decode_unchecked(const unsigned char*, size_t,
                                       unsigned char*, int);
+size_t base64_scalar_compact(unsigned char*, size_t);
+
+static BASE64_AVX2_INLINE unsigned char* compact_8(
+    __m128i value, unsigned int mask, const unsigned char* input,
+    unsigned char* output)
+{
+    if (mask == 0U) {
+        if (output != input)
+            _mm_storel_epi64((__m128i*)output, value);
+        return output + 8;
+    }
+    else {
+        unsigned char bytes[8];
+        size_t i;
+        _mm_storel_epi64((__m128i*)bytes, value);
+        for (i = 0U; i < sizeof(bytes); ++i) {
+            if (bytes[i] > 0x20U)
+                *output++ = bytes[i];
+        }
+        return output;
+    }
+}
+
+size_t base64_avx2_compact(unsigned char* buffer, size_t length)
+{
+    unsigned char* input = buffer;
+    unsigned char* output = buffer;
+    const __m256i spaces = _mm256_set1_epi8(0x20);
+    while (length >= 32U) {
+        const __m256i value = _mm256_loadu_si256((const __m256i*)input);
+        const __m256i controls = _mm256_cmpeq_epi8(
+            _mm256_subs_epu8(value, spaces), _mm256_setzero_si256());
+        const unsigned int mask = (unsigned int)_mm256_movemask_epi8(controls);
+        if (mask == 0U) {
+            if (output != input)
+                _mm256_storeu_si256((__m256i*)output, value);
+            output += 32;
+        }
+        else {
+            const __m128i lower = _mm256_castsi256_si128(value);
+            const __m128i upper = _mm256_extracti128_si256(value, 1);
+            output = compact_8(lower, mask & 0xFFU, input, output);
+            output = compact_8(_mm_srli_si128(lower, 8),
+                               (mask >> 8) & 0xFFU, input + 8, output);
+            output = compact_8(upper, (mask >> 16) & 0xFFU,
+                               input + 16, output);
+            output = compact_8(_mm_srli_si128(upper, 8),
+                               (mask >> 24) & 0xFFU, input + 24, output);
+        }
+        input += 32;
+        length -= 32;
+    }
+    if (length != 0U) {
+        size_t tail_length;
+        if (output == input)
+            tail_length = base64_scalar_compact(input, length);
+        else {
+            size_t i;
+            for (i = 0U; i < length; ++i) {
+                if (input[i] > 0x20U)
+                    *output++ = input[i];
+            }
+            tail_length = 0U;
+        }
+        output += tail_length;
+    }
+    return (size_t)(output - buffer);
+}
 
 static BASE64_AVX2_INLINE __m256i encode_unpack(__m256i value)
 {

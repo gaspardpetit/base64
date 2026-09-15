@@ -9,19 +9,24 @@
 #pragma push_macro("base64_encode")
 #pragma push_macro("base64_decode")
 #pragma push_macro("base64_decode_unchecked")
+#pragma push_macro("base64_compact")
 #undef base64_encode
 #undef base64_decode
 #undef base64_decode_unchecked
+#undef base64_compact
 #define base64_encode base64_scalar_encode
 #define base64url_encode base64url_scalar_encode
 #define base64_decode base64_scalar_decode
 #define base64_decode_unchecked base64_scalar_decode_unchecked
+#define base64_compact base64_scalar_compact
 #define BASE64_IMPLEMENTATION
 #include "base64.h"
 #undef base64_encode
 #undef base64url_encode
 #undef base64_decode
 #undef base64_decode_unchecked
+#undef base64_compact
+#pragma pop_macro("base64_compact")
 #pragma pop_macro("base64_decode_unchecked")
 #pragma pop_macro("base64_decode")
 #pragma pop_macro("base64_encode")
@@ -104,6 +109,13 @@ size_t base64_decode_unchecked(const unsigned char* input, size_t length,
                                           support_url_safe);
 }
 
+size_t base64_compact(unsigned char* buffer, size_t length)
+{
+    if (length >= 32U && base64_has_avx2())
+        return base64_avx2_compact(buffer, length);
+    return base64_scalar_compact(buffer, length);
+}
+
 #ifdef __cplusplus
 }
 #endif
@@ -113,19 +125,24 @@ size_t base64_decode_unchecked(const unsigned char* input, size_t length,
 #pragma push_macro("base64_encode")
 #pragma push_macro("base64_decode")
 #pragma push_macro("base64_decode_unchecked")
+#pragma push_macro("base64_compact")
 #undef base64_encode
 #undef base64_decode
 #undef base64_decode_unchecked
+#undef base64_compact
 #define base64_encode base64_scalar_encode
 #define base64url_encode base64url_scalar_encode
 #define base64_decode base64_scalar_decode
 #define base64_decode_unchecked base64_scalar_decode_unchecked
+#define base64_compact base64_scalar_compact
 #define BASE64_IMPLEMENTATION
 #include "base64.h"
 #undef base64_encode
 #undef base64url_encode
 #undef base64_decode
 #undef base64_decode_unchecked
+#undef base64_compact
+#pragma pop_macro("base64_compact")
 #pragma pop_macro("base64_decode_unchecked")
 #pragma pop_macro("base64_decode")
 #pragma pop_macro("base64_encode")
@@ -227,6 +244,11 @@ size_t base64_decode_unchecked(const unsigned char* input, size_t length,
                                          support_url_safe);
 }
 
+size_t base64_compact(unsigned char* buffer, size_t length)
+{
+    return base64_scalar_compact(buffer, length);
+}
+
 #ifdef __cplusplus
 }
 #endif
@@ -260,6 +282,26 @@ size_t base64_decode_unchecked_compiled(const unsigned char* input,
                                         int support_url_safe)
 {
     return base64_decode_unchecked(input, length, output, support_url_safe);
+}
+
+size_t base64_decode_whitespace(unsigned char* input, size_t length,
+                                unsigned char* output, int support_url_safe)
+{
+    return base64_decode(input, base64_compact(input, length), output,
+                         support_url_safe);
+}
+
+const char* base64_runtime_backend(void)
+{
+#if ((defined(_MSC_VER) && defined(_M_X64)) || \
+     ((defined(__GNUC__) || defined(__clang__)) && defined(__x86_64__))) && \
+    !defined(BASE64_DISABLE_HARDWARE)
+    return base64_has_avx2() ? "AVX2" : "scalar";
+#elif defined(__aarch64__) && !defined(BASE64_DISABLE_HARDWARE)
+    return "NEON";
+#else
+    return "scalar";
+#endif
 }
 
 #ifdef __cplusplus
