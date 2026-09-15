@@ -101,6 +101,18 @@ The [`cli`](cli) directory builds a streaming command compatible with the GNU
 coreutils `base64` interface. It includes standalone CMake configuration,
 differential tests against GNU `base64`, and cross-platform release workflows.
 
+On an Apple M4, the CLI compares as follows with the FreeBSD-derived macOS
+`/usr/bin/base64` for a 1 MiB payload:
+
+| Operation | This CLI | macOS `base64` | Speedup |
+|---|---:|---:|---:|
+| Encode, unwrapped | 0.615 GB/s | 0.553 GB/s | 1.11x |
+| Decode, unwrapped | 0.599 GB/s | 0.071 GB/s | 8.48x |
+| Decode, LF every 80 characters (`-i`) | 0.543 GB/s | 0.067 GB/s | 8.13x |
+
+Figures are median whole-process throughput from 15 warm-cache runs, including
+startup and file I/O, with output redirected to `/dev/null`. GB/s is decimal.
+
 ## Supported format
 
 `base64_encode` produces standard padded Base64 as defined by RFC 4648;
