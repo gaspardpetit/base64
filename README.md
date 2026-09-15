@@ -98,8 +98,7 @@ capacity. Input and output must be distinct strings.
 ## Command line
 
 The [`cli`](cli) directory builds a streaming command compatible with the GNU
-coreutils `base64` interface. It includes standalone CMake configuration,
-differential tests against GNU `base64`, and cross-platform release workflows.
+coreutils `base64` interface.
 
 CLI throughput for a 100 MiB payload (decimal GB/s):
 
@@ -215,12 +214,42 @@ mapping is retried with the URL-safe pipeline. The unchecked variant skips
 validation for trusted input and selects its standard or URL-safe pipeline with
 a one-time alphabet scan.
 
-The implementation was developed through experiments in the
-[base64-benchmark](https://github.com/gaspardpetit/base64-benchmark) project and
-was informed by the table-driven and unrolled approaches used by
-[Chromium's `modp_b64`](https://chromium.googlesource.com/chromium/src/third_party/modp_b64/)
+This project began in 2016, following [a post on Stack Overflow](https://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c/41094722#41094722).
+I started tracking variants of Base64 implementations and benchmarking them. It
+became apparent that not all implementations were equal, and the most efficient
+ones had to use memory in a very efficient way. This implementation was developed
+through experiments in the [base64-benchmark](https://github.com/gaspardpetit/base64-benchmark)
+project and was mostly informed by the table-driven and unrolled approaches used
+by [Chromium's `modp_b64`](https://chromium.googlesource.com/chromium/src/third_party/modp_b64/)
 and [TurboBase64](https://github.com/powturbo/Turbo-Base64). The portable path
 does not require architecture-specific intrinsics.
+
+After many attempts, the 64 × 64 encoding table and four 256-entry decoding
+tables emerged as the best candidates to outperform existing implementations.
+The most challenging aspects were around tail management and encoding validation;
+both can easily consume the bulk of the processing time on small payloads. For
+architecture-neutral implementations, this decoder and encoder significantly
+outperform all the best architecture-neutral implementations I could find.
+
+For SIMD, [TurboBase64](https://github.com/powturbo/Turbo-Base64) is really
+amazing work, and was very difficult to outperform for AVX2 and NEON on the
+tested systems. I attempted several different approaches which eventually
+converged to the same strategy and I only managed by a small margin, mostly
+through careful scheduling and tighter tail handling.
+
+The CLI was based on the GNU interface documented by
+[coreutils](https://www.gnu.org/software/coreutils/), with the GNU tool used as
+an oracle to ensure compatibility. The overhead for the CLI was mostly load time
+on small payloads and whitespace handling. Whitespace handling was optimized
+through an optimistic approach: assume no whitespace and attempt checked decoding
+first. If it works, we paid no preprocessing cost. With `--ignore-garbage`, if
+it fails, common control and whitespace bytes are detected and compacted in bulk:
+multiple characters in a single register in the architecture-neutral
+implementation, or through AVX2/NEON vectors when available. Clean chunks avoid
+unnecessary writes, while remaining invalid characters fall through to the
+GNU-compatible scalar parser.
+These optimizations, along with the optimized encoder/decoder, explain the 20-70x
+decoding speedup compared to the reference implementations.
 
 ## License
 
