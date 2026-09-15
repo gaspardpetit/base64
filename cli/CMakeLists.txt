@@ -1,21 +1,21 @@
 cmake_minimum_required(VERSION 3.25)
-project(base64-cli VERSION 0.1.0 LANGUAGES C CXX)
+project(base64-cli VERSION 0.1.0 LANGUAGES C)
 
 set(BASE64_CLI_VERSION "${PROJECT_VERSION}" CACHE STRING
     "Version string reported by the base64 command")
 set(BASE64_CLI_BUFFER_SIZE "49152" CACHE STRING
     "Streaming input buffer size in bytes (must be divisible by 12)")
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
 
 set(BASE64_LIBRARY_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
 
 add_library(base64-codec STATIC "${BASE64_LIBRARY_DIR}/base64.c")
 target_include_directories(base64-codec PUBLIC "${BASE64_LIBRARY_DIR}")
 
-add_executable(base64 main.cpp)
+add_executable(base64 main.c)
 target_link_libraries(base64 PRIVATE base64-codec)
 target_compile_definitions(base64 PRIVATE
   BASE64_CLI_VERSION="${BASE64_CLI_VERSION}"
@@ -39,7 +39,7 @@ else()
 endif()
 
 if(MSVC)
-  target_compile_options(base64 PRIVATE /W4 /permissive-)
+  target_compile_options(base64 PRIVATE /W4)
   target_compile_options(base64-codec PRIVATE /W4)
 else()
   target_compile_options(base64 PRIVATE -Wall -Wextra -Wpedantic)

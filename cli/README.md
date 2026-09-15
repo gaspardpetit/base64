@@ -2,7 +2,7 @@
 
 This directory builds a standalone, streaming Base64 command compatible with
 the GNU coreutils `base64` interface. It uses the GaspardPetit Base64 codec from
-this repository and does not build the benchmark suite or GoogleTest.
+this repository, is implemented in C11, and does not require a C++ runtime.
 
 ## Build and test
 
