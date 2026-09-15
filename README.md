@@ -114,13 +114,15 @@ Figures are median whole-process throughput from 15 warm-cache runs, including
 startup and file I/O, with output redirected to `/dev/null`. GB/s is decimal.
 
 On Windows 11 with an Intel Core i9-13900K and MSVC 19.44, the AVX2 CLI compares
-as follows with the 64-bit DI `base64 for Windows` 1.3.1 for a 100 MiB payload:
+as follows with the 64-bit DI `base64 for Windows` 1.3.1 and Windows PowerShell
+5.1 using .NET Framework 4.8 (`File.ReadAllBytes`/`ReadAllText` and
+`Convert.ToBase64String`/`FromBase64String`) for a 100 MiB payload:
 
-| Operation | This CLI | DI `base64` | Speedup |
-|---|---:|---:|---:|
-| Encode, unwrapped | 2.55 GB/s | 0.27 GB/s | 9.41x |
-| Decode, unwrapped | 2.12 GB/s | 0.33 GB/s | 6.51x |
-| Decode, LF every 80 characters (`-i`) | 1.72 GB/s | 0.43 GB/s | 3.97x |
+| Operation | This CLI | DI `base64` | PowerShell/.NET | vs DI | vs PowerShell |
+|---|---:|---:|---:|---:|---:|
+| Encode, unwrapped | 2.45 GB/s | 0.27 GB/s | 0.16 GB/s | 9.02x | 14.92x |
+| Decode, unwrapped | 2.10 GB/s | 0.32 GB/s | 0.09 GB/s | 6.50x | 24.57x |
+| Decode, LF every 80 characters (`-i`) | 1.65 GB/s | 0.43 GB/s | 0.08 GB/s | 3.82x | 20.03x |
 
 These are likewise median whole-process results from 15 warm-cache runs,
 including startup and file I/O, with output redirected to `NUL`. The decoded
