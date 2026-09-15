@@ -113,6 +113,18 @@ On an Apple M4, the CLI compares as follows with the FreeBSD-derived macOS
 Figures are median whole-process throughput from 15 warm-cache runs, including
 startup and file I/O, with output redirected to `/dev/null`. GB/s is decimal.
 
+On Ubuntu 24.04 with an AMD Ryzen 7 5700G and Clang 20.1, the AVX2 CLI compares
+as follows with GNU coreutils `base64` 9.4 for a 100 MiB payload:
+
+| Operation | This CLI | GNU `base64` | Speedup |
+|---|---:|---:|---:|
+| Encode, unwrapped | 6.06 GB/s | 1.66 GB/s | 3.66x |
+| Decode, unwrapped | 4.69 GB/s | 0.67 GB/s | 6.96x |
+| Decode, LF every 80 characters (`-i`) | 3.20 GB/s | 0.38 GB/s | 8.46x |
+
+These use the same median whole-process method, with output redirected to
+`/dev/null`. The decoded outputs were verified byte-for-byte. GB/s is decimal.
+
 On Windows 11 with an Intel Core i9-13900K and MSVC 19.44, the AVX2 CLI compares
 as follows with the 64-bit DI `base64 for Windows` 1.3.1 and Windows PowerShell
 5.1 using .NET Framework 4.8 (`File.ReadAllBytes`/`ReadAllText` and
