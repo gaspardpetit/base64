@@ -113,6 +113,19 @@ On an Apple M4, the CLI compares as follows with the FreeBSD-derived macOS
 Figures are median whole-process throughput from 15 warm-cache runs, including
 startup and file I/O, with output redirected to `/dev/null`. GB/s is decimal.
 
+On Windows 11 with an Intel Core i9-13900K and MSVC 19.44, the AVX2 CLI compares
+as follows with the 64-bit DI `base64 for Windows` 1.3.1 for a 100 MiB payload:
+
+| Operation | This CLI | DI `base64` | Speedup |
+|---|---:|---:|---:|
+| Encode, unwrapped | 2.55 GB/s | 0.27 GB/s | 9.41x |
+| Decode, unwrapped | 2.12 GB/s | 0.33 GB/s | 6.51x |
+| Decode, LF every 80 characters (`-i`) | 1.72 GB/s | 0.43 GB/s | 3.97x |
+
+These are likewise median whole-process results from 15 warm-cache runs,
+including startup and file I/O, with output redirected to `NUL`. The decoded
+outputs were verified byte-for-byte. GB/s is decimal.
+
 ## Supported format
 
 `base64_encode` produces standard padded Base64 as defined by RFC 4648;
