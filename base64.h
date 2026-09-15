@@ -27,6 +27,17 @@ extern "C" {
 
 BASE64_API size_t base64_encoded_size(size_t input_size);
 BASE64_API size_t base64_decoded_max_size(size_t input_size);
+/* Return the processing backend selected for this build and CPU. */
+BASE64_API const char* base64_runtime_backend(void);
+/* Remove bytes in the ASCII control-and-space range [0x00, 0x20] in place and
+ * return the new buffer length. A buffer with no removable bytes is not
+ * written. */
+BASE64_API size_t base64_compact(unsigned char* buffer, size_t length);
+/* Compact ASCII controls and space in place, then perform checked decoding.
+ * The input buffer is modified. */
+BASE64_API size_t base64_decode_whitespace(unsigned char* input, size_t length,
+                                           unsigned char* output,
+                                           int support_url_safe);
 BASE64_API size_t base64url_encode(const unsigned char* input, size_t length,
                                    char* output);
 /* Set support_url_safe to zero for standard '+'/'/' Base64 only. On NEON this
@@ -189,6 +200,49 @@ BASE64_API size_t base64_decoded_max_size(size_t input_size)
     const size_t remainder = input_size % 4U;
     return (input_size / 4U) * 3U +
            (remainder != 0U ? remainder - 1U : 0U);
+}
+
+static inline int base64_internal_word_has_control_or_space(uint64_t word)
+{
+    const uint64_t ones = UINT64_C(0x0101010101010101);
+    const uint64_t highs = UINT64_C(0x8080808080808080);
+    return ((word - ones * 33U) & ~word & highs) != 0U;
+}
+
+BASE64_API size_t base64_compact(unsigned char* buffer, size_t length)
+{
+    unsigned char* input = buffer;
+    unsigned char* output = buffer;
+    while (length >= sizeof(uint64_t)) {
+        uint64_t word;
+        memcpy(&word, input, sizeof(word));
+        if (!base64_internal_word_has_control_or_space(word)) {
+            /* Copy from the local word so exact in-place compaction remains
+             * valid when output trails input by fewer than eight bytes. A
+             * clean in-place span requires no store at all. */
+            if (output != input)
+                memcpy(output, &word, sizeof(word));
+            output += sizeof(word);
+        }
+        else {
+            size_t i;
+            for (i = 0U; i < sizeof(word); ++i) {
+                if (input[i] > 0x20U)
+                    *output++ = input[i];
+            }
+        }
+        input += sizeof(word);
+        length -= sizeof(word);
+    }
+    while (length-- != 0U) {
+        const unsigned char byte = *input++;
+        if (byte > 0x20U) {
+            if (output != input - 1U)
+                *output = byte;
+            ++output;
+        }
+    }
+    return (size_t)(output - buffer);
 }
 
 BASE64_API size_t base64_encode(const unsigned char* BASE64_RESTRICT input,
@@ -676,6 +730,21 @@ BASE64_API size_t base64_decode_unchecked(
     return (size_t)(output - begin) + data_length - 1U;
 }
 
+#if defined(BASE64_HEADER_ONLY)
+BASE64_API size_t base64_decode_whitespace(
+    unsigned char* input, size_t length, unsigned char* output,
+    int support_url_safe)
+{
+    return base64_decode(input, base64_compact(input, length), output,
+                         support_url_safe);
+}
+
+BASE64_API const char* base64_runtime_backend(void)
+{
+    return "scalar";
+}
+#endif
+
 #undef BASE64_DECODE_VALUE
 #undef BASE64_BAD_CHARACTER
 #undef BASE64URL_ENCODE_PAIR
@@ -895,6 +964,7 @@ BASE64_ALWAYS_INLINE size_t base64_decode_unchecked(const unsigned char* input,
         : base64_decode_unchecked_compiled(input, length, output,
                                            support_url_safe);
 }
+
 #undef BASE64_ALWAYS_INLINE
 #endif
 

@@ -1,0 +1,94 @@
+name: Base64 CLI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Clang
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          echo "CC=clang" >> "$GITHUB_ENV"
+          clang --version
+
+      - name: Select version
+        shell: pwsh
+        run: |
+          $version = if ("${{ github.ref_type }}" -eq "tag") {
+            "${{ github.ref_name }}" -replace '^v', ''
+          } else {
+            "0.1.0"
+          }
+          "CLI_VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Configure
+        shell: pwsh
+        run: cmake -S cli -B build/cli -DCMAKE_BUILD_TYPE=Release "-DBASE64_CLI_VERSION=$env:CLI_VERSION"
+
+      - name: Build
+        run: cmake --build build/cli --config Release --parallel
+
+      - name: Test
+        run: ctest --test-dir build/cli -C Release --output-on-failure
+
+      - name: Compare with GNU coreutils
+        if: runner.os == 'Linux'
+        run: python3 cli/tests/oracle.py build/cli/base64 /usr/bin/base64
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $artifact = "base64-${{ runner.os }}-${{ runner.arch }}"
+          cmake --install build/cli --config Release --prefix build/stage
+          New-Item -ItemType Directory -Path "build/package/$artifact" | Out-Null
+          $suffix = if ($IsWindows) { ".exe" } else { "" }
+          Copy-Item "build/stage/bin/base64$suffix" "build/package/$artifact/"
+          Copy-Item "cli/README.md" "build/package/$artifact/README.md"
+          Copy-Item "LICENSE" "build/package/$artifact/LICENSE"
+          Push-Location build/package
+          cmake -E tar cf "$artifact.zip" --format=zip -- "$artifact"
+          Pop-Location
+
+      - name: Upload binary archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: base64-${{ runner.os }}-${{ runner.arch }}
+          path: build/package/*.zip
+          if-no-files-found: error
+
+  release:
+    name: Publish release assets
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" artifacts/*.zip --generate-notes

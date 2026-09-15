@@ -40,6 +40,21 @@ and return-value contract as `base64_encode`.
 trusted. It remains bounds-safe and checks the encoded length and padding, but
 invalid alphabet characters produce unspecified decoded bytes.
 
+`base64_compact` removes every byte from `0x00` through ASCII space (`0x20`),
+which efficiently strips common control-character and whitespace contamination
+before decoding. It modifies the supplied buffer in place and returns its new
+length. A buffer containing no removable bytes is not written.
+
+`base64_decode_whitespace` composes this operation with checked decoding for a
+complete in-memory message. It modifies the encoded input buffer in place and
+returns the decoded size, or `BASE64_ERROR` when malformed or when invalid
+non-whitespace characters remain.
+
+```c
+size_t decoded_size = base64_decode_whitespace(
+    encoded, encoded_size, decoded, 0);
+```
+
 ## C++
 
 Compile `base64.cpp` and include the header:
@@ -80,13 +95,41 @@ caller-owned-output overloads equivalent to `base64::decode`.
 These overloads do not allocate when the output string already has sufficient
 capacity. Input and output must be distinct strings.
 
+## Command line
+
+The [`cli`](cli) directory builds a streaming command compatible with the GNU
+coreutils `base64` interface. It includes standalone CMake configuration,
+differential tests against GNU `base64`, and cross-platform release workflows.
+
+CLI throughput for a 100 MiB payload (decimal GB/s):
+
+| Platform | Operation | This CLI | Reference | Reference throughput | Speedup |
+|---|---|---:|---|---:|---:|
+| Apple M4 | Encode | 8.098 | macOS `base64` | 2.246 | 3.61x |
+| Apple M4 | Decode | 5.508 | macOS `base64` | 0.076 | 72.20x |
+| Apple M4 | Decode, LF80 (`-i`) | 3.700 | macOS `base64` | 0.070 | 52.59x |
+| Ryzen 7 5700G | Encode | 6.06 | GNU `base64` 9.4 | 1.66 | 3.66x |
+| Ryzen 7 5700G | Decode | 4.69 | GNU `base64` 9.4 | 0.67 | 6.96x |
+| Ryzen 7 5700G | Decode, LF80 (`-i`) | 3.20 | GNU `base64` 9.4 | 0.38 | 8.46x |
+| Core i9-13900K | Encode | 2.45 | DI / PowerShell | 0.27 / 0.16 | 9.02x / 14.92x |
+| Core i9-13900K | Decode | 2.10 | DI / PowerShell | 0.32 / 0.09 | 6.50x / 24.57x |
+| Core i9-13900K | Decode, LF80 (`-i`) | 1.65 | DI / PowerShell | 0.43 / 0.08 | 3.82x / 20.03x |
+
+Figures are medians from 15 warm-cache whole-process runs, including startup
+and file I/O, with output discarded. Decoded outputs were verified
+byte-for-byte. The systems used macOS `/usr/bin/base64`; Ubuntu 24.04 with
+Clang 20.1 and AVX2; and Windows 11 with MSVC 19.44 and AVX2. The Windows
+references were 64-bit DI `base64 for Windows` 1.3.1 and Windows PowerShell 5.1
+with .NET Framework 4.8.
+
 ## Supported format
 
 `base64_encode` produces standard padded Base64 as defined by RFC 4648;
 `base64url_encode` produces its padded URL-safe variant. Decoding accepts both
 the standard (`+` and `/`) and URL-safe (`-` and `_`) alphabets, with or without
 padding. Mixed alphabets are also accepted. Whitespace and line-wrapped input
-are rejected. Input and output buffers must not overlap.
+are rejected unless the caller first uses `base64_compact`. Encode and decode
+input and output buffers must not overlap.
 
 ## Linux AVX2
 
