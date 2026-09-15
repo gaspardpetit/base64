@@ -5,6 +5,8 @@ set(BASE64_CLI_VERSION "${PROJECT_VERSION}" CACHE STRING
     "Version string reported by the base64 command")
 set(BASE64_CLI_BUFFER_SIZE "49152" CACHE STRING
     "Streaming input buffer size in bytes (must be divisible by 12)")
+option(BASE64_DISABLE_HARDWARE
+    "Disable architecture-specific Base64 implementations" OFF)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -22,7 +24,9 @@ target_compile_definitions(base64 PRIVATE
   BASE64_CLI_BUFFER_SIZE=${BASE64_CLI_BUFFER_SIZE}
 )
 
-if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+if(BASE64_DISABLE_HARDWARE)
+  target_compile_definitions(base64-codec PRIVATE BASE64_DISABLE_HARDWARE)
+elseif(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   target_sources(base64-codec PRIVATE "${BASE64_LIBRARY_DIR}/base64_avx2.c")
   set_source_files_properties("${BASE64_LIBRARY_DIR}/base64_avx2.c"
     PROPERTIES COMPILE_OPTIONS "/arch:AVX2")
