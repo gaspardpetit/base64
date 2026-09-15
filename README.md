@@ -101,44 +101,26 @@ The [`cli`](cli) directory builds a streaming command compatible with the GNU
 coreutils `base64` interface. It includes standalone CMake configuration,
 differential tests against GNU `base64`, and cross-platform release workflows.
 
-On an Apple M4, the CLI compares as follows with the FreeBSD-derived macOS
-`/usr/bin/base64` for a 100 MiB payload:
+CLI throughput for a 100 MiB payload (decimal GB/s):
 
-| Operation | This CLI | macOS `base64` | Speedup |
-|---|---:|---:|---:|
-| Encode, unwrapped | 8.098 GB/s | 2.246 GB/s | 3.61x |
-| Decode, unwrapped | 5.508 GB/s | 0.076 GB/s | 72.20x |
-| Decode, LF every 80 characters (`-i`) | 3.700 GB/s | 0.070 GB/s | 52.59x |
+| Platform | Operation | This CLI | Reference | Reference throughput | Speedup |
+|---|---|---:|---|---:|---:|
+| Apple M4 | Encode | 8.098 | macOS `base64` | 2.246 | 3.61x |
+| Apple M4 | Decode | 5.508 | macOS `base64` | 0.076 | 72.20x |
+| Apple M4 | Decode, LF80 (`-i`) | 3.700 | macOS `base64` | 0.070 | 52.59x |
+| Ryzen 7 5700G | Encode | 6.06 | GNU `base64` 9.4 | 1.66 | 3.66x |
+| Ryzen 7 5700G | Decode | 4.69 | GNU `base64` 9.4 | 0.67 | 6.96x |
+| Ryzen 7 5700G | Decode, LF80 (`-i`) | 3.20 | GNU `base64` 9.4 | 0.38 | 8.46x |
+| Core i9-13900K | Encode | 2.45 | DI / PowerShell | 0.27 / 0.16 | 9.02x / 14.92x |
+| Core i9-13900K | Decode | 2.10 | DI / PowerShell | 0.32 / 0.09 | 6.50x / 24.57x |
+| Core i9-13900K | Decode, LF80 (`-i`) | 1.65 | DI / PowerShell | 0.43 / 0.08 | 3.82x / 20.03x |
 
-Figures are median whole-process throughput from 15 warm-cache runs, including
-startup and file I/O, with output redirected to `/dev/null`. GB/s is decimal.
-
-On Ubuntu 24.04 with an AMD Ryzen 7 5700G and Clang 20.1, the AVX2 CLI compares
-as follows with GNU coreutils `base64` 9.4 for a 100 MiB payload:
-
-| Operation | This CLI | GNU `base64` | Speedup |
-|---|---:|---:|---:|
-| Encode, unwrapped | 6.06 GB/s | 1.66 GB/s | 3.66x |
-| Decode, unwrapped | 4.69 GB/s | 0.67 GB/s | 6.96x |
-| Decode, LF every 80 characters (`-i`) | 3.20 GB/s | 0.38 GB/s | 8.46x |
-
-These use the same median whole-process method, with output redirected to
-`/dev/null`. The decoded outputs were verified byte-for-byte. GB/s is decimal.
-
-On Windows 11 with an Intel Core i9-13900K and MSVC 19.44, the AVX2 CLI compares
-as follows with the 64-bit DI `base64 for Windows` 1.3.1 and Windows PowerShell
-5.1 using .NET Framework 4.8 (`File.ReadAllBytes`/`ReadAllText` and
-`Convert.ToBase64String`/`FromBase64String`) for a 100 MiB payload:
-
-| Operation | This CLI | DI `base64` | PowerShell/.NET | vs DI | vs PowerShell |
-|---|---:|---:|---:|---:|---:|
-| Encode, unwrapped | 2.45 GB/s | 0.27 GB/s | 0.16 GB/s | 9.02x | 14.92x |
-| Decode, unwrapped | 2.10 GB/s | 0.32 GB/s | 0.09 GB/s | 6.50x | 24.57x |
-| Decode, LF every 80 characters (`-i`) | 1.65 GB/s | 0.43 GB/s | 0.08 GB/s | 3.82x | 20.03x |
-
-These are likewise median whole-process results from 15 warm-cache runs,
-including startup and file I/O, with output redirected to `NUL`. The decoded
-outputs were verified byte-for-byte. GB/s is decimal.
+Figures are medians from 15 warm-cache whole-process runs, including startup
+and file I/O, with output discarded. Decoded outputs were verified
+byte-for-byte. The systems used macOS `/usr/bin/base64`; Ubuntu 24.04 with
+Clang 20.1 and AVX2; and Windows 11 with MSVC 19.44 and AVX2. The Windows
+references were 64-bit DI `base64 for Windows` 1.3.1 and Windows PowerShell 5.1
+with .NET Framework 4.8.
 
 ## Supported format
 
