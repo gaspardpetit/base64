@@ -246,7 +246,8 @@ size_t base64_decode_unchecked(const unsigned char* input, size_t length,
 
 size_t base64_compact(unsigned char* buffer, size_t length)
 {
-    return base64_scalar_compact(buffer, length);
+    return length >= 64U ? base64_neon_compact(buffer, length)
+                         : base64_scalar_compact(buffer, length);
 }
 
 #ifdef __cplusplus
