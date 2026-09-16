@@ -342,28 +342,28 @@ BASE64_API size_t base64url_encode(
 #define BASE64_BAD_CHARACTER 0x01FFFFFFU
 #define BASE64_INVALID_VALUE 64U
 #define BASE64_REPEAT_16(X, v)                                              \
-    X(v), X(v), X(v), X(v), X(v), X(v), X(v), X(v),                       \
+    X(v), X(v), X(v), X(v), X(v), X(v), X(v), X(v),                         \
     X(v), X(v), X(v), X(v), X(v), X(v), X(v), X(v)
 #define BASE64_REPEAT_8(X, v) X(v), X(v), X(v), X(v), X(v), X(v), X(v), X(v)
 #define BASE64_DECODE_VALUES(X)                                             \
-    BASE64_REPEAT_16(X, 64), BASE64_REPEAT_16(X, 64),                      \
-    BASE64_REPEAT_8(X, 64), X(64), X(64), X(64), X(62), X(64), X(62),     \
-    X(64), X(63), X(52), X(53), X(54), X(55), X(56), X(57), X(58),       \
-    X(59), X(60), X(61), X(64), X(64), X(64), X(64), X(64), X(64),       \
-    X(64), X(0), X(1), X(2), X(3), X(4), X(5), X(6), X(7), X(8),         \
-    X(9), X(10), X(11), X(12), X(13), X(14), X(15), X(16), X(17),        \
-    X(18), X(19), X(20), X(21), X(22), X(23), X(24), X(25),              \
-    X(64), X(64), X(64), X(64), X(63), X(64), X(26), X(27), X(28),       \
-    X(29), X(30), X(31), X(32), X(33), X(34), X(35), X(36), X(37),       \
-    X(38), X(39), X(40), X(41), X(42), X(43), X(44), X(45), X(46),       \
-    X(47), X(48), X(49), X(50), X(51),                                    \
-    BASE64_REPEAT_16(X, 64), BASE64_REPEAT_16(X, 64),                      \
-    BASE64_REPEAT_16(X, 64), BASE64_REPEAT_16(X, 64),                      \
-    BASE64_REPEAT_16(X, 64), BASE64_REPEAT_16(X, 64),                      \
-    BASE64_REPEAT_16(X, 64), BASE64_REPEAT_16(X, 64),                      \
+    BASE64_REPEAT_16(X, 64), BASE64_REPEAT_16(X, 64),                       \
+    BASE64_REPEAT_8(X, 64), X(64), X(64), X(64), X(62), X(64), X(62),       \
+    X(64), X(63), X(52), X(53), X(54), X(55), X(56), X(57), X(58),          \
+    X(59), X(60), X(61), X(64), X(64), X(64), X(64), X(64), X(64),          \
+    X(64), X(0), X(1), X(2), X(3), X(4), X(5), X(6), X(7), X(8),            \
+    X(9), X(10), X(11), X(12), X(13), X(14), X(15), X(16), X(17),           \
+    X(18), X(19), X(20), X(21), X(22), X(23), X(24), X(25),                 \
+    X(64), X(64), X(64), X(64), X(63), X(64), X(26), X(27), X(28),          \
+    X(29), X(30), X(31), X(32), X(33), X(34), X(35), X(36), X(37),          \
+    X(38), X(39), X(40), X(41), X(42), X(43), X(44), X(45), X(46),          \
+    X(47), X(48), X(49), X(50), X(51),                                      \
+    BASE64_REPEAT_16(X, 64), BASE64_REPEAT_16(X, 64),                       \
+    BASE64_REPEAT_16(X, 64), BASE64_REPEAT_16(X, 64),                       \
+    BASE64_REPEAT_16(X, 64), BASE64_REPEAT_16(X, 64),                       \
+    BASE64_REPEAT_16(X, 64), BASE64_REPEAT_16(X, 64),                       \
     X(64), X(64), X(64), X(64), X(64)
 
-#define BASE64_TABLE_0(v) ((v) == BASE64_INVALID_VALUE                     \
+#define BASE64_TABLE_0(v) ((v) == BASE64_INVALID_VALUE                      \
     ? BASE64_BAD_CHARACTER : (uint32_t)(v) << 2)
 #if defined(BASE64_HEADER_ONLY)
 #  define BASE64_DECODE_TABLE_STORAGE static const
@@ -375,7 +375,7 @@ BASE64_DECODE_TABLE_STORAGE uint32_t base64_decode_0[256] = {
 };
 #undef BASE64_TABLE_0
 
-#define BASE64_TABLE_1(v) ((v) == BASE64_INVALID_VALUE                     \
+#define BASE64_TABLE_1(v) ((v) == BASE64_INVALID_VALUE                      \
     ? BASE64_BAD_CHARACTER                                                  \
     : ((uint32_t)(v) >> 4) | (((uint32_t)(v) & 15U) << 12))
 BASE64_DECODE_TABLE_STORAGE uint32_t base64_decode_1[256] = {
@@ -383,7 +383,7 @@ BASE64_DECODE_TABLE_STORAGE uint32_t base64_decode_1[256] = {
 };
 #undef BASE64_TABLE_1
 
-#define BASE64_TABLE_2(v) ((v) == BASE64_INVALID_VALUE                     \
+#define BASE64_TABLE_2(v) ((v) == BASE64_INVALID_VALUE                      \
     ? BASE64_BAD_CHARACTER                                                  \
     : (((uint32_t)(v) >> 2) << 8) | (((uint32_t)(v) & 3U) << 22))
 BASE64_DECODE_TABLE_STORAGE uint32_t base64_decode_2[256] = {
@@ -391,7 +391,7 @@ BASE64_DECODE_TABLE_STORAGE uint32_t base64_decode_2[256] = {
 };
 #undef BASE64_TABLE_2
 
-#define BASE64_TABLE_3(v) ((v) == BASE64_INVALID_VALUE                     \
+#define BASE64_TABLE_3(v) ((v) == BASE64_INVALID_VALUE                      \
     ? BASE64_BAD_CHARACTER : (uint32_t)(v) << 16)
 BASE64_DECODE_TABLE_STORAGE uint32_t base64_decode_3[256] = {
     BASE64_DECODE_VALUES(BASE64_TABLE_3)
@@ -405,7 +405,7 @@ BASE64_DECODE_TABLE_STORAGE uint32_t base64_decode_3[256] = {
 #undef BASE64_INVALID_VALUE
 
 #define BASE64_DECODE_VALUE(p)                                              \
-    (base64_decode_0[(p)[0]] | base64_decode_1[(p)[1]] |                   \
+    (base64_decode_0[(p)[0]] | base64_decode_1[(p)[1]] |                    \
      base64_decode_2[(p)[2]] | base64_decode_3[(p)[3]])
 
 static inline size_t base64_decode_tail(const unsigned char* input,
@@ -458,19 +458,19 @@ static inline size_t base64_decode_short(const unsigned char* input,
     uint32_t invalid = 0U;
     uint32_t value;
 
-#define BASE64_DECODE_SHORT_QUARTET(i)                                     \
+#define BASE64_DECODE_SHORT_QUARTET(i)                                      \
     do {                                                                    \
-        value = BASE64_DECODE_VALUE(input + (i) * 4U);                     \
-        if (!support_url_safe &&                                           \
-            (input[(i) * 4U] == '-' || input[(i) * 4U] == '_' ||          \
-             input[(i) * 4U + 1U] == '-' || input[(i) * 4U + 1U] == '_' ||\
-             input[(i) * 4U + 2U] == '-' || input[(i) * 4U + 2U] == '_' ||\
-             input[(i) * 4U + 3U] == '-' || input[(i) * 4U + 3U] == '_')) \
-            value |= BASE64_BAD_CHARACTER;                                \
+        value = BASE64_DECODE_VALUE(input + (i) * 4U);                      \
+        if (!support_url_safe &&                                            \
+            (input[(i) * 4U] == '-' || input[(i) * 4U] == '_' ||            \
+             input[(i) * 4U + 1U] == '-' || input[(i) * 4U + 1U] == '_' ||  \
+             input[(i) * 4U + 2U] == '-' || input[(i) * 4U + 2U] == '_' ||  \
+             input[(i) * 4U + 3U] == '-' || input[(i) * 4U + 3U] == '_'))   \
+            value |= BASE64_BAD_CHARACTER;                                  \
         invalid |= value;                                                   \
-        output[(i) * 3U] = (unsigned char)value;                           \
-        output[(i) * 3U + 1U] = (unsigned char)(value >> 8);               \
-        output[(i) * 3U + 2U] = (unsigned char)(value >> 16);              \
+        output[(i) * 3U] = (unsigned char)value;                            \
+        output[(i) * 3U + 1U] = (unsigned char)(value >> 8);                \
+        output[(i) * 3U + 2U] = (unsigned char)(value >> 16);               \
     } while (0)
 
     switch (quartets) {
@@ -517,18 +517,18 @@ static inline size_t base64_decode_short_unchecked(
     uint32_t invalid_url = 0U;
     uint32_t value;
 
-#define BASE64_DECODE_SHORT_UNCHECKED_QUARTET(i)                            \
-    do {                                                                    \
-        value = BASE64_DECODE_VALUE(input + (i) * 4U);                     \
-        if (!support_url_safe)                                              \
-            invalid_url |=                                                  \
-                input[(i) * 4U] == '-' || input[(i) * 4U] == '_' ||        \
+#define BASE64_DECODE_SHORT_UNCHECKED_QUARTET(i)                              \
+    do {                                                                      \
+        value = BASE64_DECODE_VALUE(input + (i) * 4U);                        \
+        if (!support_url_safe)                                                \
+            invalid_url |=                                                    \
+                input[(i) * 4U] == '-' || input[(i) * 4U] == '_' ||           \
                 input[(i) * 4U + 1U] == '-' || input[(i) * 4U + 1U] == '_' || \
                 input[(i) * 4U + 2U] == '-' || input[(i) * 4U + 2U] == '_' || \
-                input[(i) * 4U + 3U] == '-' || input[(i) * 4U + 3U] == '_'; \
-        output[(i) * 3U] = (unsigned char)value;                           \
-        output[(i) * 3U + 1U] = (unsigned char)(value >> 8);               \
-        output[(i) * 3U + 2U] = (unsigned char)(value >> 16);              \
+                input[(i) * 4U + 3U] == '-' || input[(i) * 4U + 3U] == '_';   \
+        output[(i) * 3U] = (unsigned char)value;                              \
+        output[(i) * 3U + 1U] = (unsigned char)(value >> 8);                  \
+        output[(i) * 3U + 2U] = (unsigned char)(value >> 16);                 \
     } while (0)
 
     switch (quartets) {
@@ -767,31 +767,31 @@ BASE64_ALWAYS_INLINE size_t base64_encode_inline_short(
 {
 #define BASE64_INLINE_ENCODE_GROUP(i)                                      \
     do {                                                                   \
-        const uint32_t value = ((uint32_t)input[(i) * 3U] << 16) |        \
-            ((uint32_t)input[(i) * 3U + 1U] << 8) |                       \
-            input[(i) * 3U + 2U];                                         \
-        memcpy(output + (i) * 4U,                                         \
-               ((const char (*)[2])base64_encode_pair)[value >> 12], 2U); \
-        memcpy(output + (i) * 4U + 2U,                                    \
-               ((const char (*)[2])base64_encode_pair)[value & 0xFFFU],   \
+        const uint32_t value = ((uint32_t)input[(i) * 3U] << 16) |         \
+            ((uint32_t)input[(i) * 3U + 1U] << 8) |                        \
+            input[(i) * 3U + 2U];                                          \
+        memcpy(output + (i) * 4U,                                          \
+               ((const char (*)[2])base64_encode_pair)[value >> 12], 2U);  \
+        memcpy(output + (i) * 4U + 2U,                                     \
+               ((const char (*)[2])base64_encode_pair)[value & 0xFFFU],    \
                2U);                                                        \
     } while (0)
 #define BASE64_INLINE_ENCODE_TAIL1(i)                                      \
     do {                                                                   \
-        const uint32_t value = (uint32_t)input[(i) * 3U] << 16;           \
-        memcpy(output + (i) * 4U,                                         \
-               ((const char (*)[2])base64_encode_pair)[value >> 12], 2U); \
-        output[(i) * 4U + 2U] = '=';                                      \
-        output[(i) * 4U + 3U] = '=';                                      \
+        const uint32_t value = (uint32_t)input[(i) * 3U] << 16;            \
+        memcpy(output + (i) * 4U,                                          \
+               ((const char (*)[2])base64_encode_pair)[value >> 12], 2U);  \
+        output[(i) * 4U + 2U] = '=';                                       \
+        output[(i) * 4U + 3U] = '=';                                       \
     } while (0)
 #define BASE64_INLINE_ENCODE_TAIL2(i)                                      \
     do {                                                                   \
-        const uint32_t value = ((uint32_t)input[(i) * 3U] << 16) |        \
-            ((uint32_t)input[(i) * 3U + 1U] << 8);                        \
-        memcpy(output + (i) * 4U,                                         \
-               ((const char (*)[2])base64_encode_pair)[value >> 12], 2U); \
-        output[(i) * 4U + 2U] = base64_alphabet[(value >> 6) & 63U];      \
-        output[(i) * 4U + 3U] = '=';                                      \
+        const uint32_t value = ((uint32_t)input[(i) * 3U] << 16) |         \
+            ((uint32_t)input[(i) * 3U + 1U] << 8);                         \
+        memcpy(output + (i) * 4U,                                          \
+               ((const char (*)[2])base64_encode_pair)[value >> 12], 2U);  \
+        output[(i) * 4U + 2U] = base64_alphabet[(value >> 6) & 63U];       \
+        output[(i) * 4U + 3U] = '=';                                       \
     } while (0)
     switch (length) {
     case 15:
@@ -905,19 +905,19 @@ BASE64_ALWAYS_INLINE size_t base64_decode_inline_short(
         return BASE64_ERROR;
     quartets = data_length >> 2;
     remainder = data_length & 3U;
-#define BASE64_INLINE_QUARTET(i)                                           \
+#define BASE64_INLINE_QUARTET(i)                                            \
     do {                                                                    \
-        const unsigned char* p = input + (i) * 4U;                         \
-        value = base64_decode_0[p[0]] | base64_decode_1[p[1]] |            \
-                base64_decode_2[p[2]] | base64_decode_3[p[3]];             \
+        const unsigned char* p = input + (i) * 4U;                          \
+        value = base64_decode_0[p[0]] | base64_decode_1[p[1]] |             \
+                base64_decode_2[p[2]] | base64_decode_3[p[3]];              \
         if (checked) invalid |= value;                                      \
-        if (!support_url_safe &&                                           \
-            (p[0] == '-' || p[0] == '_' || p[1] == '-' || p[1] == '_' || \
-             p[2] == '-' || p[2] == '_' || p[3] == '-' || p[3] == '_'))  \
-            invalid |= 0x01FFFFFFU;                                        \
-        output[(i) * 3U] = (unsigned char)value;                           \
-        output[(i) * 3U + 1U] = (unsigned char)(value >> 8);               \
-        output[(i) * 3U + 2U] = (unsigned char)(value >> 16);              \
+        if (!support_url_safe &&                                            \
+            (p[0] == '-' || p[0] == '_' || p[1] == '-' || p[1] == '_' ||    \
+             p[2] == '-' || p[2] == '_' || p[3] == '-' || p[3] == '_'))     \
+            invalid |= 0x01FFFFFFU;                                         \
+        output[(i) * 3U] = (unsigned char)value;                            \
+        output[(i) * 3U + 1U] = (unsigned char)(value >> 8);                \
+        output[(i) * 3U + 2U] = (unsigned char)(value >> 16);               \
     } while (0)
     switch (quartets) {
     case 5: BASE64_INLINE_QUARTET(4); /* fall through */
