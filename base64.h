@@ -612,6 +612,65 @@ static inline size_t base64_decode_short_unchecked(
     return quartets * 3U + remainder - 1U;
 }
 
+BASE64_INTERNAL_INLINE void base64_store_three_decoded(
+    unsigned char* output, uint32_t x0, uint32_t x1, uint32_t x2)
+{
+#if defined(WORDS_BIGENDIAN) || \
+    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+    output[0] = (unsigned char)x0;
+    output[1] = (unsigned char)(x0 >> 8);
+    output[2] = (unsigned char)(x0 >> 16);
+    output[3] = (unsigned char)x1;
+    output[4] = (unsigned char)(x1 >> 8);
+    output[5] = (unsigned char)(x1 >> 16);
+    output[6] = (unsigned char)x2;
+    output[7] = (unsigned char)(x2 >> 8);
+    output[8] = (unsigned char)(x2 >> 16);
+#else
+    const uint64_t word =
+        (uint64_t)(x0 & 0x00FFFFFFU) |
+        ((uint64_t)(x1 & 0x00FFFFFFU) << 24) |
+        ((uint64_t)(x2 & 0xFFFFU) << 48);
+    memcpy(output, &word, 8);
+    output[8] = (unsigned char)(x2 >> 16);
+#endif
+}
+
+#define BASE64_DECODE_STATIC_BODY(d0, d1, d2, d3, url_safe)                 \
+    do {                                                                    \
+        if (data_length <= 24U)                                             \
+            return base64_decode_short(input, data_length, output,          \
+                                       (url_safe));                          \
+        while (data_length >= 12U) {                                        \
+            const uint32_t x0 = d0[input[0]] | d1[input[1]] |               \
+                                d2[input[2]] | d3[input[3]];                 \
+            const uint32_t x1 = d0[input[4]] | d1[input[5]] |               \
+                                d2[input[6]] | d3[input[7]];                 \
+            const uint32_t x2 = d0[input[8]] | d1[input[9]] |               \
+                                d2[input[10]] | d3[input[11]];               \
+            if ((x0 | x1 | x2) >= BASE64_BAD_CHARACTER)                    \
+                return BASE64_ERROR;                                        \
+            base64_store_three_decoded(output, x0, x1, x2);                 \
+            input += 12;                                                    \
+            output += 9;                                                    \
+            data_length -= 12;                                              \
+        }                                                                   \
+        while (data_length >= 4U) {                                         \
+            const uint32_t value = d0[input[0]] | d1[input[1]] |            \
+                                   d2[input[2]] | d3[input[3]];             \
+            if (value >= BASE64_BAD_CHARACTER)                              \
+                return BASE64_ERROR;                                        \
+            output[0] = (unsigned char)value;                               \
+            output[1] = (unsigned char)(value >> 8);                        \
+            output[2] = (unsigned char)(value >> 16);                       \
+            input += 4;                                                     \
+            output += 3;                                                    \
+            data_length -= 4;                                               \
+        }                                                                   \
+        return base64_decode_tail(input, data_length, output, begin,         \
+                                  d0, d1, d2);                              \
+    } while (0)
+
 BASE64_INTERNAL_INLINE size_t base64_decode_impl(
     const unsigned char* BASE64_RESTRICT input, size_t length,
     unsigned char* BASE64_RESTRICT output, int support_url_safe)
@@ -619,14 +678,6 @@ BASE64_INTERNAL_INLINE size_t base64_decode_impl(
     unsigned char* const begin = output;
     size_t data_length = length;
     size_t padding = 0U;
-    const uint32_t* decode_0 = support_url_safe
-        ? base64_decode_0 : base64_decode_standard_0;
-    const uint32_t* decode_1 = support_url_safe
-        ? base64_decode_1 : base64_decode_standard_1;
-    const uint32_t* decode_2 = support_url_safe
-        ? base64_decode_2 : base64_decode_standard_2;
-    const uint32_t* decode_3 = support_url_safe
-        ? base64_decode_3 : base64_decode_standard_3;
 
     if (data_length != 0U && input[data_length - 1U] == '=') {
         --data_length;
@@ -646,58 +697,16 @@ BASE64_INTERNAL_INLINE size_t base64_decode_impl(
         return BASE64_ERROR;
     }
 
-    if (data_length <= 24U)
-        return base64_decode_short(input, data_length, output,
-                                   support_url_safe);
-    while (data_length >= 12U) {
-        const uint32_t x0 = decode_0[input[0]] | decode_1[input[1]] |
-                            decode_2[input[2]] | decode_3[input[3]];
-        const uint32_t x1 = decode_0[input[4]] | decode_1[input[5]] |
-                            decode_2[input[6]] | decode_3[input[7]];
-        const uint32_t x2 = decode_0[input[8]] | decode_1[input[9]] |
-                            decode_2[input[10]] | decode_3[input[11]];
-        if ((x0 | x1 | x2) >= BASE64_BAD_CHARACTER)
-            return BASE64_ERROR;
-#if defined(WORDS_BIGENDIAN) || \
-    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
-        output[0] = (unsigned char)x0;
-        output[1] = (unsigned char)(x0 >> 8);
-        output[2] = (unsigned char)(x0 >> 16);
-        output[3] = (unsigned char)x1;
-        output[4] = (unsigned char)(x1 >> 8);
-        output[5] = (unsigned char)(x1 >> 16);
-        output[6] = (unsigned char)x2;
-        output[7] = (unsigned char)(x2 >> 8);
-        output[8] = (unsigned char)(x2 >> 16);
-#else
-        {
-            const uint64_t word =
-                (uint64_t)(x0 & 0x00FFFFFFU) |
-                ((uint64_t)(x1 & 0x00FFFFFFU) << 24) |
-                ((uint64_t)(x2 & 0xFFFFU) << 48);
-            memcpy(output, &word, 8);
-            output[8] = (unsigned char)(x2 >> 16);
-        }
-#endif
-        input += 12;
-        output += 9;
-        data_length -= 12;
-    }
-    while (data_length >= 4U) {
-        const uint32_t value = decode_0[input[0]] | decode_1[input[1]] |
-                               decode_2[input[2]] | decode_3[input[3]];
-        if (value >= BASE64_BAD_CHARACTER)
-            return BASE64_ERROR;
-        output[0] = (unsigned char)value;
-        output[1] = (unsigned char)(value >> 8);
-        output[2] = (unsigned char)(value >> 16);
-        input += 4;
-        output += 3;
-        data_length -= 4;
-    }
-    return base64_decode_tail(input, data_length, output, begin,
-                              decode_0, decode_1, decode_2);
+    if (support_url_safe)
+        BASE64_DECODE_STATIC_BODY(base64_decode_0, base64_decode_1,
+                                  base64_decode_2, base64_decode_3, 1);
+    BASE64_DECODE_STATIC_BODY(base64_decode_standard_0,
+                              base64_decode_standard_1,
+                              base64_decode_standard_2,
+                              base64_decode_standard_3, 0);
 }
+
+#undef BASE64_DECODE_STATIC_BODY
 
 BASE64_API size_t base64_decode(const unsigned char* BASE64_RESTRICT input,
                                 size_t length,
