@@ -209,8 +209,9 @@ static size_t base64_neon_decode_dispatch(const unsigned char* input,
              * scalar validation remains the fallback for invalid input. */
             if (!support_url_safe ||
                 !base64url_neon_decode_blocks(input, vector_length, output))
-                return base64_scalar_decode(input, length, output,
-                                            support_url_safe);
+                return support_url_safe
+                    ? base64url_scalar_decode(input, length, output)
+                    : base64_scalar_decode(input, length, output);
         }
     }
     {
@@ -219,9 +220,13 @@ static size_t base64_neon_decode_dispatch(const unsigned char* input,
                                              length - vector_length,
                                              output + vector_length / 4U * 3U,
                                              support_url_safe)
-            : base64_scalar_decode(input + vector_length, length - vector_length,
-                                   output + vector_length / 4U * 3U,
-                                   support_url_safe);
+            : (support_url_safe
+                ? base64url_scalar_decode(
+                    input + vector_length, length - vector_length,
+                    output + vector_length / 4U * 3U)
+                : base64_scalar_decode(
+                    input + vector_length, length - vector_length,
+                    output + vector_length / 4U * 3U));
         return tail == BASE64_ERROR ? BASE64_ERROR
                                     : vector_length / 4U * 3U + tail;
     }
