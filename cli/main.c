@@ -242,8 +242,7 @@ static int decode_stream(FILE* input, bool ignore_garbage)
             size_t produced;
             if (!flush_output(output_buffer, &output_size))
                 return fail("write error");
-            produced = base64_decode(
-                input_buffer, count, output_buffer, 0);
+            produced = base64_decode(input_buffer, count, output_buffer);
             if (produced != BASE64_ERROR) {
                 if (!write_all(output_buffer, produced))
                     return fail("write error");
@@ -284,8 +283,8 @@ static int decode_stream(FILE* input, bool ignore_garbage)
                     size_t produced;
                     if (!flush_output(output_buffer, &output_size))
                         return fail("write error");
-                    produced = base64_decode(
-                        compacted_data, aligned, output_buffer, 0);
+                    produced = base64_decode(compacted_data, aligned,
+                                             output_buffer);
                     compact_ok = produced != BASE64_ERROR;
                     if (compact_ok && !write_all(output_buffer, produced))
                         return fail("write error");

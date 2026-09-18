@@ -8,15 +8,18 @@
 
 #pragma push_macro("base64_encode")
 #pragma push_macro("base64_decode")
+#pragma push_macro("base64url_decode")
 #pragma push_macro("base64_decode_unchecked")
 #pragma push_macro("base64_compact")
 #undef base64_encode
 #undef base64_decode
+#undef base64url_decode
 #undef base64_decode_unchecked
 #undef base64_compact
 #define base64_encode base64_scalar_encode
 #define base64url_encode base64url_scalar_encode
 #define base64_decode base64_scalar_decode
+#define base64url_decode base64url_scalar_decode
 #define base64_decode_unchecked base64_scalar_decode_unchecked
 #define base64_compact base64_scalar_compact
 #define BASE64_IMPLEMENTATION
@@ -24,10 +27,12 @@
 #undef base64_encode
 #undef base64url_encode
 #undef base64_decode
+#undef base64url_decode
 #undef base64_decode_unchecked
 #undef base64_compact
 #pragma pop_macro("base64_compact")
 #pragma pop_macro("base64_decode_unchecked")
+#pragma pop_macro("base64url_decode")
 #pragma pop_macro("base64_decode")
 #pragma pop_macro("base64_encode")
 
@@ -89,13 +94,19 @@ size_t base64url_encode(const unsigned char* input, size_t length, char* output)
 }
 
 size_t base64_decode(const unsigned char* input, size_t length,
-                     unsigned char* output, int support_url_safe)
+                     unsigned char* output)
 {
     if (length >= 24U && base64_has_avx2())
-        return support_url_safe
-            ? base64_avx2_decode(input, length, output)
-            : base64_avx2_decode_standard(input, length, output);
-    return base64_scalar_decode(input, length, output, support_url_safe);
+        return base64_avx2_decode_standard(input, length, output);
+    return base64_scalar_decode(input, length, output);
+}
+
+size_t base64url_decode(const unsigned char* input, size_t length,
+                        unsigned char* output)
+{
+    if (length >= 24U && base64_has_avx2())
+        return base64_avx2_decode(input, length, output);
+    return base64url_scalar_decode(input, length, output);
 }
 
 size_t base64_decode_unchecked(const unsigned char* input, size_t length,
@@ -124,15 +135,18 @@ size_t base64_compact(unsigned char* buffer, size_t length)
 
 #pragma push_macro("base64_encode")
 #pragma push_macro("base64_decode")
+#pragma push_macro("base64url_decode")
 #pragma push_macro("base64_decode_unchecked")
 #pragma push_macro("base64_compact")
 #undef base64_encode
 #undef base64_decode
+#undef base64url_decode
 #undef base64_decode_unchecked
 #undef base64_compact
 #define base64_encode base64_scalar_encode
 #define base64url_encode base64url_scalar_encode
 #define base64_decode base64_scalar_decode
+#define base64url_decode base64url_scalar_decode
 #define base64_decode_unchecked base64_scalar_decode_unchecked
 #define base64_compact base64_scalar_compact
 #define BASE64_IMPLEMENTATION
@@ -140,10 +154,12 @@ size_t base64_compact(unsigned char* buffer, size_t length)
 #undef base64_encode
 #undef base64url_encode
 #undef base64_decode
+#undef base64url_decode
 #undef base64_decode_unchecked
 #undef base64_compact
 #pragma pop_macro("base64_compact")
 #pragma pop_macro("base64_decode_unchecked")
+#pragma pop_macro("base64url_decode")
 #pragma pop_macro("base64_decode")
 #pragma pop_macro("base64_encode")
 
@@ -228,11 +244,19 @@ size_t base64url_encode(const unsigned char* input, size_t length, char* output)
 }
 
 size_t base64_decode(const unsigned char* input, size_t length,
-                     unsigned char* output, int support_url_safe)
+                     unsigned char* output)
 {
     return length >= 64U
-        ? base64_neon_decode_dispatch(input, length, output, 0, support_url_safe)
-        : base64_scalar_decode(input, length, output, support_url_safe);
+        ? base64_neon_decode_dispatch(input, length, output, 0, 0)
+        : base64_scalar_decode(input, length, output);
+}
+
+size_t base64url_decode(const unsigned char* input, size_t length,
+                        unsigned char* output)
+{
+    return length >= 64U
+        ? base64_neon_decode_dispatch(input, length, output, 0, 1)
+        : base64url_scalar_decode(input, length, output);
 }
 
 size_t base64_decode_unchecked(const unsigned char* input, size_t length,
@@ -266,9 +290,15 @@ extern "C" {
 #endif
 
 size_t base64_decode_compiled(const unsigned char* input, size_t length,
-                              unsigned char* output, int support_url_safe)
+                              unsigned char* output)
 {
-    return base64_decode(input, length, output, support_url_safe);
+    return base64_decode(input, length, output);
+}
+
+size_t base64url_decode_compiled(const unsigned char* input, size_t length,
+                                 unsigned char* output)
+{
+    return base64url_decode(input, length, output);
 }
 
 size_t base64_encode_compiled(const unsigned char* input, size_t length,
@@ -286,10 +316,15 @@ size_t base64_decode_unchecked_compiled(const unsigned char* input,
 }
 
 size_t base64_decode_whitespace(unsigned char* input, size_t length,
-                                unsigned char* output, int support_url_safe)
+                                unsigned char* output)
 {
-    return base64_decode(input, base64_compact(input, length), output,
-                         support_url_safe);
+    return base64_decode(input, base64_compact(input, length), output);
+}
+
+size_t base64url_decode_whitespace(unsigned char* input, size_t length,
+                                   unsigned char* output)
+{
+    return base64url_decode(input, base64_compact(input, length), output);
 }
 
 const char* base64_runtime_backend(void)

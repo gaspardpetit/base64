@@ -65,14 +65,26 @@ static int test_decode_whitespace(void)
     unsigned char encoded[] = "Zm9v\0\r\n\t YmFy";
     unsigned char decoded[16];
     const size_t size = base64_decode_whitespace(
-        encoded, sizeof(encoded) - 1U, decoded, 0);
+        encoded, sizeof(encoded) - 1U, decoded);
     if (size != 6U || memcmp(decoded, "foobar", 6U) != 0)
         return 0;
     {
         unsigned char invalid[] = "Zm!9v";
         return base64_decode_whitespace(
-            invalid, sizeof(invalid) - 1U, decoded, 0) == BASE64_ERROR;
+            invalid, sizeof(invalid) - 1U, decoded) == BASE64_ERROR;
     }
+}
+
+static int test_decode_alphabet_modes(void)
+{
+    static const unsigned char standard[] = "AAA+AAA/";
+    static const unsigned char url_safe[] = "AAA-AAA_";
+    unsigned char output[8];
+    return base64_decode(standard, sizeof(standard) - 1U, output) == 6U &&
+           base64url_decode(standard, sizeof(standard) - 1U, output) == 6U &&
+           base64_decode(url_safe, sizeof(url_safe) - 1U, output) ==
+               BASE64_ERROR &&
+           base64url_decode(url_safe, sizeof(url_safe) - 1U, output) == 6U;
 }
 
 int main(void)
@@ -83,7 +95,8 @@ int main(void)
         fprintf(stderr, "unexpected backend: %s\n", backend);
         return 1;
     }
-    if (!test_compact() || !test_decode_whitespace()) {
+    if (!test_compact() || !test_decode_whitespace() ||
+        !test_decode_alphabet_modes()) {
         fprintf(stderr, "Base64 API test failed\n");
         return 1;
     }

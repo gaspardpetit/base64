@@ -68,10 +68,10 @@ BASE64_CPP_API bool decode(const std::string& input, std::string& output)
     if (&input == &output)
         throw std::invalid_argument("Base64 input and output must be distinct");
     output.resize(base64_decoded_max_size(input.size()));
-    const size_t size = base64_decode(
+    const size_t size = base64url_decode(
         reinterpret_cast<const unsigned char*>(input.data()),
         input.size(),
-        reinterpret_cast<unsigned char*>(output.data()), true);
+        reinterpret_cast<unsigned char*>(output.data()));
     if (size == BASE64_ERROR) {
         output.clear();
         return false;
@@ -115,9 +115,9 @@ BASE64_CPP_API std::string decode(const std::string& input)
 {
     if (base64_decoded_max_size(input.size()) <= 15U) {
         unsigned char buffer[16];
-        const size_t size = base64_decode(
+        const size_t size = base64url_decode(
             reinterpret_cast<const unsigned char*>(input.data()),
-            input.size(), buffer, true);
+            input.size(), buffer);
         if (size == BASE64_ERROR)
             throw std::invalid_argument("Invalid Base64 input");
         return std::string(reinterpret_cast<const char*>(buffer), size);

@@ -30,8 +30,9 @@ For header-only use, define `BASE64_HEADER_ONLY` before including the header:
 
 Allocate `base64_encoded_size(input_size)` bytes for encoding or
 `base64_decoded_max_size(input_size)` bytes for decoding. The functions
-return the number of bytes written. `base64_decode` returns `BASE64_ERROR`
-for invalid input.
+return the number of bytes written. `base64_decode` accepts the standard
+alphabet, while `base64url_decode` accepts both the standard and URL-safe
+alphabets. Both return `BASE64_ERROR` for invalid input.
 
 Use `base64url_encode` to produce URL-safe Base64. It has the same buffer-size
 and return-value contract as `base64_encode`.
@@ -52,7 +53,7 @@ non-whitespace characters remain.
 
 ```c
 size_t decoded_size = base64_decode_whitespace(
-    encoded, encoded_size, decoded, 0);
+    encoded, encoded_size, decoded);
 ```
 
 ## C++
@@ -124,11 +125,12 @@ with .NET Framework 4.8.
 ## Supported format
 
 `base64_encode` produces standard padded Base64 as defined by RFC 4648;
-`base64url_encode` produces its padded URL-safe variant. Decoding accepts both
-the standard (`+` and `/`) and URL-safe (`-` and `_`) alphabets, with or without
-padding. Mixed alphabets are also accepted. Whitespace and line-wrapped input
-are rejected unless the caller first uses `base64_compact`. Encode and decode
-input and output buffers must not overlap.
+`base64url_encode` produces its padded URL-safe variant. `base64_decode`
+accepts only the standard (`+` and `/`) alphabet. `base64url_decode` accepts
+both the standard and URL-safe (`-` and `_`) alphabets, including mixed input.
+Both decoders accept padded and unpadded input. Whitespace and line-wrapped
+input are rejected unless the caller first uses `base64_compact`. Encode and
+decode input and output buffers must not overlap.
 
 ## Linux AVX2
 
