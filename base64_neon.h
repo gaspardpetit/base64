@@ -12,6 +12,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 #include <arm_neon.h>
 
 #if defined(BASE64_NEON_HEADER_ONLY)
@@ -22,8 +23,8 @@
 #  define BASE64_NEON_API extern
 #endif
 
-/* These process complete SIMD blocks only. The scalar frontend owns tails and
- * padding, so callers pass a multiple of 48 / 64 bytes respectively. */
+/* Encoding consumes 48-byte and 12-byte blocks; decoding consumes complete
+ * 64-byte blocks. The scalar frontend owns the remaining tails and padding. */
 BASE64_NEON_API size_t base64_neon_encode_blocks(
     const unsigned char* input, size_t length, char* output);
 BASE64_NEON_API size_t base64url_neon_encode_blocks(
@@ -414,6 +415,32 @@ static inline size_t base64_neon_encode_blocks_impl(
         input += 48;
         output += 64;
         length -= 48;
+    }
+    while (length >= 12U) {
+        uint32_t last4;
+        memcpy(&last4, input + 8, sizeof(last4));
+        const uint8x16_t raw = vcombine_u8(
+            vld1_u8(input), vreinterpret_u8_u32(vdup_n_u32(last4)));
+        const uint8x8_t a = vqtbl1_u8(raw, vcreate_u8(0x0906030009060300));
+        const uint8x8_t b = vqtbl1_u8(raw, vcreate_u8(0x0a0704010a070401));
+        const uint8x8_t c = vqtbl1_u8(raw, vcreate_u8(0x0b0805020b080502));
+        const uint8x8_t mask = vdup_n_u8(63);
+        const uint8x8_t i0 = vqtbl4_u8(table, vshr_n_u8(a, 2));
+        const uint8x8_t i1 = vqtbl4_u8(table,
+            vand_u8(vsli_n_u8(vshr_n_u8(b, 4), a, 4), mask));
+        const uint8x8_t i2 = vqtbl4_u8(table,
+            vand_u8(vsli_n_u8(vshr_n_u8(c, 6), b, 2), mask));
+        const uint8x8_t i3 = vqtbl4_u8(table, vand_u8(c, mask));
+        const uint8x8_t z0 = vzip1_u8(i0, i1);
+        const uint8x8_t z1 = vzip1_u8(i2, i3);
+        const uint16x4x2_t zipped = vzip_u16(
+            vreinterpret_u16_u8(z0), vreinterpret_u16_u8(z1));
+        vst1q_u8((uint8_t*)output, vcombine_u8(
+            vreinterpret_u8_u16(zipped.val[0]),
+            vreinterpret_u8_u16(zipped.val[1])));
+        input += 12;
+        output += 16;
+        length -= 12;
     }
     return (size_t)(input - begin);
 }

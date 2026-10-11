@@ -79,16 +79,16 @@ extern "C" {
 
 size_t base64_encode(const unsigned char* input, size_t length, char* output)
 {
-    if (length >= 16U && base64_has_avx2())
-        return length < 28U ? base64_avx128_encode(input, length, output)
+    if (length >= 12U && base64_has_avx2())
+        return length >= 16U && length < 24U ? base64_avx128_encode(input, length, output)
                             : base64_avx2_encode(input, length, output);
     return base64_scalar_encode(input, length, output);
 }
 
 size_t base64url_encode(const unsigned char* input, size_t length, char* output)
 {
-    if (length >= 16U && base64_has_avx2())
-        return length < 28U ? base64url_avx128_encode(input, length, output)
+    if (length >= 12U && base64_has_avx2())
+        return length >= 16U && length < 24U ? base64url_avx128_encode(input, length, output)
                             : base64url_avx2_encode(input, length, output);
     return base64url_scalar_encode(input, length, output);
 }
@@ -169,10 +169,9 @@ static size_t base64_neon_encode_dispatch(const unsigned char* input,
                                           size_t length, char* output,
                                           int url_safe)
 {
-    const size_t vector_length = length & ~(size_t)47U;
     const size_t consumed = url_safe
-        ? base64url_neon_encode_blocks(input, vector_length, output)
-        : base64_neon_encode_blocks(input, vector_length, output);
+        ? base64url_neon_encode_blocks(input, length, output)
+        : base64_neon_encode_blocks(input, length, output);
     const size_t written = consumed / 3U * 4U;
     return written + (url_safe
         ? base64url_scalar_encode(input + consumed, length - consumed,
@@ -233,13 +232,13 @@ extern "C" {
 
 size_t base64_encode(const unsigned char* input, size_t length, char* output)
 {
-    return length >= 48U ? base64_neon_encode_dispatch(input, length, output, 0)
+    return length >= 12U ? base64_neon_encode_dispatch(input, length, output, 0)
                          : base64_scalar_encode(input, length, output);
 }
 
 size_t base64url_encode(const unsigned char* input, size_t length, char* output)
 {
-    return length >= 48U ? base64_neon_encode_dispatch(input, length, output, 1)
+    return length >= 12U ? base64_neon_encode_dispatch(input, length, output, 1)
                          : base64url_scalar_encode(input, length, output);
 }
 

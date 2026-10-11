@@ -200,7 +200,8 @@ nine bytes with packed stores where the platform permits it.
 The optional AVX2 backend processes four 24-byte encoding blocks together. Its
 main encoding loop uses overlapping 256-bit input loads after an initial safe
 load, avoiding the cost of assembling each input vector from two smaller
-loads. The large-input decoder processes four 32-byte blocks per iteration.
+loads. A bounded 24-byte step and a 12-byte SSE step handle shorter inputs and
+tails. The large-input decoder processes four 32-byte blocks per iteration.
 Decoding uses independently derived hash tables to translate and validate both
 RFC 4648 alphabets, followed by packed multiply-add operations that assemble
 the decoded bytes. Checked and unchecked decoding use separately specialized
@@ -208,8 +209,9 @@ loops. Standard-only decoding uses dedicated mapping and validation tables,
 while URL-safe-compatible decoding accepts both alphabets in a combined
 pipeline.
 
-The optional NEON backend processes 48 input bytes per encoding block and 64
-Base64 characters per decoding block. Its checked decoder uses compact lookup
+The optional NEON backend processes 48 input bytes per main encoding block,
+with a 12-byte step for shorter inputs and tails, and 64 Base64 characters per
+decoding block. Its checked decoder uses compact lookup
 tables to validate and translate each RFC 4648 alphabet in a dedicated SIMD
 pipeline. Standard input enters its pipeline directly; a failed standard
 mapping is retried with the URL-safe pipeline. The unchecked variant skips

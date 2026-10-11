@@ -102,12 +102,12 @@ static BASE64_AVX2_INLINE __m256i encode_unpack(__m256i value)
 static BASE64_AVX2_INLINE __m256i encode_load(const unsigned char* input)
 {
     const __m128i lo = _mm_loadu_si128((const __m128i*)input);
-    const __m128i hi = _mm_loadu_si128((const __m128i*)(input + 12));
+    const __m128i hi = _mm_loadu_si128((const __m128i*)(input + 8));
     __m256i value = _mm256_inserti128_si256(
         _mm256_castsi128_si256(lo), hi, 1);
     return _mm256_shuffle_epi8(value, _mm256_setr_epi8(
         1,0,2,1,4,3,5,4,7,6,8,7,10,9,11,10,
-        1,0,2,1,4,3,5,4,7,6,8,7,10,9,11,10));
+        5,4,6,5,8,7,9,8,11,10,12,11,14,13,15,14));
 }
 
 /* After the first block, four preceding bytes are available. A single
@@ -216,7 +216,7 @@ static BASE64_AVX2_INLINE void encode_block_128_safe12(
         _mm256_storeu_si256((__m256i*)(output + 96), v3);                     \
         input += 96; output += 128; length -= 96;                             \
     }                                                                         \
-    while (length >= 28U) {                                                   \
+    while (length >= 24U) {                                                   \
         __m256i value = encode_unpack(encode_load(input));                    \
         value = encode_translate(value, url_safe);                            \
         _mm256_storeu_si256((__m256i*)output, value);                         \

@@ -5,6 +5,53 @@
 #include <stdio.h>
 #include <string.h>
 
+static int test_encode_boundaries(void)
+{
+    static const char standard[] =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    static const char url[] =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+    size_t length, offset, mode;
+    for (length = 0U; length <= 160U; ++length) {
+        for (offset = 0U; offset < 16U; ++offset) {
+            unsigned char input[176];
+            char output[220], expected[220];
+            size_t i;
+            for (i = 0U; i < length; ++i)
+                input[offset + i] = (unsigned char)(i * 73U + length * 19U);
+            for (mode = 0U; mode < 2U; ++mode) {
+                const char* alphabet = mode ? url : standard;
+                const size_t expected_size = base64_encoded_size(length);
+                size_t written;
+                memset(output, 0xA5, sizeof(output));
+                for (i = 0U; i < length; i += 3U) {
+                    const unsigned int a = input[offset + i];
+                    const unsigned int b = i + 1U < length ? input[offset + i + 1U] : 0U;
+                    const unsigned int c = i + 2U < length ? input[offset + i + 2U] : 0U;
+                    const size_t j = i / 3U * 4U;
+                    expected[j] = alphabet[a >> 2];
+                    expected[j + 1U] = alphabet[((a & 3U) << 4) | (b >> 4)];
+                    expected[j + 2U] = i + 1U < length
+                        ? alphabet[((b & 15U) << 2) | (c >> 6)] : '=';
+                    expected[j + 3U] = i + 2U < length
+                        ? alphabet[c & 63U] : '=';
+                }
+                written = mode
+                    ? base64url_encode(input + offset, length, output)
+                    : base64_encode(input + offset, length, output);
+                if (written != expected_size ||
+                    memcmp(output, expected, expected_size) != 0 ||
+                    output[expected_size] != (char)0xA5) {
+                    fprintf(stderr, "encode failed at %zu/%zu/%zu\n",
+                            length, offset, mode);
+                    return 0;
+                }
+            }
+        }
+    }
+    return 1;
+}
+
 static int test_compact(void)
 {
     size_t length;
@@ -95,7 +142,7 @@ int main(void)
         fprintf(stderr, "unexpected backend: %s\n", backend);
         return 1;
     }
-    if (!test_compact() || !test_decode_whitespace() ||
+    if (!test_encode_boundaries() || !test_compact() || !test_decode_whitespace() ||
         !test_decode_alphabet_modes()) {
         fprintf(stderr, "Base64 API test failed\n");
         return 1;
